@@ -417,7 +417,7 @@ body table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   overflow: auto;
   display: block;
 }
@@ -426,7 +426,7 @@ body th {
   border-bottom: 1px dashed #666;
   color: #eee;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 15px;
 }
 body td {
   padding: 9px 8px 0;
@@ -457,8 +457,8 @@ body {
   color: #c9cacc;
   font-display: swap;
   font-weight: 400;
-  font-size: 14px;
-  font-family: "Menlo", "Meslo LG", monospace;
+  font-size: 16px;
+  font-family: "Menlo", "Meslo LG", "Source Han Serif", "STZhongsong", "Microsoft Yahei", monospace;
   line-height: 1.725;
   text-rendering: geometricPrecision;
   flex: 1;
@@ -1443,7 +1443,7 @@ pre {
   border: 1px dotted #666;
   border-radius: 4px;
   font-size: 13px;
-  font-family: "Menlo", "Meslo LG", monospace;
+  font-family: "Source Code Pro", "Menlo", "Meslo LG", consolas, monospace;
   line-height: 22px;
   -webkit-border-radius: 4px;
 }
@@ -1464,7 +1464,7 @@ code {
   padding: 10px 15px;
   border-radius: 4px;
   background: #212326;
-  font-family: "Menlo", "Meslo LG", monospace;
+  font-family: "Source Code Pro", "Menlo", "Meslo LG", consolas, monospace;
   -webkit-border-radius: 4px;
 }
 .highlight figcaption {
