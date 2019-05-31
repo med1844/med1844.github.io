@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/图解辗转相除法/35by14_2.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/图解辗转相除法/35by14_1.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/图解辗转相除法/35by14_3.png">
-<meta property="og:updated_time" content="2019-05-31T16:56:06.316Z">
+<meta property="og:updated_time" content="2019-05-31T17:02:09.021Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="图解辗转相除法 &amp; Codeforces 343A">
 <meta name="twitter:description" content="前言虽然在很久很久以前刚入门ACM的时候就已经知道辗转相除法的存在，并且也用GCD解了不少题，不过说实话辗转相除法的原理一直不是很清楚。 直到最近做到这样一道题: Codeforces - 343A，本以为是一道憨批构造，结果构造了两个小时都没出来，立刻自闭。 看了题解之后当即觉得基础数论白学了。毕竟能够证明$\gcd(a, b) = \gcd(b, a \bmod b)$并不代表对其有直观的理解">
@@ -165,7 +165,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(randint(<span class="number">1</span>, <span class="number">20</span>), randint(<span class="number">1</span>, <span class="number">20</span>))</span><br><span class="line"><span class="number">12</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
 <p>于是我们将通过一个$12 \times 10$的矩形来理解这一算法:</p>
 <p><img src="//medioqrity.github.io/2019/05/31/图解辗转相除法/12by10.png" alt="12by10"></p>
-<p>$\min(12, 10) = 10$，所以，我们从中削去$\min(12, 10) \times \min(12, 10)$大小的矩形:</p>
+<p>$\min(12, 10) = 10$，所以，我们从中削去$10\times 10$大小的矩形:</p>
 <p><img src="//medioqrity.github.io/2019/05/31/图解辗转相除法/12by10_1.png" alt="12by10_1"></p>
 <p>现在我们还剩下一个$2 \times 10$的矩形。可以认为问题被转化成了求$\gcd(2, 10)$。</p>
 <p>$\min(2, 10) = 2$，所以我们从中削去尽可能多的$2\times 2$的矩形:</p>
