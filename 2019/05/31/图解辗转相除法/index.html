@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/图解辗转相除法/17by5_5.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/图解辗转相除法/17by5_6.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/图解辗转相除法/Calkin-Wilf.png">
-<meta property="og:updated_time" content="2019-06-01T16:25:14.190Z">
+<meta property="og:updated_time" content="2019-06-02T05:00:47.714Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="图解辗转相除法 &amp; Codeforces 343A">
 <meta name="twitter:description" content="前言虽然在很久很久以前刚入门ACM的时候就已经知道辗转相除法的存在，并且也用GCD解了不少题，不过说实话辗转相除法的原理一直不是很清楚。 直到最近做到这样一道题: Codeforces - 343A，本以为是一道憨批构造，结果构造了两个小时都没出来，立刻自闭。 看了题解之后当即觉得基础数论白学了。毕竟能够证明$\gcd(a, b) = \gcd(b, a \bmod b)$并不代表对其有直观的理解">
@@ -232,7 +232,7 @@
 <li>在分子上增加一个$d$，等同于在水平方向上增加一个$d \times d$大小的正方形。</li>
 <li>在分母上增加一个$c$，等同于在竖直方向上增加一个$c \times c$大小的正方形。</li>
 </ul>
-<p>也就是说，每增加一个电阻，就等于逆向执行了一步$\text{Euclidean Algorithm}$。</p>
+<p>也就是说，每增加一个电阻，就等于逆向执行了一步辗转相除法: 从水平方向上，或是竖直方向上，增加一个正方形。</p>
 <p>所以，最终的答案就是$\gcd(a, b)$所需要执行的<strong>减法</strong>次数。</p>
 <p>注意，这里是减法，而不是<strong>取模</strong>次数。</p>
 <p>这很好理解，因为从$\displaystyle \frac{7}{14}$到$\displaystyle \frac{35}{14}$需要增加<strong>两个电阻</strong>，而通过取模，从$\displaystyle\frac{35}{14}$到$\displaystyle\frac{7}{14}$只需要<strong>一次运算</strong>:$35 \equiv 7 \bmod 14.$</p>
@@ -255,6 +255,7 @@
 <p>由树的性质可知，从一个节点到另一个节点的路径有且只有一条。所以，从任何一个分数，也就是树中的某个节点出发，到$\displaystyle \frac{1}{1}$，也就是根节点，<strong>有且只有一条路径</strong>。</p>
 <p>这说明，<strong>答案总是存在，并且唯一</strong>。所以，题干中要求的”使用电阻数<em>最少</em>“，可以说只是迷惑人的。</p>
 <p>因为答案是唯一的，所以我们求出来的值就一定是正确的，而不用去担心是否还有用更少电阻实现的可能。</p>
+<p>同时你也应该注意到了，由于路径本身就说明了要增加的是并联电阻还是串联电阻，所以我们甚至可以画出对应的电路图来！</p>
 <p><em>P.S:Calkin-Wilf Tree是一颗二叉树这一点也在一定程度上直观地说明了为什么辗转相除法的时间复杂度是</em>$\mathcal{O}(\log n)$<em>级别的。</em></p>
 
   </div>
