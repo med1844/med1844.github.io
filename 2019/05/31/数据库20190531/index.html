@@ -6,13 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="角色 车是货车的父类，货车是车的子类。 简单的树形结构，很好理解。 强实体集和弱实体集使用双线来表示客观存在的依赖性。  更详细地来说:  上图，等价于某个A至少等于一个B。 强实体集待补。 属性简单属性: 不能被分隔成更小的部分。 复杂属性: 由多个更小的部分组成。 例: 201792123可以被分隔成年份，专业号，编号。所以是复杂属性。 信息过载: Information overload，把">
+    <meta name="description" content="角色 车是货车的父类，货车是车的子类。 简单的树形结构，很好理解。 强实体集和弱实体集使用双线来表示客观存在的依赖性。  更详细地来说:  上图，等价于某个A至少等于一个B。 事实上，教材对强弱实体集有如下定义:  强实体集: 有主码的实体集。 弱实体集: 没有足够的属性以形成主码的实体集。  不难看出，实体集技术要求不可能拥有一个可以区分所有技术要求的，唯一的主码。 属性简单属性: 不能被分隔成">
 <meta name="keywords" content="数据库">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库20190531">
 <meta property="og:url" content="https://medioqrity.github.io/2019/05/31/数据库20190531/index.html">
 <meta property="og:site_name" content="Medioqrity&#39;s Blog">
-<meta property="og:description" content="角色 车是货车的父类，货车是车的子类。 简单的树形结构，很好理解。 强实体集和弱实体集使用双线来表示客观存在的依赖性。  更详细地来说:  上图，等价于某个A至少等于一个B。 强实体集待补。 属性简单属性: 不能被分隔成更小的部分。 复杂属性: 由多个更小的部分组成。 例: 201792123可以被分隔成年份，专业号，编号。所以是复杂属性。 信息过载: Information overload，把">
+<meta property="og:description" content="角色 车是货车的父类，货车是车的子类。 简单的树形结构，很好理解。 强实体集和弱实体集使用双线来表示客观存在的依赖性。  更详细地来说:  上图，等价于某个A至少等于一个B。 事实上，教材对强弱实体集有如下定义:  强实体集: 有主码的实体集。 弱实体集: 没有足够的属性以形成主码的实体集。  不难看出，实体集技术要求不可能拥有一个可以区分所有技术要求的，唯一的主码。 属性简单属性: 不能被分隔成">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/数据库20190531/Role.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/数据库20190531/E-R_Example_2.png">
@@ -20,10 +20,10 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/数据库20190531/学生和院系.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/数据库20190531/学生和院系_下限确定.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/05/31/数据库20190531/两种强弱关系表述方法的关系.png">
-<meta property="og:updated_time" content="2019-05-31T16:59:27.057Z">
+<meta property="og:updated_time" content="2019-06-02T04:53:52.667Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库20190531">
-<meta name="twitter:description" content="角色 车是货车的父类，货车是车的子类。 简单的树形结构，很好理解。 强实体集和弱实体集使用双线来表示客观存在的依赖性。  更详细地来说:  上图，等价于某个A至少等于一个B。 强实体集待补。 属性简单属性: 不能被分隔成更小的部分。 复杂属性: 由多个更小的部分组成。 例: 201792123可以被分隔成年份，专业号，编号。所以是复杂属性。 信息过载: Information overload，把">
+<meta name="twitter:description" content="角色 车是货车的父类，货车是车的子类。 简单的树形结构，很好理解。 强实体集和弱实体集使用双线来表示客观存在的依赖性。  更详细地来说:  上图，等价于某个A至少等于一个B。 事实上，教材对强弱实体集有如下定义:  强实体集: 有主码的实体集。 弱实体集: 没有足够的属性以形成主码的实体集。  不难看出，实体集技术要求不可能拥有一个可以区分所有技术要求的，唯一的主码。 属性简单属性: 不能被分隔成">
 <meta name="twitter:image" content="https://medioqrity.github.io/2019/05/31/数据库20190531/Role.png">
     
     
@@ -159,12 +159,17 @@
 <p>更详细地来说:</p>
 <p><img src="//medioqrity.github.io/2019/05/31/数据库20190531/AtoB.png" alt="AtoB"></p>
 <p>上图，等价于<em>某个A至少等于一个B</em>。</p>
-<p><strong><em>强实体集待补。</em></strong></p>
+<p>事实上，教材对强弱实体集有如下定义:</p>
+<ul>
+<li><strong>强实体集</strong>: 有主码的实体集。</li>
+<li><strong>弱实体集</strong>: 没有足够的属性以形成主码的实体集。</li>
+</ul>
+<p>不难看出，实体集<em>技术要求</em>不可能拥有一个可以区分所有技术要求的，唯一的主码。</p>
 <h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><p>简单属性: 不能被分隔成更小的部分。</p>
 <p>复杂属性: 由多个更小的部分组成。</p>
-<p><strong>例: 201792123</strong>可以被分隔成<em>年份，专业号，编号</em>。所以是<em>复杂属性</em>。</p>
+<p><strong>例: </strong>201792123可以被分隔成<em>年份，专业号，编号</em>。所以是<em>复杂属性</em>。</p>
 <p>信息过载: Information overload，把太多信息放到一个属性里。</p>
-<p>如果需要将上面所说的学号拆分成年份，专业号，编号来使用的话，说明发生了信息过载。</p>
+<p>如果需要将上面所说的学号拆分成年份，专业号，编号来使用的话，就可以认为发生了信息过载。</p>
 <h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><p>考虑一个学生有哪些属性:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">学号，姓名，院系名，出生地，生日，年龄，性别，电话，QQ号</span><br></pre></td></tr></table></figure>
 <p>每个属性都看一看是不是简单属性:</p>
@@ -180,7 +185,7 @@
 <li>QQ号，$\text{multi-value}$: 可能有大号，小号 = 有多个值，是一个列表 -&gt; $\text{multi-value}.$</li>
 </ul>
 <p>有多个值的属性可以写作: {QQ号}，{电话}</p>
-<p>如果出生年月是1999年，年龄写的却是14岁。这种情况是不应该发生的，同时也说明出生年月和年龄有一定的关系。</p>
+<p>如果出生年月是1999年，年龄写的却是14岁…这种情况是不应该发生的。这同时也说明出生年月和年龄有一定的关系。</p>
 <p>我们称年龄是出生年月的$\text{derived attribute}$，译名为<em>导出属性</em>。（虽然个人觉得派生属性更好一点）</p>
 <p>现在简单的总结一下所有的属性:</p>
 <ul>
@@ -189,19 +194,20 @@
 <li>multi value 多值属性</li>
 <li>derived 导出属性</li>
 </ul>
-<h2 id="另一个例子"><a href="#另一个例子" class="headerlink" title="另一个例子"></a>另一个例子</h2><p>再来考虑院系有哪些属性</p>
+<h2 id="另一个例子"><a href="#另一个例子" class="headerlink" title="另一个例子"></a>另一个例子</h2><p>再来考虑院系有哪些属性:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">院系名，building, budget</span><br></pre></td></tr></table></figure>
-<p>实际上院系和学生里的院系名是<strong>存在冗余</strong>的。</p>
+<p>实际上<em>院系</em>和<em>学生</em>里的<em>院系名</em>是<strong>存在冗余</strong>的。</p>
 <p>首先思考几个问题:</p>
 <ul>
 <li>为什么学生和院系之间要有联系集?</li>
 <li>为什么学生必须要有院系名这个属性?</li>
 <li><strong>如果我的院系变了，那么<em>我还是我</em>吗?</strong></li>
 </ul>
-<p>显然，院系并不能表征学生的特点。并不是内在的属性。</p>
+<p>显然，院系并不是学生内在的属性。不论是从软件学院转到音乐学院还是什么别的学院，<strong>我依然还是我</strong>。</p>
 <p>所以院系名这个属性是冗余的。</p>
 <p><img src="//medioqrity.github.io/2019/05/31/数据库20190531/学生和院系.png" alt="学生和院系"></p>
 <p>这张图完整的总结了学生和院系的关系。</p>
+<p><strong><em>待补: 为什么学生是弱实体集? 学号难道不是主码吗?</em></strong></p>
 <p>现在对这张图进行更进一步的改进:</p>
 <p><img src="//medioqrity.github.io/2019/05/31/数据库20190531/学生和院系_下限确定.png" alt="学生和院系_下限确定"></p>
 <p>图中已经对<code>1..*</code>和<code>0..x</code>进行了说明。</p>
