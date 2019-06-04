@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="例子11student(student_id, phone) 这里我们希望记录电话的服务提供商。 那么在这里电话到底应该是作为实体还是作为属性建模? 如果把电话按照属性来绘图的话，会出现描述属性的属性，而这种情况是不应该存在的:  如果出现这种情况，应该把这个属性单独拆出来作为一个实体来使用:  例子2 考虑上图，要怎么描述某个供应商给某个项目提供了多少器材呢? 其实稍微想一想就会发现做不到，因为">
+<meta name="keywords" content="数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库20190603">
+<meta property="og:url" content="https://medioqrity.github.io/2019/06/03/数据库20190603/index.html">
+<meta property="og:site_name" content="Medioqrity&#39;s Blog">
+<meta property="og:description" content="例子11student(student_id, phone) 这里我们希望记录电话的服务提供商。 那么在这里电话到底应该是作为实体还是作为属性建模? 如果把电话按照属性来绘图的话，会出现描述属性的属性，而这种情况是不应该存在的:  如果出现这种情况，应该把这个属性单独拆出来作为一个实体来使用:  例子2 考虑上图，要怎么描述某个供应商给某个项目提供了多少器材呢? 其实稍微想一想就会发现做不到，因为">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Example1.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Example1_fixed.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Failure.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/3-ary_Relations.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Binary_3-ary_Relations.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Binary_3-ary_Relations_Detailized.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Prime_Attributes.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Prime_Attributes_2.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Functional_Dependences.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Lossless_Decomposition.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Lossy_Decomposition.png">
+<meta property="og:updated_time" content="2019-06-04T08:43:31.844Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据库20190603">
+<meta name="twitter:description" content="例子11student(student_id, phone) 这里我们希望记录电话的服务提供商。 那么在这里电话到底应该是作为实体还是作为属性建模? 如果把电话按照属性来绘图的话，会出现描述属性的属性，而这种情况是不应该存在的:  如果出现这种情况，应该把这个属性单独拆出来作为一个实体来使用:  例子2 考虑上图，要怎么描述某个供应商给某个项目提供了多少器材呢? 其实稍微想一想就会发现做不到，因为">
+<meta name="twitter:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Example1.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>数据库20190603</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+    <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+<body class="max-width mx-auto px3 ltr">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/05/31/图解辗转相除法/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://medioqrity.github.io/2019/06/03/数据库20190603/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&text=数据库20190603"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&is_video=false&description=数据库20190603"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=数据库20190603&body=Check out this article: https://medioqrity.github.io/2019/06/03/数据库20190603/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&name=数据库20190603&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#例子1"><span class="toc-number">1.</span> <span class="toc-text">例子1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例子2"><span class="toc-number">2.</span> <span class="toc-text">例子2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#主属性"><span class="toc-number">3.</span> <span class="toc-text">主属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Rational-Database-Design"><span class="toc-number">4.</span> <span class="toc-text">Rational Database Design</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#数据依赖"><span class="toc-number"></span> <span class="toc-text">数据依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么要关注数据依赖"><span class="toc-number">2.</span> <span class="toc-text">为什么要关注数据依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数依赖的一些注意要点"><span class="toc-number">3.</span> <span class="toc-text">函数依赖的一些注意要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一个例子"><span class="toc-number">4.</span> <span class="toc-text">一个例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#存在的依赖"><span class="toc-number">4.1.</span> <span class="toc-text">存在的依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存在的问题"><span class="toc-number">4.2.</span> <span class="toc-text">存在的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#平凡的和非平凡的函数依赖"><span class="toc-number">5.</span> <span class="toc-text">平凡的和非平凡的函数依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#完全的函数依赖"><span class="toc-number">6.</span> <span class="toc-text">完全的函数依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#传递函数依赖"><span class="toc-number">7.</span> <span class="toc-text">传递函数依赖</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#规范化"><span class="toc-number"></span> <span class="toc-text">规范化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#无损分解"><span class="toc-number">1.</span> <span class="toc-text">无损分解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有损分解"><span class="toc-number">2.</span> <span class="toc-text">有损分解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#怎么判断是否是无损分解"><span class="toc-number">3.</span> <span class="toc-text">怎么判断是否是无损分解</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#范式"><span class="toc-number"></span> <span class="toc-text">范式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#范式的定义"><span class="toc-number">1.</span> <span class="toc-text">范式的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#范式的种类"><span class="toc-number">2.</span> <span class="toc-text">范式的种类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一范式"><span class="toc-number">3.</span> <span class="toc-text">第一范式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二范式"><span class="toc-number">4.</span> <span class="toc-text">第二范式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三范式"><span class="toc-number">5.</span> <span class="toc-text">第三范式</span></a></li></ol>
+    </li></div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        数据库20190603
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Medioqrity's Blog</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-06-03T10:27:39.000Z" itemprop="datePublished">2019-06-03</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/数据库/">数据库</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student(student_id, phone)</span><br></pre></td></tr></table></figure>
+<p>这里我们希望记录电话的服务提供商。</p>
+<p>那么在这里电话到底应该是作为实体还是作为属性建模?</p>
+<p>如果把电话按照属性来绘图的话，会出现<strong>描述属性的属性</strong>，而这种情况是不应该存在的:</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Example1.png" alt="Example1"></p>
+<p>如果出现这种情况，应该把这个属性单独拆出来作为一个实体来使用:</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Example1_fixed.png" alt="Example1_fixed"></p>
+<h2 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h2><p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Failure.png" alt="Failure"></p>
+<p>考虑上图，要怎么描述<em>某个供应商给某个项目提供了多少器材</em>呢?</p>
+<p>其实稍微想一想就会发现做不到，因为任何两个关系都只连接了三个实体集中的两个，自然是不可能描述涉及到三个实体集的关系。</p>
+<p>所以需要建立一个三元联系:</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/3-ary_Relations.png" alt="3-ary_Relations"></p>
+<p>事实上它也可以被转换成一个二元联系:</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Binary_3-ary_Relations.png" alt="Binary_3-ary_Relations"></p>
+<p>事实上，更严格地来看，它应该长这样:</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Binary_3-ary_Relations_Detailized.png" alt="Binary_3-ary_Relations_Detailized"></p>
+<h2 id="主属性"><a href="#主属性" class="headerlink" title="主属性"></a>主属性</h2><p>Attributes of the relation which exist in at least one of the possible candidate keys, are called <strong>prime  attributes</strong>.</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Prime_Attributes.png" alt="Prime_Attributes"></p>
+<p>这个例子里三个属性全都成主属性了，所以再来一个例子:</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Prime_Attributes_2.png" alt="Prime_Attributes_2"></p>
+<h2 id="Rational-Database-Design"><a href="#Rational-Database-Design" class="headerlink" title="Rational Database Design"></a>Rational Database Design</h2><p>怎么确定一个关系模式是否合适? -&gt; 关系规范化</p>
+<p>考虑这个例子:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">instructor(ID, name, deptname, salary)</span><br><span class="line">department(deptname, building, budget)</span><br></pre></td></tr></table></figure>
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inst_dept(ID, name, salary, deptname, building, budget)</span><br></pre></td></tr></table></figure>
+<p>哪一种设计更好?</p>
+<p>现代大数据一般使用的是第二种，虽然会有冗余，但是这样的冗余可以说是空间换时间。</p>
+<p>答案是第一种更好。原因是因为第二种设计:</p>
+<ul>
+<li>不能存储没有教授的部门。</li>
+<li>不能存储不属于任何部门的教授。</li>
+<li>存在数据冗余。</li>
+<li>存在潜在的数据不一致性风险，比如:<ul>
+<li>将两个部门合并成一个时，硬件出现问题，导致只有一部分人被合并进了新部门。</li>
+</ul>
+</li>
+<li>更新数据时效率低。</li>
+</ul>
+<h1 id="数据依赖"><a href="#数据依赖" class="headerlink" title="数据依赖"></a>数据依赖</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>类似于统计中的正相关和负相关的概念。</p>
+<p>这里指的可以说是更加宽泛的概念，也就是关系中的属性值之间的相互关系。</p>
+<p><strong>例:</strong></p>
+<p>在某学校的学生的关系中，只要学号确定了，那么这个学生的姓名就确定了。这相当于一个从学号到姓名的映射: $s_{\text{name}} = f(s_{\text{id}})$。</p>
+<p>像这样的数据依赖被称为<strong>函数依赖</strong>，记作$s_{\text{id}}\rarr s_{\text{name}}$。</p>
+<h2 id="为什么要关注数据依赖"><a href="#为什么要关注数据依赖" class="headerlink" title="为什么要关注数据依赖"></a>为什么要关注数据依赖</h2><p>它有助于形成好的，规范的关系模式，防止冗余的产生。</p>
+<h2 id="函数依赖的一些注意要点"><a href="#函数依赖的一些注意要点" class="headerlink" title="函数依赖的一些注意要点"></a>函数依赖的一些注意要点</h2><ul>
+<li>通用性: 函数依赖是指$R$的所有关系实例都要满足的约束条件。</li>
+<li>?  </li>
+<li>?</li>
+</ul>
+<p><del>讲得太快了根本来不及记。。</del></p>
+<h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>学号 $s_{\text{id}}$</th>
+<th>姓名 $s_{\text{name}}$</th>
+<th>系名   $d_{\text{name}}$</th>
+<th>系主任 $d_{\text{leader}}$</th>
+<th>课程号 $c_{\text{id}}$</th>
+<th>课程名  $c_\text{name}$</th>
+<th>成绩 $\text{Grade}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>胡斐</td>
+<td>胡氏家族</td>
+<td>胡一刀</td>
+<td>1</td>
+<td>刀法</td>
+<td>100</td>
+</tr>
+<tr>
+<td>1</td>
+<td>胡斐</td>
+<td>胡氏家族</td>
+<td>胡一刀</td>
+<td>2</td>
+<td>内功</td>
+<td>85</td>
+</tr>
+<tr>
+<td>2</td>
+<td>段誉</td>
+<td>段氏家族</td>
+<td>段正南</td>
+<td>2</td>
+<td>内功</td>
+<td>100</td>
+</tr>
+<tr>
+<td>3</td>
+<td>韦一笑</td>
+<td>明教</td>
+<td>张无忌</td>
+<td>3</td>
+<td>轻功</td>
+<td>100</td>
+</tr>
+<tr>
+<td>4</td>
+<td>殷天正</td>
+<td>明教</td>
+<td>张无忌</td>
+<td>2</td>
+<td>内功</td>
+<td>90</td>
+</tr>
+<tr>
+<td>5</td>
+<td>乔峰</td>
+<td>丐帮</td>
+<td>洪七公</td>
+<td>2</td>
+<td>内功</td>
+<td>98</td>
+</tr>
+<tr>
+<td>2</td>
+<td>段誉</td>
+<td>段氏家族</td>
+<td>段正南</td>
+<td>1</td>
+<td>刀法</td>
+<td>10</td>
+</tr>
+<tr>
+<td>6</td>
+<td>裘千丈</td>
+<td>铁掌帮</td>
+<td>裘千仞</td>
+<td>4</td>
+<td>歪门邪道</td>
+<td>98</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>显然，主码应当是学号和课程名的组合。</p>
+<h3 id="存在的依赖"><a href="#存在的依赖" class="headerlink" title="存在的依赖"></a>存在的依赖</h3><script type="math/tex; mode=display">
+\begin{align*}
+s_\text{id} &\to s_\text{name} \\
+s_\text{id} &\to d_\text{name} \\
+s_\text{id} &\to d_\text{leader} \\
+d_\text{name} &\to d_\text{leader} \\
+c_\text{id} &\to c_\text{name} \\
+(s_\text{id}, c_\text{id}) &\to \text{Grade}
+\end{align*}</script><p>上面的关系看起来实在过于乏味，好在我们还有另一种更加直观的表示方法:</p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Functional_Dependences.png" alt="Functional_Dependences"></p>
+<h3 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h3><p>如果来了一个没有选课的孩子，那怎么办?</p>
+<p>相同的系名，系主任被存储了很多次，产生了冗余。同时，更新时，不仅需要更新几十万条记录，而且如果更新时硬件出现了故障，也会导致潜在的数据不一致性。</p>
+<h2 id="平凡的和非平凡的函数依赖"><a href="#平凡的和非平凡的函数依赖" class="headerlink" title="平凡的和非平凡的函数依赖"></a>平凡的和非平凡的函数依赖</h2><ul>
+<li>$(s_{\text{id}}, c_{\text{id}}) \to \text{Grade}$, non-trivial</li>
+<li>$(s_{\text{id}}, c_{\text{id}}) \to c_{\text{id}}$, trivial</li>
+</ul>
+<h2 id="完全的函数依赖"><a href="#完全的函数依赖" class="headerlink" title="完全的函数依赖"></a>完全的函数依赖</h2><p>少任何一个参数都不能够继续维持依赖关系。</p>
+<p><strong>例:</strong></p>
+<p>上面的$(s_\text{id}, c_\text{id}) \to \text{Grade}$就是完全依赖关系。</p>
+<p>它满足去掉任何一个都不能够继续维持依赖关系的要求。这是很显然的:</p>
+<ul>
+<li>如果去掉$s_\text{id}$，那么仅凭课程号怎么知道现在需要的是一堆成绩中的哪个?</li>
+<li>如果去掉$c_\text{id}$，那么一个学生考了那么多课程，怎么知道是这些课程成绩中的哪个?</li>
+</ul>
+<h2 id="传递函数依赖"><a href="#传递函数依赖" class="headerlink" title="传递函数依赖"></a>传递函数依赖</h2><p> 可以认为$d_\text{leader}$传递函数依赖于$s_\text{id}$，因为$s_\text{id} \to d_\text{name}$且$d_\text{name} \to d_\text{leader}$。<del>（c++风格的条件）</del></p>
+<h1 id="规范化"><a href="#规范化" class="headerlink" title="规范化"></a>规范化</h1><p>规范化过程的本质就是将一个关系模式分解成几个关系模式。</p>
+<h2 id="无损分解"><a href="#无损分解" class="headerlink" title="无损分解"></a>无损分解</h2><p>分解完之后应该还有办法能够拼回去，也就是说还有<strong>连接条件</strong>可以写。</p>
+<p>如果分解了就没有办法拼回去了，那么就称为产生了信息丢失。</p>
+<p><strong>不产生信息丢失</strong>是分解唯一的原则。</p>
+<p><strong>例:</strong></p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Lossless_Decomposition.png" alt="Lossless_Decomposition"></p>
+<p>上图是一个无损分解。</p>
+<h2 id="有损分解"><a href="#有损分解" class="headerlink" title="有损分解"></a>有损分解</h2><p>可以简单地认为是连接条件产生了重复项，导致拼回去之后的结果相比原来的表要少了一些项，那么这种分解就可以认为是有损分解。</p>
+<p><strong>例:</strong></p>
+<p><img src="//medioqrity.github.io/2019/06/03/数据库20190603/Lossy_Decomposition.png" alt="Lossy_Decomposition"></p>
+<p>上图是一个有损分解: 连接条件$d_\text{count}$拥有重复的值。</p>
+<h2 id="怎么判断是否是无损分解"><a href="#怎么判断是否是无损分解" class="headerlink" title="怎么判断是否是无损分解"></a>怎么判断是否是无损分解</h2><p>由于每次分解一定是把某一个关系模式分成两个关系模式，<del>也就是二叉树，</del>所以:</p>
+<p><strong>如果把分解后的结果重新连接，得到的等于原来的结果，那么它就是无损分解。</strong></p>
+<h1 id="范式"><a href="#范式" class="headerlink" title="范式"></a>范式</h1><h2 id="范式的定义"><a href="#范式的定义" class="headerlink" title="范式的定义"></a>范式的定义</h2><p>范式是符合某一种级别的关系模式的集合。</p>
+<h2 id="范式的种类"><a href="#范式的种类" class="headerlink" title="范式的种类"></a>范式的种类</h2><ul>
+<li>第一范式 1NF</li>
+<li>第二范式 2NF</li>
+<li>第三范式 3NF</li>
+<li>Boyce-Codd范式</li>
+</ul>
+<p>第四，第五范式只需要知道存在即可。</p>
+<p>它们的严格程度:</p>
+<script type="math/tex; mode=display">
+\text{1NF} \supset \text{2NF} \supset \text{3NF} \supset \text{BCNF}</script><p>如果某一关系模式$R$是第$n$范式，可以简记为$R \in n\text{NF}$</p>
+<p>显然，由上面的严格程度可知，假设某个关系满足第二范式，那么它一定满足第一范式。</p>
+<h2 id="第一范式"><a href="#第一范式" class="headerlink" title="第一范式"></a>第一范式</h2><p>如果关系模式$R$中的<strong>所有属性域都是原子的</strong>，那么$R \in \text{1NF}.$</p>
+<h2 id="第二范式"><a href="#第二范式" class="headerlink" title="第二范式"></a>第二范式</h2><p>若关系模式$R \in \text{1NF}$，并且每一个非主属性都完全函数依赖于$R$的码，则$R \in \text{2NF}$</p>
+<h2 id="第三范式"><a href="#第三范式" class="headerlink" title="第三范式"></a>第三范式</h2><p>若$R$不存在非主属性对码的传递函数依赖，则$R \in \text{3NF}$。</p>
+<p>若$R \in \text{3NF}$，则$R$的每一个非主属性既不部分函数依赖于候选码，也不传递函数依赖于候选吗。</p>
+<p><del>个人感觉第三范式的算法就是将有向图中冗余的边去除，将它变成一颗生成树即可?</del></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#例子1"><span class="toc-number">1.</span> <span class="toc-text">例子1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例子2"><span class="toc-number">2.</span> <span class="toc-text">例子2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#主属性"><span class="toc-number">3.</span> <span class="toc-text">主属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Rational-Database-Design"><span class="toc-number">4.</span> <span class="toc-text">Rational Database Design</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#数据依赖"><span class="toc-number"></span> <span class="toc-text">数据依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么要关注数据依赖"><span class="toc-number">2.</span> <span class="toc-text">为什么要关注数据依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数依赖的一些注意要点"><span class="toc-number">3.</span> <span class="toc-text">函数依赖的一些注意要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一个例子"><span class="toc-number">4.</span> <span class="toc-text">一个例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#存在的依赖"><span class="toc-number">4.1.</span> <span class="toc-text">存在的依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存在的问题"><span class="toc-number">4.2.</span> <span class="toc-text">存在的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#平凡的和非平凡的函数依赖"><span class="toc-number">5.</span> <span class="toc-text">平凡的和非平凡的函数依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#完全的函数依赖"><span class="toc-number">6.</span> <span class="toc-text">完全的函数依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#传递函数依赖"><span class="toc-number">7.</span> <span class="toc-text">传递函数依赖</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#规范化"><span class="toc-number"></span> <span class="toc-text">规范化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#无损分解"><span class="toc-number">1.</span> <span class="toc-text">无损分解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有损分解"><span class="toc-number">2.</span> <span class="toc-text">有损分解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#怎么判断是否是无损分解"><span class="toc-number">3.</span> <span class="toc-text">怎么判断是否是无损分解</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#范式"><span class="toc-number"></span> <span class="toc-text">范式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#范式的定义"><span class="toc-number">1.</span> <span class="toc-text">范式的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#范式的种类"><span class="toc-number">2.</span> <span class="toc-text">范式的种类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一范式"><span class="toc-number">3.</span> <span class="toc-text">第一范式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二范式"><span class="toc-number">4.</span> <span class="toc-text">第二范式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三范式"><span class="toc-number">5.</span> <span class="toc-text">第三范式</span></a></li></ol>
+    </li></div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://medioqrity.github.io/2019/06/03/数据库20190603/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&text=数据库20190603"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&is_video=false&description=数据库20190603"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=数据库20190603&body=Check out this article: https://medioqrity.github.io/2019/06/03/数据库20190603/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&title=数据库20190603"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://medioqrity.github.io/2019/06/03/数据库20190603/&name=数据库20190603&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 medioqrity
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
