@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Functional_Dependences.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Lossless_Decomposition.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/03/数据库20190603/Lossy_Decomposition.png">
-<meta property="og:updated_time" content="2019-06-04T08:43:31.844Z">
+<meta property="og:updated_time" content="2019-06-04T08:46:00.984Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库20190603">
 <meta name="twitter:description" content="例子11student(student_id, phone) 这里我们希望记录电话的服务提供商。 那么在这里电话到底应该是作为实体还是作为属性建模? 如果把电话按照属性来绘图的话，会出现描述属性的属性，而这种情况是不应该存在的:  如果出现这种情况，应该把这个属性单独拆出来作为一个实体来使用:  例子2 考虑上图，要怎么描述某个供应商给某个项目提供了多少器材呢? 其实稍微想一想就会发现做不到，因为">
@@ -196,7 +196,7 @@
 <p>这里指的可以说是更加宽泛的概念，也就是关系中的属性值之间的相互关系。</p>
 <p><strong>例:</strong></p>
 <p>在某学校的学生的关系中，只要学号确定了，那么这个学生的姓名就确定了。这相当于一个从学号到姓名的映射: $s_{\text{name}} = f(s_{\text{id}})$。</p>
-<p>像这样的数据依赖被称为<strong>函数依赖</strong>，记作$s_{\text{id}}\rarr s_{\text{name}}$。</p>
+<p>像这样的数据依赖被称为<strong>函数依赖</strong>，记作$s_{\text{id}}\to s_{\text{name}}$。</p>
 <h2 id="为什么要关注数据依赖"><a href="#为什么要关注数据依赖" class="headerlink" title="为什么要关注数据依赖"></a>为什么要关注数据依赖</h2><p>它有助于形成好的，规范的关系模式，防止冗余的产生。</p>
 <h2 id="函数依赖的一些注意要点"><a href="#函数依赖的一些注意要点" class="headerlink" title="函数依赖的一些注意要点"></a>函数依赖的一些注意要点</h2><ul>
 <li>通用性: 函数依赖是指$R$的所有关系实例都要满足的约束条件。</li>
