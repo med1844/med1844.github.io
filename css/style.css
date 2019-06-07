@@ -325,7 +325,7 @@ body .h1 {
   letter-spacing: 0.01em;
   font-weight: 700;
   font-style: normal;
-  font-size: 1.5em;
+  font-size: 2em;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
 }
@@ -339,13 +339,13 @@ body .h2 {
   text-transform: none;
   letter-spacing: normal;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.5rem;
 }
 body h3 {
   color: #383838;
   text-decoration: underline;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 1.25rem;
 }
 body h4,
 body h5,
@@ -355,7 +355,7 @@ body h6 {
   color: #8c8c8c;
   text-decoration: none;
   font-weight: normal;
-  font-size: 0.9rem;
+  font-size: 1.125rem;
 }
 body h3,
 body h4,
@@ -493,13 +493,13 @@ body {
   background-repeat: repeat-x;
 }
 .content a:hover {
-  background-image: linear-gradient(transparent, transparent 4px, #d480aa 4px, #d480aa);
+  background-image: linear-gradient(transparent, transparent 4px, #8181d3 4px, #8181d3);
 }
 .content a.icon {
   background: none;
 }
 .content a.icon:hover {
-  color: #d480aa;
+  color: #8181d3;
 }
 .content h1 a,
 .content .h1 a,
@@ -519,7 +519,7 @@ body {
 .content h4 a:hover,
 .content h5 a:hover,
 .content h6 a:hover {
-  background-image: linear-gradient(transparent, transparent 6px, #d480aa 6px, #d480aa);
+  background-image: linear-gradient(transparent, transparent 6px, #8181d3 6px, #8181d3);
   background-position: bottom;
   background-size: 100% 6px;
   background-repeat: repeat-x;
@@ -530,7 +530,7 @@ body {
   text-decoration: none;
 }
 .content h6 a:hover {
-  background-image: linear-gradient(transparent, transparent 6px, #d480aa 6px, #d480aa);
+  background-image: linear-gradient(transparent, transparent 6px, #8181d3 6px, #8181d3);
   background-position: bottom;
   background-size: 100% 6px;
   background-repeat: repeat-x;
@@ -578,8 +578,8 @@ body {
   letter-spacing: 0.01em;
   font-weight: 700;
   font-style: normal;
-  font-size: 1.5rem;
-  line-height: 2rem;
+  font-size: 1.75rem;
+  line-height: 2.3333rem;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
 }
@@ -692,7 +692,7 @@ body {
   background: none;
 }
 #header-post a.icon:hover {
-  color: #d480aa;
+  color: #8181d3;
 }
 #header-post ol {
   list-style-type: none;
@@ -809,7 +809,7 @@ body {
   text-align: right;
 }
 #header-post #toc a:hover {
-  color: #d480aa;
+  color: #8181d3;
 }
 #header-post #toc .toc-level-1 > .toc-link {
   display: none;
@@ -900,7 +900,7 @@ body {
   background: none;
 }
 #footer-post a.icon:hover {
-  color: #d480aa;
+  color: #8181d3;
 }
 #footer-post #nav-footer {
   padding-right: 1rem;
@@ -981,7 +981,7 @@ body {
   line-height: 30px;
 }
 #footer-post #toc-footer a:hover {
-  color: #d480aa;
+  color: #8181d3;
 }
 #footer-post #toc-footer .toc-level-1 > .toc-link {
   display: none;
@@ -1054,7 +1054,7 @@ article header .posttitle {
   margin-top: 0;
   margin-bottom: 0;
   text-transform: none;
-  font-size: 1.5em;
+  font-size: 1.75em;
   line-height: 1.25;
 }
 article header .meta {
@@ -1168,7 +1168,7 @@ article .content .caption {
   line-height: 1.25;
 }
 .article-tag .tag-link {
-  background-image: linear-gradient(transparent, transparent 10px, #d480aa 10px, #d480aa);
+  background-image: linear-gradient(transparent, transparent 10px, #8181d3 10px, #8181d3);
   background-position: bottom;
   background-size: 100% 6px;
   background-repeat: repeat-x;
@@ -1177,7 +1177,7 @@ article .content .caption {
   content: "#";
 }
 .article-category .category-link {
-  background-image: linear-gradient(transparent, transparent 10px, #d480aa 10px, #d480aa);
+  background-image: linear-gradient(transparent, transparent 10px, #8181d3 10px, #8181d3);
   background-position: bottom;
   background-size: 100% 6px;
   background-repeat: repeat-x;
@@ -1341,8 +1341,8 @@ article .content .caption {
   font-size: 0.8em;
 }
 #search-result em.search-keyword {
-  border-bottom: 1px dashed #d480aa;
-  color: #d480aa;
+  border-bottom: 1px dashed #8181d3;
+  color: #8181d3;
   font-weight: bold;
 }
 .search-no-result {
@@ -1407,16 +1407,18 @@ article .content .caption {
 .highlight .code .meta-string {
   color: #50a14f;
 }
-.highlight .code .built_in {
+.highlight .code .built_in,
+.highlight .code .class,
+.highlight .code .title {
   color: #c18401;
 }
 .highlight .code .attr,
 .highlight .code .variable,
 .highlight .code .template-variable,
 .highlight .code .type,
+.highlight .code .selector-class,
 .highlight .code .selector-attr,
 .highlight .code .selector-pseudo,
-.highlight .code .selector-class,
 .highlight .code .number {
   color: #986801;
 }
@@ -1439,14 +1441,15 @@ article .content .caption {
 }
 pre {
   overflow-x: auto;
-  padding: 10px 15px;
-  padding-bottom: 0;
+  margin: 0 0;
+  padding: 0px 0px;
+  padding-bottom: 0px;
   border: 1px dotted #666;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 14px;
   font-family: "Source Code Pro", "Menlo", "Meslo LG", consolas, monospace;
   line-height: 22px;
-  -webkit-border-radius: 4px;
+  -webkit-border-radius: 0px;
 }
 pre code {
   display: block;
@@ -1454,15 +1457,18 @@ pre code {
   border: none;
 }
 code {
-  padding: 0 5px;
-  border: 1px dotted #666;
-  border-radius: 2px;
-  -webkit-border-radius: 2px;
+  padding: 0 0;
+  border: 1px none #666;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  background: #f4f4f4;
+  font-family: "Source Code Pro", "Menlo", "Meslo LG", consolas, monospace;
+  color: #22966e;
 }
 .highlight {
   overflow-x: auto;
-  margin: 1rem 0;
-  padding: 10px 15px;
+  margin: 0 0;
+  padding: 0px 10px;
   border-radius: 4px;
   background: #fafafa;
   font-family: "Source Code Pro", "Menlo", "Meslo LG", consolas, monospace;
@@ -1471,15 +1477,15 @@ code {
 .highlight figcaption {
   margin: -5px 0 5px;
   color: #757575;
-  font-size: 0.9em;
+  font-size: 1em;
   zoom: 1;
 }
 .highlight figcaption a {
   float: right;
   color: #757575;
   font-style: italic;
-  font-size: 0.8em;
-  background-image: linear-gradient(transparent, transparent 10px, #d480aa 10px, #d480aa);
+  font-size: 1em;
+  background-image: linear-gradient(transparent, transparent 10px, #8181d3 10px, #8181d3);
   background-position: bottom;
   background-size: 100% 6px;
   background-repeat: repeat-x;
@@ -1506,5 +1512,5 @@ code {
   text-align: right;
 }
 .highlight .line {
-  height: 22px;
+  height: 20px;
 }
