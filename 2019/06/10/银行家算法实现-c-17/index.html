@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Medioqrity&#39;s Blog">
 <meta property="og:description" content="要求的是什么一个序列，表示进程按照该序列进行处理，就不会发生死锁。 思路由于有很多种资源，所以资源本身用一个向量表示。我们不妨假设向量支持+=，&amp;lt;=等运算符。 用一个have向量保存目前每一种资源剩余多少可用。 每次寻找中，贪心的寻找这样一个进程，使得:  它需要的资源的数量，每一种都不多于对应种类可用资源的数量。  我们用alloc[i]表示第i个进程目前已经分配到的资源，maxx[i]表">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-10T12:21:50.440Z">
+<meta property="og:updated_time" content="2019-06-10T13:38:40.657Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="银行家算法实现(c++17)">
 <meta name="twitter:description" content="要求的是什么一个序列，表示进程按照该序列进行处理，就不会发生死锁。 思路由于有很多种资源，所以资源本身用一个向量表示。我们不妨假设向量支持+=，&amp;lt;=等运算符。 用一个have向量保存目前每一种资源剩余多少可用。 每次寻找中，贪心的寻找这样一个进程，使得:  它需要的资源的数量，每一种都不多于对应种类可用资源的数量。  我们用alloc[i]表示第i个进程目前已经分配到的资源，maxx[i]表">
@@ -49,8 +49,7 @@
     
     <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
-<body class="max-width mx-auto px3 ltr">
-    
+<body class="max-width mx-auto px3 ltr">    
       <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
   <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -264,8 +263,23 @@
 
 <!-- Baidu Analytics -->
 
-<!-- Disqus Comments --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- Disqus Comments -->
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
