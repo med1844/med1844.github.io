@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Medioqrity&#39;s Blog">
 <meta property="og:description" content="首先简单讲一下SSTF算法:  维护一下当前磁头在哪个磁道。 每次选择距离当前磁道最近的请求，将磁头移动到那个位置。  一开始仔细思考了一下，用普通线段树的话大概只能做到$\mathcal{O}(n^2 \log n)$的复杂度，还不如对于每个元素扫一遍数组的$\mathcal{O}(n^2)$来的方便… 后来突然一想…这不是排个序后，用一个双出队列就能$\mathcal{O}(n\log n +">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-15T15:24:34.745Z">
+<meta property="og:updated_time" content="2019-06-15T15:25:16.274Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="磁盘调度 - SSTF算法实现(C++17)">
 <meta name="twitter:description" content="首先简单讲一下SSTF算法:  维护一下当前磁头在哪个磁道。 每次选择距离当前磁道最近的请求，将磁头移动到那个位置。  一开始仔细思考了一下，用普通线段树的话大概只能做到$\mathcal{O}(n^2 \log n)$的复杂度，还不如对于每个元素扫一遍数组的$\mathcal{O}(n^2)$来的方便… 后来突然一想…这不是排个序后，用一个双出队列就能$\mathcal{O}(n\log n +">
@@ -49,8 +49,7 @@
     
     <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
-<body class="max-width mx-auto px3 ltr">
-    
+<body class="max-width mx-auto px3 ltr">    
       <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
   <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -257,8 +256,23 @@
 
 <!-- Baidu Analytics -->
 
-<!-- Disqus Comments --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- Disqus Comments -->
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
