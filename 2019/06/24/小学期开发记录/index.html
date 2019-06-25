@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/Transparency.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/Normal_Mapping.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/Shadow_Maps.png">
-<meta property="og:updated_time" content="2019-06-24T15:38:34.075Z">
+<meta property="og:updated_time" content="2019-06-25T15:07:54.392Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录">
 <meta name="twitter:description" content="2019/06/24小学期第一天。 在得知选题已经被限死的情况下，我和队友仍然决定写minecraft。理由如下:  学OpenGL和LWJGL，不管最后能不能作为大作业，都不亏。 通过前三周爆肝所得到的半成品，也许有机会求情。 这是程序员的浪漫！！  于是，在简单地研究之后，我们得出了如下学习路线:  快速入门OpenGL，熟悉API。 入门LWJGL。 做到能够渲染一个草方块的程度。  这是最">
@@ -103,7 +103,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-25"><span class="toc-number">2.</span> <span class="toc-text">2019/06/25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-26"><span class="toc-number">3.</span> <span class="toc-text">2019/06/26</span></a></li></ol>
     </div>
   </span>
 </div>
@@ -181,7 +181,32 @@
 </li>
 </ul>
 <p>但是，MC本身还是没有自带光影，这是为什么呢?</p>
-
+<h2 id="2019-06-25"><a href="#2019-06-25" class="headerlink" title="2019/06/25"></a>2019/06/25</h2><p>凌晨爆肝OpenGL入门教程。</p>
+<p>本来想着也许睡觉前能够依葫芦画瓢，整个草方块出来，不过现在看看估计是没可能了。</p>
+<p>要学的确实非常多，比方说怎么将一个物体投影到屏幕上来。</p>
+<p>这主要被分为四个步骤:</p>
+<ul>
+<li>模型坐标系</li>
+<li>世界坐标系</li>
+<li>相机坐标系</li>
+<li>视野投影</li>
+</ul>
+<p>每两个坐标系之间，都需要一个<em>矩阵</em>来对坐标进行变换。最后一步虽然也是通过矩阵，但其实并不是仅仅靠矩阵就能够完成的。</p>
+<p>在相机坐标系部分，教程里有一句话真的非常震撼:</p>
+<blockquote>
+<p>The engines don’t move the ship at all. The ship stays where it is and the engines move the universe around it.</p>
+</blockquote>
+<p>简直就像是缸中之脑一样，真的可以颠覆世界观。</p>
+<p>这说的是，从世界坐标系转换到摄像机坐标系时发生的事情: 当你转头时，你并没有动，动的是山的坐标。</p>
+<p>所以，可以简单地把摄像机坐标系当作:</p>
+<ul>
+<li>摄像机的坐标是原点</li>
+<li>当摄像机移动视角时，我们可以对所有物体的坐标重新进行计算来达到等价的效果。也就是说，<em>the camera stays where it is, and the MATRIX move the objects around it.</em></li>
+</ul>
+<p><em>这里的MATRIX可作双关，配合上文的缸中之脑效果更佳。;)</em></p>
+<hr>
+<p>之后在中午醒来之后上完课，补票千与千寻之后（其他都无所谓，这个真的必须补啊），花了不少时间去完成课内的问题。为了调整作息，也就是提早睡觉时间，所以今天几乎可以认为是完全没有进度了。</p>
+<h2 id="2019-06-26"><a href="#2019-06-26" class="headerlink" title="2019/06/26"></a>2019/06/26</h2>
   </div>
 </article>
 
@@ -204,7 +229,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-25"><span class="toc-number">2.</span> <span class="toc-text">2019/06/25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-26"><span class="toc-number">3.</span> <span class="toc-text">2019/06/26</span></a></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
