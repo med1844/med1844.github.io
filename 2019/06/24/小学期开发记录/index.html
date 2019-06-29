@@ -23,7 +23,11 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/photo_2019-06-27.jpg">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/First_shader.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/VertexColoring.png">
-<meta property="og:updated_time" content="2019-06-28T15:41:47.506Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/ACM/Blog/medioqrity.github.io/blog/source/_posts/小学期开发记录/Texturing.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/2019-06-29_19.18.14.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/2019-06-29_19.19.40.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/Block_Coord.png">
+<meta property="og:updated_time" content="2019-06-29T12:15:15.741Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录">
 <meta name="twitter:description" content="2019/06/24小学期第一天。 在得知选题已经被限死的情况下，我和队友仍然决定写minecraft。理由如下:  学OpenGL和LWJGL，不管最后能不能作为大作业，都不亏。 通过前三周爆肝所得到的半成品，也许有机会求情。 这是程序员的浪漫！！  于是，在简单地研究之后，我们得出了如下学习路线:  快速入门OpenGL，熟悉API。 入门LWJGL。 做到能够渲染一个草方块的程度。  这是最">
@@ -108,7 +112,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-25"><span class="toc-number">2.</span> <span class="toc-text">2019/06/25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-26"><span class="toc-number">3.</span> <span class="toc-text">2019/06/26</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-27"><span class="toc-number">4.</span> <span class="toc-text">2019/06/27</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-28"><span class="toc-number">5.</span> <span class="toc-text">2019/06/28</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-25"><span class="toc-number">2.</span> <span class="toc-text">2019/06/25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-26"><span class="toc-number">3.</span> <span class="toc-text">2019/06/26</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-27"><span class="toc-number">4.</span> <span class="toc-text">2019/06/27</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-28"><span class="toc-number">5.</span> <span class="toc-text">2019/06/28</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-29"><span class="toc-number">6.</span> <span class="toc-text">2019/06/29</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
   </span>
 </div>
@@ -256,6 +260,52 @@
 <p>不过就算是学会了那么多着色器的使用方法，其实对贴图依然没有什么帮助…</p>
 <p>之后学会了怎么对顶点进行染色。看起来距离Texturing还是遥遥无期啊…</p>
 <p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/VertexColoring.png" alt="VertexColoring"></p>
+<h2 id="2019-06-29"><a href="#2019-06-29" class="headerlink" title="2019/06/29"></a>2019/06/29</h2><p>学会了怎么把材质绑定到顶点上，为此也学会了怎么创建uniform变量，在学了一点joml的接口之后已经能够做到在Vertex Shader中进行矩阵运算了。</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/ACM\Blog\medioqrity.github.io\blog\source\_posts\小学期开发记录\Texturing.png" alt="Texturing"></p>
+<p>有了这样的知识之后，我认为已经可以开始思考Chunk类的实现了:</p>
+<ul>
+<li><p>首先会有一个$16 \times 16 \times 256$的三维数组，用于存放方块ID。</p>
+</li>
+<li><p>其次应该有一个用于渲染的mesh，存储那些需要渲染的面。关于存储有两种方案:</p>
+<ul>
+<li>仅在生成区块和改造区块时对mesh进行修改。平常与Chunk类一同存储在外存上。</li>
+<li><p>在将区块读入内存时，通过一个方法来生成mesh。平常不会将mesh数据存储在外存上。</p>
+<p>显然第二种方法对于地形生成器来说比较友好。缺点是加载时会比较慢。考虑到对地形生成器的友好，所以决定采用第二种方法。<del>（偷懒是第一生产力）</del></p>
+</li>
+</ul>
+</li>
+<li><p>一对值$x, y$，表示当前区块的区块坐标。</p>
+</li>
+<li><p>一个$16 \times 16$的数组，用于存放生态群系值。当然，这个可能会等到之后再来实现。</p>
+</li>
+<li><p>一个用来生成mesh的方法。可以简单考虑一下它的逻辑:</p>
+<p>  我们需要生成以下数据来构建一个mesh:</p>
+<ul>
+<li>顶点坐标</li>
+<li>index</li>
+<li>材质坐标</li>
+<li><p>材质id </p>
+<p>为了计算顶点坐标，我想很显然我们需要先定义一下对于一个方块而言，它的中心在哪。</p>
+<p>打开mc，打开f3，通过将视角的水平角度和垂直角度分别调节到0和90度，我们可以确认准心所指向的位置就是当前x, z坐标所对应的位置。</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/2019-06-29_19.18.14.png" alt="2019-06-29_19.18.14"></p>
+<p>那么可以看到准心对准的位置是425.988, 78.028，而准心距离方块的角可以说非常近了，所以不妨认为准心对准了426, 78。</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/2019-06-29_19.19.40.png" alt="2019-06-29_19.19.40"></p>
+<p>这里可以认为准心对准的是425, 78。</p>
+<p>显然我们可以得出结论: 整数坐标是存放在方块的角上的。</p>
+<p>因而我们可以定义每个方块的原点如下:</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/Block_Coord.png" alt="Block_Coord"></p>
+<p>这样就可以计算出那些需要被显示的面对应4个点的坐标了。</p>
+<p>index可以通过一个哈希表记录当前点是否已经被加入到顶点数组中。如果有就直接使用已有的index，否则分配一个新的index并且记录进哈希表内即可。</p>
+<p>材质坐标，我想这也许应该由一个TextureManager的类来管理，具体的方法大概是:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Vector2f[] textureIndex = TextureManager.getTextureIndex(BLOCK_ID, DIRECTION);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>然后把材质坐标放进材质坐标数组里就可以了。
+
+不过这样子的话就需要把所有的材质都放在同一张图片里。可能这就是为什么早期Minecraft都是采用一整张terrian.png来进行渲染的吧。
+</code></pre><p>在考虑完这些必要的东西后就可以开始写了。</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于窗口: <a href="https://www.glfw.org/docs/latest/window_guide.html#window_object" target="_blank" rel="noopener">https://www.glfw.org/docs/latest/window_guide.html#window_object</a></li>
 <li>关于什么是IBO: <a href="https://vulkan-tutorial.com/Vertex_buffers/Index_buffer" target="_blank" rel="noopener">https://vulkan-tutorial.com/Vertex_buffers/Index_buffer</a></li>
@@ -284,7 +334,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-25"><span class="toc-number">2.</span> <span class="toc-text">2019/06/25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-26"><span class="toc-number">3.</span> <span class="toc-text">2019/06/26</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-27"><span class="toc-number">4.</span> <span class="toc-text">2019/06/27</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-28"><span class="toc-number">5.</span> <span class="toc-text">2019/06/28</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-24"><span class="toc-number">1.</span> <span class="toc-text">2019/06/24</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-25"><span class="toc-number">2.</span> <span class="toc-text">2019/06/25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-26"><span class="toc-number">3.</span> <span class="toc-text">2019/06/26</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-27"><span class="toc-number">4.</span> <span class="toc-text">2019/06/27</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-28"><span class="toc-number">5.</span> <span class="toc-text">2019/06/28</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-06-29"><span class="toc-number">6.</span> <span class="toc-text">2019/06/29</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
