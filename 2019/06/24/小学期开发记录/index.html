@@ -28,7 +28,9 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/2019-06-29_19.19.40.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/Block_Coord.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/The_True_Step.png">
-<meta property="og:updated_time" content="2019-06-29T19:34:57.337Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/Adding_Input.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/Moving_Around.png">
+<meta property="og:updated_time" content="2019-06-30T16:10:23.729Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录">
 <meta name="twitter:description" content="2019/06/24小学期第一天。 在得知选题已经被限死的情况下，我和队友仍然决定写minecraft。理由如下:  学OpenGL和LWJGL，不管最后能不能作为大作业，都不亏。 通过前三周爆肝所得到的半成品，也许有机会求情。 这是程序员的浪漫！！  于是，在简单地研究之后，我们得出了如下学习路线:  快速入门OpenGL，熟悉API。 入门LWJGL。 做到能够渲染一个草方块的程度。  这是最">
@@ -310,6 +312,19 @@
 <p>来一张近照:</p>
 <p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/The_True_Step.png" alt="The_True_Step"></p>
 <p><del><em>我可能真的很喜欢MC的草方块诶233</em></del></p>
+<p>接下来一整个白天被各种事情切碎了，不得不说手机这东西真的非常糟糕…当然注意力不集中自己也有原因。</p>
+<p>熄灯之后肝了一个小时左右把Input类写好了，目前算是一个比较稳定的版本?</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/Adding_Input.png" alt="Adding_Input"></p>
+<p>当然作为初期版本，穿模是必不可少的:</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/Moving_Around.png" alt="Moving_Around"></p>
+<p>不过帧率还是不怎么样，感觉有必要做一下优化。</p>
+<p>之后的路线大致想好了:</p>
+<ul>
+<li>TextureManager</li>
+<li>Chunks</li>
+<li>Generator</li>
+<li>光照</li>
+</ul>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于窗口: <a href="https://www.glfw.org/docs/latest/window_guide.html#window_object" target="_blank" rel="noopener">https://www.glfw.org/docs/latest/window_guide.html#window_object</a></li>
 <li>关于什么是IBO: <a href="https://vulkan-tutorial.com/Vertex_buffers/Index_buffer" target="_blank" rel="noopener">https://vulkan-tutorial.com/Vertex_buffers/Index_buffer</a></li>
