@@ -35,7 +35,10 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/stupid_implementation.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/multiTextureSupplement.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/multiTextureSupplement_other.png">
-<meta property="og:updated_time" content="2019-07-02T04:04:22.557Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/directionalLightBug.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/ambientLightBug.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/06/24/小学期开发记录/ambientLightBug2.png">
+<meta property="og:updated_time" content="2019-07-02T14:43:55.942Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录">
 <meta name="twitter:description" content="2019/06/24小学期第一天。 在得知选题已经被限死的情况下，我和队友仍然决定写minecraft。理由如下:  学OpenGL和LWJGL，不管最后能不能作为大作业，都不亏。 通过前三周爆肝所得到的半成品，也许有机会求情。 这是程序员的浪漫！！  于是，在简单地研究之后，我们得出了如下学习路线:  快速入门OpenGL，熟悉API。 入门LWJGL。 做到能够渲染一个草方块的程度。  这是最">
@@ -372,6 +375,21 @@
 <p>不过为了能够实现光影，这两种光源我们应该都会实现。但是现在的话，我想可能还是平行光源优先。</p>
 <p>这是因为在加入物品系统之前，我想我们暂时还用不到动态光源。而这些动态光源，比方说拿在手上的火把，萤石，一桶岩浆，南瓜灯，或者是被放置并且被活塞推动的红石灯，都是点光源。</p>
 <p>显然昼夜交替会先于物品系统被制作出来，所以我想，平行光的实现应当是比点光源更加优先的。</p>
+<hr>
+<p>结果debug了一整天都没有找出怎么解决问题来。</p>
+<p>现在虽然平行光实现了，但是通篇全是bug:</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/directionalLightBug.png" alt="directionalLightBug"></p>
+<p>对<code>fragment.fsh</code>稍微做了点手脚，来测试到底是哪出了问题:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setupColours(material, outTextureCoord);</span><br><span class="line"></span><br><span class="line">    vec4 diffuseSpecular = calcDirectionalLight(directionalLight, vertexPos, vertexNormal);</span><br><span class="line"></span><br><span class="line">    fragColor = ambientC * vec4(ambientLight, <span class="number">1</span>) + diffuseSpecular;</span><br><span class="line">    fragColor = vec4(ambientLight, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中<code>ambientLight</code>是一个<code>uniform vec3</code>变量。按照<code>fragColor = vec4(ambientLight, 1)</code>，应该所有方块都会被渲染成<code>ambientLight</code>的颜色，但是结果却是一片黑色:</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/ambientLightBug.png" alt="ambientLightBug"></p>
+<p>它照理说应该在renderer初始化的时候就被赋值了:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Renderer</span> </span>&#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Vector3f ambientLight = <span class="keyword">new</span> Vector3f(.<span class="number">3f</span>, .<span class="number">3f</span>, .<span class="number">3f</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Camera camera)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        shader = <span class="keyword">new</span> Shader();</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        shader.createUniform(<span class="string">"ambientLight"</span>);</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        shader.setUniform(<span class="string">"ambientLight"</span>, ambientLight);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果把<code>fragment.fsh</code>改成这样:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setupColours(material, outTextureCoord);</span><br><span class="line"></span><br><span class="line">    vec4 diffuseSpecular = calcDirectionalLight(directionalLight, vertexPos, vertexNormal);</span><br><span class="line"></span><br><span class="line">    fragColor = ambientC * vec4(ambientLight, <span class="number">1</span>) + diffuseSpecular;</span><br><span class="line">    fragColor = vec4(<span class="number">.3</span>f, <span class="number">.3</span>f, <span class="number">.3</span>f, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>就会得到正确的结果:</p>
+<p><img src="//medioqrity.github.io/2019/06/24/小学期开发记录/ambientLightBug2.png" alt="ambientLightBug2"></p>
+<p>这到底是为什么呢…可能mc就是因为这个才放弃的光影?</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于窗口: <a href="https://www.glfw.org/docs/latest/window_guide.html#window_object" target="_blank" rel="noopener">https://www.glfw.org/docs/latest/window_guide.html#window_object</a></li>
 <li>关于什么是IBO: <a href="https://vulkan-tutorial.com/Vertex_buffers/Index_buffer" target="_blank" rel="noopener">https://vulkan-tutorial.com/Vertex_buffers/Index_buffer</a></li>
