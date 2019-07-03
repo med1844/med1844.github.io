@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle.gif">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle_updated.gif">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/perlin_first.png">
-<meta property="og:updated_time" content="2019-07-03T17:00:29.895Z">
+<meta property="og:updated_time" content="2019-07-03T18:57:09.031Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第二周">
 <meta name="twitter:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
@@ -110,7 +110,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
   </span>
 </div>
@@ -250,6 +250,13 @@
 <li>存储与读取Chunk</li>
 <li>动态光源</li>
 </ul>
+<h2 id="2019-07-04"><a href="#2019-07-04" class="headerlink" title="2019/07/04"></a>2019/07/04</h2><p>稍微熬了会夜把Shadow Mapping看懂了。不过距离实现还有不少距离。</p>
+<p>来简单讲一下原理:</p>
+<ol>
+<li>首先以光源作为原点，计算每个fragment到光源原点的距离。这样，得到的距离一定是这个方向上最小的。因为在同一方向上，任何大于这个距离的点都不会被光照到。</li>
+<li>以camera视角进行计算。对于每个fragment，除了计算camera视角的坐标外，还要计算在光照坐标系下的坐标。如果这个坐标对应的光照方向的距离大于最小值的话就说明该fragment处在阴影内。</li>
+</ol>
+<p>于是这要求我们新建一堆东西，包括对texture类进行修改以支持空材质供shadow map使用，或者是全新的shadow.vsh和shadow.fsh。考虑到工作量，我决定还是留到白天再做。</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于光照:<ul>
 <li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a></li>
@@ -290,7 +297,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
