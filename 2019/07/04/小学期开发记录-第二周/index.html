@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle.gif">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle_updated.gif">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/perlin_first.png">
-<meta property="og:updated_time" content="2019-07-03T16:53:02.978Z">
+<meta property="og:updated_time" content="2019-07-03T17:00:29.895Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第二周">
 <meta name="twitter:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
@@ -247,12 +247,25 @@
 <li>声效</li>
 <li>生物模型及其动画</li>
 <li>优化Chunk渲染</li>
+<li>存储与读取Chunk</li>
 <li>动态光源</li>
 </ul>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
-<li>关于光照: <a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a>, <a href="https://en.wikipedia.org/wiki/Phong_shading" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Phong_shading</a></li>
-<li>关于阴影: <a href="https://ahbejarano.gitbook.io/lwjglgamedev/chapter18" target="_blank" rel="noopener">https://ahbejarano.gitbook.io/lwjglgamedev/chapter18</a>, <a href="https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank" rel="noopener">https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/</a></li>
-<li>关于perlin noise: <a href="https://flafla2.github.io/2014/08/09/perlinnoise.html" target="_blank" rel="noopener">https://flafla2.github.io/2014/08/09/perlinnoise.html</a>, <a href="https://en.wikipedia.org/wiki/Perlin_noise" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Perlin_noise</a></li>
+<li>关于光照:<ul>
+<li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Phong_shading" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Phong_shading</a></li>
+</ul>
+</li>
+<li>关于阴影: <ul>
+<li><a href="https://ahbejarano.gitbook.io/lwjglgamedev/chapter18" target="_blank" rel="noopener">https://ahbejarano.gitbook.io/lwjglgamedev/chapter18</a></li>
+<li><a href="https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank" rel="noopener">https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/</a></li>
+</ul>
+</li>
+<li>关于perlin noise: <ul>
+<li><a href="https://flafla2.github.io/2014/08/09/perlinnoise.html" target="_blank" rel="noopener">https://flafla2.github.io/2014/08/09/perlinnoise.html</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Perlin_noise" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Perlin_noise</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
