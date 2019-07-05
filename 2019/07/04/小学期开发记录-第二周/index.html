@@ -29,7 +29,10 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMeshCode.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMesh.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/400.png">
-<meta property="og:updated_time" content="2019-07-05T14:08:15.767Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Shadow.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowAcne.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycleWithShadow.gif">
+<meta property="og:updated_time" content="2019-07-05T17:41:18.309Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第二周">
 <meta name="twitter:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
@@ -114,7 +117,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
   </span>
 </div>
@@ -292,6 +295,18 @@
 <p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/400.png" alt="400"></p>
 <p>接下来该回到阴影啦！虽然阴影真的很烦人，但是它能够做到的效果是真的非常迷人的。</p>
 <p>我已经迫不及待想要看到夕阳投下的阴影笼罩这片丘陵的样子了。</p>
+<h2 id="2019-07-06"><a href="#2019-07-06" class="headerlink" title="2019/07/06"></a>2019/07/06</h2><p>最后发现问题出在了calcShadow上，于是在凌晨搞出了第一个可以正常跑的shadow:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Shadow.png" alt="First_Shadow"></p>
+<p>完全重写了原本教程里的<code>calcShadow(vec4)</code>，并且做了最最简单的shadow acne去除工作:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">calcShadow</span><span class="params">(vec4 position)</span> </span>&#123;</span><br><span class="line">    vec3 projCoords = position.xyz / position.w;</span><br><span class="line">    projCoords = projCoords * <span class="number">0.5</span> + <span class="number">0.5</span>;</span><br><span class="line">    <span class="keyword">float</span> closestDepth = texture(shadowMap, projCoords.xy).r;</span><br><span class="line">    <span class="keyword">float</span> currentDepth = projCoords.z;</span><br><span class="line">    <span class="keyword">return</span> currentDepth - closestDepth &gt; <span class="number">1e-3</span> ? <span class="number">0.0</span> : <span class="number">1.0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这代码的可读性简直高到爆炸了好吗！！</p>
+<p>可能会有人想问<code>currentDepth - closestDepth &gt; 1e-3</code>为什么不直接写成<code>currentDepth &gt; closestDepth</code>，对此我就贴一张图:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowAcne.png" alt="ShadowAcne"></p>
+<p><em><del>感受Shadow Acne的力量吧！</del></em></p>
+<p>其实细微处还是有不少问题存在的，不过这些就留到稍微靠后一点再优化。先考虑怎么正确的设置<code>directionalLight</code>的<code>viewMatrix</code>，毕竟让阴影动起来可能更重要，也更震撼。</p>
+<p>肝了一小段时间之后做出了动态的阴影，顺带做成了GIF。为了限制文件大小只能把画面和质量都砍了…</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycleWithShadow.gif" alt="dayNightCycleWithShadow"></p>
+<p>不过意境在那就足够了，对吧。; )</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于光照:<ul>
 <li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a></li>
@@ -301,6 +316,7 @@
 <li>关于阴影: <ul>
 <li><a href="https://ahbejarano.gitbook.io/lwjglgamedev/chapter18" target="_blank" rel="noopener">https://ahbejarano.gitbook.io/lwjglgamedev/chapter18</a></li>
 <li><a href="https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank" rel="noopener">https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/</a></li>
+<li><a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping" target="_blank" rel="noopener">https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping</a></li>
 </ul>
 </li>
 <li>关于perlin noise: <ul>
@@ -332,7 +348,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
