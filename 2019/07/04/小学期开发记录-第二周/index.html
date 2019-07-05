@@ -25,7 +25,11 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle.gif">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle_updated.gif">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/perlin_first.png">
-<meta property="og:updated_time" content="2019-07-03T18:57:09.031Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowBug.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMeshCode.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMesh.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/400.png">
+<meta property="og:updated_time" content="2019-07-05T14:08:15.767Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第二周">
 <meta name="twitter:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
@@ -110,7 +114,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
   </span>
 </div>
@@ -257,6 +261,37 @@
 <li>以camera视角进行计算。对于每个fragment，除了计算camera视角的坐标外，还要计算在光照坐标系下的坐标。如果这个坐标对应的光照方向的距离大于最小值的话就说明该fragment处在阴影内。</li>
 </ol>
 <p>于是这要求我们新建一堆东西，包括对texture类进行修改以支持空材质供shadow map使用，或者是全新的shadow.vsh和shadow.fsh。考虑到工作量，我决定还是留到白天再做。</p>
+<hr>
+<p>然后接下来一整天都浪费在这个东西上面了，并且做出来的成果，虽然有，但全是bug:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowBug.png" alt="shadowBug"></p>
+<p>这玩意可以说就是照抄教程吧。毕竟原理懂了之后就只剩下实现了。</p>
+<p>但是因为教程的结构和我们的项目的结构不一样，所以即便是抄也得搞明白教程的每个语句在做什么才行。</p>
+<p>然后就出现了这种莫名奇妙并且怎么都找不到原因的bug。</p>
+<p>根据vertex shader的源码，也许可以通过排除法来确定可能导致问题的变量:</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">0</span>) <span class="keyword">in</span> <span class="type">vec3</span> position;</span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">1</span>) <span class="keyword">in</span> <span class="type">vec2</span> textureCoord;</span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">2</span>) <span class="keyword">in</span> <span class="type">vec3</span> vertexNormalVector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">out</span> <span class="type">vec2</span> outTextureCoord;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec3</span> vertexNormal;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec3</span> vertexPos;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec3</span> originVertexNormal;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec4</span> lightViewVertexPos;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> projectionMatrix;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> modelViewMatrix;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> modelLightViewMatrix;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> orthoProjectionMatrix;</span><br></pre></td></tr></table></figure>
+<p>首先，材质能够正常渲染，说明<code>modelViewMatrix</code>和<code>projectionMatrix</code>是没有错误的。</p>
+<p>其次，跟教程的<code>orthoProjectionMatrix</code>对比输出后发现是一样的，所以<code>orthoProjectionMatrix</code>也是正确的。那么最大的嫌疑就落在<code>modelLightViewMatrix</code>上了。但是，没有办法确定它是否是错的。教程中放置了一个平面和一个旋转的方块来作为演示，而我不可能在同样的位置放一个方块来确定我是否正确。即便可以，需要的时间也太多了。</p>
+<h2 id="2019-07-05"><a href="#2019-07-05" class="headerlink" title="2019/07/05"></a>2019/07/05</h2><p>莫名其妙又到了一周的结尾。越发感觉做大作业的时间要不够了…</p>
+<p>花了太多时间在课内的垃圾小项目上了。这种项目讲道理做了什么也学不到。不是很懂学校老师都在想什么。</p>
+<p>以后就用ACM风格写，反正也不用维护。</p>
+<hr>
+<p>关于阴影，虽然后来发现距离正确的阴影已经很近了（只是阴影本身在随着光照转动），但是却总是不知道到底错在了哪。换句话说就是不知道为什么阴影会跟着转。</p>
+<p>最神奇的是把scene.fsh的输出换成<code>fragColor = vec4(vec3(texture(shadowMap, (lightViewVertexPos * 0.5 + 0.5).xy).r), 1)</code>后，可以清楚的发现其实<code>shadowMap</code>的输出结果是正确的。</p>
+<p>不过最终还是暂时放弃了做阴影，先花了些时间把队友的初版地图生成器Merge了。</p>
+<p>当区块数增加后，FPS也下降到了30多。要知道当时只有$4 \times 4 = 16$个区块啊。</p>
+<p>于是我就花了点时间把<code>Chunk.generateMesh()</code>给写好了:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMeshCode.png" alt="ChunkMeshCode"></p>
+<p>由于现在每个区块暂时还是$16 \times 16 \times 16$的大小，所以现在100个区块只需要渲染100个Mesh就可以啦！而之前的话，只要是与空气接触的方块，每个都会被调用一次render函数。100个区块，就是至少16000个<code>render()</code>，肯定是吃不消的。更不用说那些地形崎岖的区块了。</p>
+<p>配合<code>glEnable(GL_CULL_FACE)</code>，FPS已经回到60了，可喜可贺:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMesh.png" alt="ChunkMesh"></p>
+<p>可以注意到几乎每个区块的侧面都没有被渲染。这是通过<code>ChunkManager.getBlock(x, y, z)</code>做到的，它可以跨区块获取方块数据。有了这样的优化后，渲染的面数相比之前又少了非常多。</p>
+<p>但是我不能理解的是为什么区块之间隔了这么远。</p>
+<p>既然我记录了每个Chunk的Chunk坐标，那么它的世界坐标显然是<code>new Vector3f(x &lt;&lt; 4, 0, z &lt;&lt; 4)</code>吧?</p>
+<p>找了半天bug之后发现原来是因为block本身存的是世界坐标…所以chunk的世界坐标只要设成<code>0, 0, 0</code>就行了…</p>
+<p>贴一张400个区块的截图！</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/400.png" alt="400"></p>
+<p>接下来该回到阴影啦！虽然阴影真的很烦人，但是它能够做到的效果是真的非常迷人的。</p>
+<p>我已经迫不及待想要看到夕阳投下的阴影笼罩这片丘陵的样子了。</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于光照:<ul>
 <li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a></li>
@@ -297,7 +332,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
