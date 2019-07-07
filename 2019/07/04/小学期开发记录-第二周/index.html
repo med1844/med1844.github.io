@@ -33,7 +33,9 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowAcne.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycleWithShadow.gif">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/niceShadow.png">
-<meta property="og:updated_time" content="2019-07-06T10:20:22.893Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/VoxelAO.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/StupidCode.png">
+<meta property="og:updated_time" content="2019-07-07T07:06:09.319Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第二周">
 <meta name="twitter:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
@@ -118,7 +120,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-07"><span class="toc-number">7.</span> <span class="toc-text">2019/07/07</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
   </span>
 </div>
@@ -318,6 +320,14 @@
 <p>下一步本来应该是研究地形生成，但是可能应该先往光照，阴影，skybox方面走一走。至少卖相还是要好看点的嘛233</p>
 </blockquote>
 <p>至于Skybox就先放一放吧23333</p>
+<h2 id="2019-07-07"><a href="#2019-07-07" class="headerlink" title="2019/07/07"></a>2019/07/07</h2><p>网上的教程一般都是通用的环境光吸收，也就是SSAO。</p>
+<p>不过要实现SSAO的话，需要先把着色器部分改成Deferred Shading，目前来说有点没必要。</p>
+<p>于是就采用了相对来说更加投机取巧的办法，也就是根据voxel的特性，直接根据方块所处位置周围的情况来确定AO就可以了。这甚至可以在生成chunk的时候就顺带完成。</p>
+<p> 贴一张结果:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/VoxelAO.png" alt="VoxelAO"></p>
+<p>看起来有质感多了！相比之下，用于实现它的代码是真的写的毫无质感:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/StupidCode.png" alt="StupidCode"></p>
+<p>下一步就该把太阳和月亮放进天空啦！</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于光照:<ul>
 <li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a></li>
@@ -366,7 +376,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-07"><span class="toc-number">7.</span> <span class="toc-text">2019/07/07</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
