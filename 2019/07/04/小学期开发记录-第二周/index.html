@@ -36,7 +36,10 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/VoxelAO.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/StupidCode.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/playSimplex.gif">
-<meta property="og:updated_time" content="2019-07-07T12:15:20.099Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/FullSizeChunk.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowMapIssue.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowOnCliff.png">
+<meta property="og:updated_time" content="2019-07-07T14:51:07.559Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第二周">
 <meta name="twitter:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
@@ -335,6 +338,20 @@
 <p>FPS瞬间爆炸啊！！</p>
 <p>太可怕了，这种程度的地形对MC来说不是塞牙缝的吗！！</p>
 <p>自闭了，看来优化之路还远得很啊…</p>
+<p>贴一下全景图:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/FullSizeChunk.png" alt="FullSizeChunk"></p>
+<hr>
+<p>跑完步回来近距离欣赏了一会，发现为了能够让Shadow Map正常渲染远处的影子，所以正投影矩阵必须开得特别大。这样，就会导致阴影的质量非常低:</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowMapIssue.png" alt="shadowMapIssue"></p>
+<p>有三个解决方法:</p>
+<ul>
+<li>实现Cascaded Shadowing</li>
+<li>把Shadow Map的材质开得更大一点</li>
+<li>把正交投影矩阵范围改小点</li>
+</ul>
+<p>考虑到实现Cascaded Shadowing实在是过于繁琐<del>（其实就是懒+心累）</del>，直接把后两个优化做了。</p>
+<p>在一周的最后，来好好欣赏一下这一周的努力的成果吧。</p>
+<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowOnCliff.png" alt="ShadowOnCliff"></p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于光照:<ul>
 <li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a></li>
