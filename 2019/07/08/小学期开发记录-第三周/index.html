@@ -16,7 +16,9 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/simplexNoiseFixed.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/simplexAnimation.gif">
-<meta property="og:updated_time" content="2019-07-08T15:21:38.588Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/moreBlocks.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/transparencyError.png">
+<meta property="og:updated_time" content="2019-07-08T17:15:21.024Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第三周">
 <meta name="twitter:description" content="2019/07/08做完光影之后整整一天都非常咸鱼。毕竟在画质方面，这么多年来心心念念的坑终于填了。同时也没有什么明确的方向。 忍不住再贴一张:  然后在课上稍微玩了一会simplex噪声，用3d的噪声做了个GIF玩:  有点好奇体积云之类的是不是也是用这种噪声生成的呢?  后来得知课程设计里面需要用到数据库。这就很尴尬了，因为原版MC我实在是想不到哪里要用到数据库。 我之前待过的服务器里面，插件">
@@ -101,7 +103,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-09"><span class="toc-number">2.</span> <span class="toc-text">2019/07/09</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
   </span>
 </div>
@@ -167,6 +169,16 @@
 </ul>
 <p>在做这个之前我想我应该先把水和玻璃，以及一些其他的方块加进游戏里。</p>
 <p>看起来接下来几天可能不会有什么非常好看的成果了。毕竟在做出让人感觉可以被接受的Height Map之前，有很多工作要做。</p>
+<h2 id="2019-07-09"><a href="#2019-07-09" class="headerlink" title="2019/07/09"></a>2019/07/09</h2><p>首先简单加了一下雾效果。目前它还只存在于fragment shader里。</p>
+<p>然后加了一下包括流体和透明方块在内的方块。不知道为什么渲染起来这么慢…帧率总之已经爆炸了。 </p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/moreBlocks.png" alt="moreBlocks"></p>
+<p>显而易见的是，透明方块背后的面也没有被渲染。我想这应该是OpenGL的问题:</p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/transparencyError.png" alt="transparencyError"></p>
+<p>有些方向的面是被渲染的，而另外一些方向的面就没有被渲染。如果你穿过玻璃或者水，就会发现其实那些面被加进了mesh里，并且也会被渲染，只不过被玻璃覆盖了而已。</p>
+<p>并且也可以从图中发现玻璃的阴影并不正确。这是因为采用的渲染方式不是deferred shading，而是先渲染depth map，然后再渲染整个mesh。这样会导致透明方块的depth map渲染错误，因为它是被当作一整个方块来进行深度采样的。</p>
+<p>看来下一步暂时不是地形生成，而是先改成deferred shading，然后看看有没有什么办法能够解决OpenGL的这个问题。毕竟这还是太致命了。</p>
+<p>同时还发现了Texture Array，不知道它的效率跟使用一整张terrain.png相比哪个更快。如果是Texture Array的话，只能说明又要推倒重来了…</p>
+<p>总之，下一步是更改渲染结构。应该能够在今天完成。应该。尽量不给自己插flag…</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>Terrain generation:<ul>
 <li><a href="https://notch.tumblr.com/post/3746989361/terrain-generation-part-1" target="_blank" rel="noopener">https://notch.tumblr.com/post/3746989361/terrain-generation-part-1</a></li>
@@ -197,7 +209,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-09"><span class="toc-number">2.</span> <span class="toc-text">2019/07/09</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
