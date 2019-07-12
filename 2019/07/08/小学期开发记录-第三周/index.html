@@ -25,7 +25,11 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/digging.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/meq.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/particles.gif">
-<meta property="og:updated_time" content="2019-07-11T15:07:07.113Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/randomFaceAndRealParticle.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration2.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NVIDIA.png">
+<meta property="og:updated_time" content="2019-07-12T14:37:51.675Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第三周">
 <meta name="twitter:description" content="2019/07/08做完光影之后整整一天都非常咸鱼。毕竟在画质方面，这么多年来心心念念的坑终于填了。同时也没有什么明确的方向。 忍不住再贴一张:  然后在课上稍微玩了一会simplex噪声，用3d的噪声做了个GIF玩:  有点好奇体积云之类的是不是也是用这种噪声生成的呢?  后来得知课程设计里面需要用到数据库。这就很尴尬了，因为原版MC我实在是想不到哪里要用到数据库。 我之前待过的服务器里面，插件">
@@ -248,6 +252,30 @@
 <p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/particles.gif" alt="particles"></p>
 <p>虽然相比原版来说还是有些不同，不过已经还算说得过去啦。</p>
 <p>接下来打算简单重构一下，把课程中教的工厂模式应用到项目里。<del>纯粹是为了给老师一点面子吧。</del></p>
+<hr>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/randomFaceAndRealParticle.png" alt="randomFaceAndRealParticle"></p>
+<p>现在粒子看起来更加真实了。首先，破坏之后粒子显示的不再是一整个面，而是从原图上随机采样的几个点。</p>
+<p>其次增加了对方块的碰撞检测。也就是说，如果粒子碰到了方块，就会停下来。这比之前的无视一切实体方块直接下落要好多了。</p>
+<p>同时，粒子的寿命也被改善了。之前，它的寿命是服从uniform distribution的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">long</span>) Math.random() * <span class="number">3000</span></span><br></pre></td></tr></table></figure>
+<p>为了让大部分粒子的生命短一些，有个简单的办法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">long</span>) (Math.pow(Math.random(), <span class="number">5</span>) * <span class="number">3000</span>)</span><br></pre></td></tr></table></figure>
+<p>粒子部分差不多到这也就结束了。</p>
+<hr>
+<p>队友的新地形生成器merge到主分支啦！展示一下效果:</p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration.png" alt="NewTerrainGeneration"></p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration2.png" alt="NewTerrainGeneration2"></p>
+<p>突然有了抱大腿的感觉（笑）</p>
+<p>不过性能非常糟糕。测试下来，应该是因为整个游戏是单线程的。</p>
+<p>所以接下来要把renderer单独拆出去作为一个线程来对chunks进行渲染。看起来终于要用到操作系统的知识了。</p>
+<hr>
+<p>看起来把renderer拆出去作为一个单独的线程一点用都没有。大概是已经到了集显的尽头了吧（其实就是优化太菜）</p>
+<p>于是想了点办法把GPU换成了独显，卧槽瞬间丝般顺滑！英伟达牛逼！</p>
+<p>贴一张400区块，30FPS的截图:</p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NVIDIA.png" alt="NVIDIA"></p>
+<p>当然为了好看把背景P成了美丽的白色。看起来就像每一个朦胧且美丽的雾天一样。</p>
+<p>我立刻原地去世，这已经能当壁纸了罢！</p>
+<p><del>抱大腿的感觉真好…</del></p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>Terrain generation:<ul>
 <li><a href="https://notch.tumblr.com/post/3746989361/terrain-generation-part-1" target="_blank" rel="noopener">https://notch.tumblr.com/post/3746989361/terrain-generation-part-1</a></li>
