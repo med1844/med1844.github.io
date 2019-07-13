@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration2.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NVIDIA.png">
-<meta property="og:updated_time" content="2019-07-12T14:37:51.675Z">
+<meta property="og:updated_time" content="2019-07-13T18:25:59.066Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第三周">
 <meta name="twitter:description" content="2019/07/08做完光影之后整整一天都非常咸鱼。毕竟在画质方面，这么多年来心心念念的坑终于填了。同时也没有什么明确的方向。 忍不住再贴一张:  然后在课上稍微玩了一会simplex噪声，用3d的噪声做了个GIF玩:  有点好奇体积云之类的是不是也是用这种噪声生成的呢?  后来得知课程设计里面需要用到数据库。这就很尴尬了，因为原版MC我实在是想不到哪里要用到数据库。 我之前待过的服务器里面，插件">
@@ -65,7 +65,8 @@
     
     <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
-<body class="max-width mx-auto px3 ltr">    
+<body class="max-width mx-auto px3 ltr">
+    
       <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
   <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -114,7 +115,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-09"><span class="toc-number">2.</span> <span class="toc-text">2019/07/09</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-10"><span class="toc-number">3.</span> <span class="toc-text">2019/07/10</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-11"><span class="toc-number">4.</span> <span class="toc-text">2019/07/11</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-09"><span class="toc-number">2.</span> <span class="toc-text">2019/07/09</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-10"><span class="toc-number">3.</span> <span class="toc-text">2019/07/10</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-11"><span class="toc-number">4.</span> <span class="toc-text">2019/07/11</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-12"><span class="toc-number">5.</span> <span class="toc-text">2019/07/12</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-13"><span class="toc-number">6.</span> <span class="toc-text">2019/07/13</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-14"><span class="toc-number">7.</span> <span class="toc-text">2019/07/14</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
   </span>
 </div>
@@ -261,8 +262,7 @@
 <p>为了让大部分粒子的生命短一些，有个简单的办法:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">long</span>) (Math.pow(Math.random(), <span class="number">5</span>) * <span class="number">3000</span>)</span><br></pre></td></tr></table></figure>
 <p>粒子部分差不多到这也就结束了。</p>
-<hr>
-<p>队友的新地形生成器merge到主分支啦！展示一下效果:</p>
+<h2 id="2019-07-12"><a href="#2019-07-12" class="headerlink" title="2019/07/12"></a>2019/07/12</h2><p>队友的新地形生成器merge到主分支啦！展示一下效果:</p>
 <p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration.png" alt="NewTerrainGeneration"></p>
 <p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration2.png" alt="NewTerrainGeneration2"></p>
 <p>突然有了抱大腿的感觉（笑）</p>
@@ -276,6 +276,26 @@
 <p>当然为了好看把背景P成了美丽的白色。看起来就像每一个朦胧且美丽的雾天一样。</p>
 <p>我立刻原地去世，这已经能当壁纸了罢！</p>
 <p><del>抱大腿的感觉真好…</del></p>
+<h2 id="2019-07-13"><a href="#2019-07-13" class="headerlink" title="2019/07/13"></a>2019/07/13</h2><p>睡醒就中午了。组里有一场camp选拔赛，于是一下午就过去了。</p>
+<p>差不多两个月没打ACM了，体验确实是非常差。当然自己菜也是一大原因。</p>
+<p>然后修复了一下换成独显之后在FragmentShader中计算方块侧面阴影时产生的条纹。</p>
+<p>队友在做动态地图。目前已经做到把地图存在外存里了。不过还是会有一些卡顿，所以还需要再继续进行改进。</p>
+<p>然后就莫名其妙到了第二天凌晨。生产力低下。</p>
+<h2 id="2019-07-14"><a href="#2019-07-14" class="headerlink" title="2019/07/14"></a>2019/07/14</h2><p>相比前一周，这一周真是什么都没做，全靠大佬队友带飞。</p>
+<p>正好到了Camp报名的时候，权衡了很久最后还是选择不去。其实回过头来好好想一想就会发现，自己其实并不清楚自己为什么要打ACM。好像以前想到这个问题的时候，我都会下意识回避掉。</p>
+<p>我很热爱算法吗? 不。我只对优秀的性能感兴趣，至于算法本身的美感，我很少能够体会得到。</p>
+<p>我喜欢竞技吗? 不。我不喜欢与人竞争，因为这太累，同时也调动太多的感情。然而现实就是需要不断地与所有人进行竞争，通过做到别人做不到的事情，来换取大家都想要的东西。</p>
+<p>我喜欢旅行吗? 不。我不喜欢不熟悉的环境，尤其是当它们还使人感到不适的时候。</p>
+<p>我喜欢团队合作吗? 不。我不喜欢与人交流，人类之间要互相理解实在太困难了。之前区域赛就多少在和队友抢键盘。</p>
+<p>我喜欢挑战难题吗? 这取决于题目是否有趣，或者是否非常现实。然而大多数ACM的题目其实并不那么有趣。</p>
+<p>然后回过头来仔细想想，ACM中的知识能够应用到工作中的又有多少呢? 最近做minecrash，我不断地思考哪里可以怎样用ACM中的知识来优化，但是事实上用的最多的却是最简单的单链表。最复杂的，可能也只是Simplex Noise，而它更像是玄学调参，就像机器学习所做的那样。在实际工程中，可能甚至连课内教的数据结构都只会用到一小部分。</p>
+<p>现实中不会有那么多的区间和那么多的询问让你修改，也不会让你用字典树来维护权值，也不会大费周章让你写个segment tree beat。它不可靠，维护性极差，也不是原子的。相比之下，连接一个数据库，丢个<code>executeUpdate()</code>过去，一切就都结束了。</p>
+<p>到底是我的水平太低，还是确实ACM过于纸上谈兵呢?</p>
+<p>而且，ACM打了那么久，我依然不能针对应用场景来设计最优的算法。像是一年前做推箱子的时候，我就不知道要从何下手。简单地应用BFS的后果就是只有40步的最优解都需要花上20多秒才能搜出来。而别人90多页的启发式算法的论文我又怎么都理解不了它的核心想法。</p>
+<p>我觉得我学到的知识都是死的。面对只有30帧的minecrash，除了打开Google，然后搜索类似于<code>minecraft optimization rendering</code>的内容之外，我想不到任何让它变得更快的方法。</p>
+<p>我好像总是在问题的表面打转，而就是做不到像利刃那样，穿破表面，直指问题核心。是不是所有这些问题，都可以用粗暴无脑的一句<em>“去学习啊”</em>就能解决呢?</p>
+<hr>
+<p>想要提升阴影质量。所以我决定把Cascade Shadow Map做了。</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>Terrain generation:<ul>
 <li><a href="https://notch.tumblr.com/post/3746989361/terrain-generation-part-1" target="_blank" rel="noopener">https://notch.tumblr.com/post/3746989361/terrain-generation-part-1</a></li>
@@ -316,7 +336,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-09"><span class="toc-number">2.</span> <span class="toc-text">2019/07/09</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-10"><span class="toc-number">3.</span> <span class="toc-text">2019/07/10</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-11"><span class="toc-number">4.</span> <span class="toc-text">2019/07/11</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-08"><span class="toc-number">1.</span> <span class="toc-text">2019/07/08</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-09"><span class="toc-number">2.</span> <span class="toc-text">2019/07/09</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-10"><span class="toc-number">3.</span> <span class="toc-text">2019/07/10</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-11"><span class="toc-number">4.</span> <span class="toc-text">2019/07/11</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-12"><span class="toc-number">5.</span> <span class="toc-text">2019/07/12</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-13"><span class="toc-number">6.</span> <span class="toc-text">2019/07/13</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-14"><span class="toc-number">7.</span> <span class="toc-text">2019/07/14</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
@@ -380,23 +400,8 @@
 
 <!-- Baidu Analytics -->
 
-<!-- Disqus Comments -->
+<!-- Disqus Comments --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
