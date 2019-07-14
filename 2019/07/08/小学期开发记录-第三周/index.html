@@ -29,7 +29,11 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NewTerrainGeneration2.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/NVIDIA.png">
-<meta property="og:updated_time" content="2019-07-13T18:25:59.066Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/CascadeSplit.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/cascadeShadow.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/CascadeShadowMapFinish.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/08/小学期开发记录-第三周/CascadeShadowMapFinish2.png">
+<meta property="og:updated_time" content="2019-07-14T15:55:24.777Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第三周">
 <meta name="twitter:description" content="2019/07/08做完光影之后整整一天都非常咸鱼。毕竟在画质方面，这么多年来心心念念的坑终于填了。同时也没有什么明确的方向。 忍不住再贴一张:  然后在课上稍微玩了一会simplex噪声，用3d的噪声做了个GIF玩:  有点好奇体积云之类的是不是也是用这种噪声生成的呢?  后来得知课程设计里面需要用到数据库。这就很尴尬了，因为原版MC我实在是想不到哪里要用到数据库。 我之前待过的服务器里面，插件">
@@ -65,8 +69,7 @@
     
     <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
-<body class="max-width mx-auto px3 ltr">
-    
+<body class="max-width mx-auto px3 ltr">    
       <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
   <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -296,6 +299,23 @@
 <p>我好像总是在问题的表面打转，而就是做不到像利刃那样，穿破表面，直指问题核心。是不是所有这些问题，都可以用粗暴无脑的一句<em>“去学习啊”</em>就能解决呢?</p>
 <hr>
 <p>想要提升阴影质量。所以我决定把Cascade Shadow Map做了。</p>
+<p> 肝了一晚上，最后虽然能跑了，但是bug很严重。</p>
+<p>首先确定了Cascade split是正确的:</p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/CascadeSplit.png" alt="CascadeSplit"></p>
+<p>红色表示这属于最近的Shadow Cascade中，绿色表示稍远，蓝色表示最远。</p>
+<p>很奇怪的一点就是影子只有在正午附近才能显示。同时，似乎在头顶以上部分的方块不会被算入阴影内。说明教程本身的OrthoProjectionMatrix的计算有错误。</p>
+<hr>
+<p>于是把教程的正投影矩阵给日了，换成了自己的无脑投影。于是得到了类似于下图的神奇结果:</p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/cascadeShadow.png" alt="cascadeShadow"></p>
+<p>红色区域内的阴影的质量是最高的，绿色其次，蓝色最差。从这张图里可以清晰的看到红色部分内的阴影的边界比绿色部分内的阴影的边界要更加清晰。</p>
+<p>但是有个神奇的问题就是换成独显之后，影子就没了！</p>
+<hr>
+<p>浪费了一晚上在给独显debug，最后发现是教程里面<code>ArrayTexture</code>里面创建shadow map texture的时候的参数错了。</p>
+<p>于是现在阴影质量也算是提上去了。相比一周之前，几乎没有任何画质上的改动，看起来像是这一周什么都没做…</p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/CascadeShadowMapFinish.png" alt="CascadeShadowMapFinish"></p>
+<p><img src="//medioqrity.github.io/2019/07/08/小学期开发记录-第三周/CascadeShadowMapFinish2.png" alt="CascadeShadowMapFinish2"></p>
+<p>这周就到此结束了。下一周只有一两天会拿来开发，因为周五就要答辩了，而写的东西又太多了，可能要准备很久，所以必须空出足够多的时间来应对意料之外的情况。</p>
+<p>我想，下周可能会先把性能问题解决一下吧。之后可能稍微简单地实现一下物品系统和物品栏，然后就要开始准备答辩了。小学期也就要结束了啊。</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>Terrain generation:<ul>
 <li><a href="https://notch.tumblr.com/post/3746989361/terrain-generation-part-1" target="_blank" rel="noopener">https://notch.tumblr.com/post/3746989361/terrain-generation-part-1</a></li>
@@ -400,8 +420,23 @@
 
 <!-- Baidu Analytics -->
 
-<!-- Disqus Comments --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- Disqus Comments -->
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
