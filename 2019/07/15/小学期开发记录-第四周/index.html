@@ -17,7 +17,8 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/15/小学期开发记录-第四周/Review.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/15/小学期开发记录-第四周/ISEMPTY.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/15/小学期开发记录-第四周/60fps.gif">
-<meta property="og:updated_time" content="2019-07-15T14:46:34.822Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/07/15/小学期开发记录-第四周/DynamicMap.png">
+<meta property="og:updated_time" content="2019-07-15T18:54:52.089Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 第四周">
 <meta name="twitter:description" content="2019/07/15明天就要开始写文档了，所以今天很可能就是最后一天开发了。 突然对自己之前那些摸鱼的日子感到后悔，但是后悔又有什么用呢? 按照惯例，首先开幕雷击:  这是前三周的成果。 早上起来先加了Frustum Culling，也就是把视野范围外的区块直接抛弃掉。这样就可以减少GL调用。 不过FPS没有什么实质上的提升。后来看了一下是因为要正确的渲染阴影还是需要把所有的mesh都渲染一遍才行">
@@ -102,7 +103,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-15"><span class="toc-number">1.</span> <span class="toc-text">2019/07/15</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number"></span> <span class="toc-text">Reference</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-15"><span class="toc-number">1.</span> <span class="toc-text">2019/07/15</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-16"><span class="toc-number">2.</span> <span class="toc-text">2019/07/16</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number"></span> <span class="toc-text">Reference</span></a>
     </li></div>
   </span>
 </div>
@@ -169,6 +170,9 @@
 <p>看起来质量应该很低…没办法了，毕竟动图的size不能太大呀…</p>
 <p>大概还是能够看出晨雾是最浓的。</p>
 <p>准备在写文档之前最后再搞一下物品栏和物品系统。</p>
+<h2 id="2019-07-16"><a href="#2019-07-16" class="headerlink" title="2019/07/16"></a>2019/07/16</h2><p><img src="//medioqrity.github.io/2019/07/15/小学期开发记录-第四周/DynamicMap.png" alt="DynamicMap"></p>
+<p>但是先搞的不是物品栏，而是队友那边的动态地图。也确实没办法，因为单线程的缘故，移动的时候都会很卡…</p>
+<p>先把这个修复完再开始写文档吧…</p>
 <h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
 <li>PPSM:<ul>
 <li><a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch10.html" target="_blank" rel="noopener">https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch10.html</a></li>
@@ -199,7 +203,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-15"><span class="toc-number">1.</span> <span class="toc-text">2019/07/15</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number"></span> <span class="toc-text">Reference</span></a>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-15"><span class="toc-number">1.</span> <span class="toc-text">2019/07/15</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-16"><span class="toc-number">2.</span> <span class="toc-text">2019/07/16</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number"></span> <span class="toc-text">Reference</span></a>
     </li></div>
 
     <div id="share-footer" style="display: none">
