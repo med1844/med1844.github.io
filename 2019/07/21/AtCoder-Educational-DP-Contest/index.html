@@ -15,7 +15,7 @@
 <meta property="og:description" content="AtCoder - Educational DPD - 01背包空间复杂度优化一开始我们可以得到方程:  dp[i][v] = \mathrm{max}(dp[i - 1][v], dp[i - 1][v - \mathrm{volumn}[i]] + \mathrm{value}[i])$\mathrm{max}$中的两项分别代表了不取当前物品，和取当前物品。 跟其他背包入门不一样，我采用的不是">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://medioqrity.github.io/2019/07/21/AtCoder-Educational-DP-Contest/1547687969962.png">
-<meta property="og:updated_time" content="2019-07-23T16:00:59.272Z">
+<meta property="og:updated_time" content="2019-07-23T16:03:17.118Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AtCoder Educational DP Contest">
 <meta name="twitter:description" content="AtCoder - Educational DPD - 01背包空间复杂度优化一开始我们可以得到方程:  dp[i][v] = \mathrm{max}(dp[i - 1][v], dp[i - 1][v - \mathrm{volumn}[i]] + \mathrm{value}[i])$\mathrm{max}$中的两项分别代表了不取当前物品，和取当前物品。 跟其他背包入门不一样，我采用的不是">
@@ -51,8 +51,7 @@
     
     <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
-<body class="max-width mx-auto px3 ltr">
-    
+<body class="max-width mx-auto px3 ltr">    
       <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
   <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -477,8 +476,23 @@ dp[cnt_1][cnt_2][cnt_3] =
 
 <!-- Baidu Analytics -->
 
-<!-- Disqus Comments --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- Disqus Comments -->
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
