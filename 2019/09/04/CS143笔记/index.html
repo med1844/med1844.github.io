@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="CS143笔记至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方">
+<meta name="keywords" content="CS,Compiler">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS143笔记">
+<meta property="og:url" content="https://medioqrity.github.io/2019/09/04/CS143笔记/index.html">
+<meta property="og:site_name" content="Medioqrity&#39;s Blog">
+<meta property="og:description" content="CS143笔记至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_2.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_1.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_1.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_2.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_3.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_2.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_4.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_5.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_6.png">
+<meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_3.png">
+<meta property="og:updated_time" content="2019-09-04T11:16:32.056Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CS143笔记">
+<meta name="twitter:description" content="CS143笔记至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方">
+<meta name="twitter:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>CS143笔记</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+    <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+<body class="max-width mx-auto px3 ltr">    
+      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/08/19/小学期开发记录-后日谈/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://medioqrity.github.io/2019/09/04/CS143笔记/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&text=CS143笔记"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&is_video=false&description=CS143笔记"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CS143笔记&body=Check out this article: https://medioqrity.github.io/2019/09/04/CS143笔记/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&name=CS143笔记&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CS143笔记"><span class="toc-number">1.</span> <span class="toc-text">CS143笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compiler-Structure"><span class="toc-number">1.1.</span> <span class="toc-text">Compiler Structure</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lexical-Analyze"><span class="toc-number">1.2.</span> <span class="toc-text">Lexical Analyze</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Finite-Automaton"><span class="toc-number">1.2.1.</span> <span class="toc-text">Finite Automaton</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Regular-Expression"><span class="toc-number">1.2.2.</span> <span class="toc-text">Regular Expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA"><span class="toc-number">1.2.3.</span> <span class="toc-text">NFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DFA"><span class="toc-number">1.2.4.</span> <span class="toc-text">DFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA-to-DFA"><span class="toc-number">1.2.5.</span> <span class="toc-text">NFA to DFA</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">2.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CS143笔记
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Medioqrity's Blog</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-09-04T09:13:59.000Z" itemprop="datePublished">2019-09-04</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/CS/">CS</a>, <a class="tag-link" href="/tags/Compiler/">Compiler</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="CS143笔记"><a href="#CS143笔记" class="headerlink" title="CS143笔记"></a>CS143笔记</h1><p>至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。</p>
+<h2 id="Compiler-Structure"><a href="#Compiler-Structure" class="headerlink" title="Compiler Structure"></a>Compiler Structure</h2><p>编译一般分为5个阶段，分别是:</p>
+<ul>
+<li>Lexical Analyze</li>
+<li>Parsing</li>
+<li>Syntax Analyze</li>
+<li>Optimization</li>
+<li>Code Generation</li>
+</ul>
+<h2 id="Lexical-Analyze"><a href="#Lexical-Analyze" class="headerlink" title="Lexical Analyze"></a>Lexical Analyze</h2><p>总结一下就是这部分是用来对Token进行分类的。</p>
+<p>比方说:</p>
+<ul>
+<li><code>if</code>是一个关键字，而<code>i</code>不是，它只是一个合法变量名。</li>
+<li><code>0x12</code>是一个十六进制常量，而<code>0</code>是一个十进制常量。</li>
+<li><code>a2ads8fa72</code>是一个合法变量名，而<code>2ads8fa72</code>不是。</li>
+</ul>
+<h3 id="Finite-Automaton"><a href="#Finite-Automaton" class="headerlink" title="Finite Automaton"></a>Finite Automaton</h3><p>为了描述这种分类规则，我们可以使用名为<em>Finite Automaton</em>的数学工具。</p>
+<blockquote>
+<p>A <strong>finite-state machine</strong> (<strong>FSM</strong>) or <strong>finite-state automaton</strong> (<strong>FSA</strong>, plural: <em>automata</em>), <strong>finite automaton</strong>, or simply a <strong>state machine</strong>, is a mathematical <a href="https://en.wikipedia.org/wiki/Model_of_computation" target="_blank" rel="noopener">model of computation</a>. It is an <a href="https://en.wikipedia.org/wiki/Abstract_machine" target="_blank" rel="noopener">abstract machine</a> that can be in exactly one of a finite number of <em>states</em> at any given time.</p>
+<p>(来自<a href="https://en.wikipedia.org/wiki/Finite-state_machine" target="_blank" rel="noopener">Wikipedia</a>)</p>
+</blockquote>
+<p>其实之前在学习计算机网络的时候，描述TCP可靠传输的时候就已经使用过自动机来描述状态之间的转移。也算是一种预习吧（笑）</p>
+<p><em>说句题外话，一直很佩服前人，连一个模式匹配都能和数学理论挂钩。对于数学苦手的我来说可能就和理论研究无缘了吧。</em></p>
+<h3 id="Regular-Expression"><a href="#Regular-Expression" class="headerlink" title="Regular Expression"></a>Regular Expression</h3><p>不得不说把正则表达式和有限自动机放在一起教是非常天才的教法。相比网上的垃圾RE教程（像是直接告诉你什么代表什么含义的那种），显然这种教法更加容易让人学会并理解并应用正则表达式。</p>
+<h3 id="NFA"><a href="#NFA" class="headerlink" title="NFA"></a>NFA</h3><p>全名是Nondeterministic Finite Automata。它的特性就是可能同时处在多个状态，比方说:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example.png" alt="NFA_Example"></p>
+<p>从<code>A</code>出发，我们不能确定下一步到底是状态<code>B</code>还是<code>C</code>。我想在某种意义上可以看作，我们现在同时处在<code>B</code>和<code>C</code>两个状态上:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_2.png" alt="NFA_Example_2"></p>
+<p>这就是为什么它是Nondeterministic的。 我猜想，对于比较复杂的模式，保持多个状态可能会造成效率严重低下（比方说需要保存的状态数以指数级增长的极端情况?），因此才使用DFA来进行模式匹配。不过这终究是猜想，转换的原因还需要进一步的了解。</p>
+<h3 id="DFA"><a href="#DFA" class="headerlink" title="DFA"></a>DFA</h3><p>全名是Deterministic Finite Automata，和NFA的区别只在于第一个单词。其实从字面上就可以大致了解它和NFA的不同: 它每次只能从一个状态转移到另外一个确定的状态。</p>
+<p>神奇的是，我们可以把NFA转换为DFA。虽然通过详细的例子我已经明白转换步骤，但是回想起来我依然会惊叹于这种转换方法的奇妙。也许我依然还是只是流于表面，没有参透这种转换方法的核心思想。</p>
+<h3 id="NFA-to-DFA"><a href="#NFA-to-DFA" class="headerlink" title="NFA to DFA"></a>NFA to DFA</h3><p>我们就使用网课的测试题作为例子:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3.png" alt="NFA_Example_3"></p>
+<p>网课本身没有给出下方的正则表达式，这是我自己加的。</p>
+<p>首先，第一步，从出发点<code>A</code>，找出仅通过$\varepsilon$的边所能够到达的所有状态:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_1.png" alt="NFA_Example_3_step_1"></p>
+<p>我们将它称作$\varepsilon\text{-clos}$，是epsilon closure的缩写。直译我想就是epsilon闭包吧。<del>（离散数学阴魂不散）</del></p>
+<p>对应地，我们可以将<code>ABCGHI</code>作为我们的DFA的第一个节点:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_1.png" alt="result_DFA_step_1"></p>
+<p>接下来，<strong>从$\varepsilon\text{-clos}(A)$中的任意一个节点出发</strong>，我们会发现有两种选择:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_2.png" alt="NFA_Example_3_step_2"></p>
+<p>可以看到这两个选择已经被高亮出来。下面我们分别对它们进行处理。</p>
+<p>首先是通过<code>1</code>，到达状态<code>D</code>。下一步同样是计算从<code>D</code>出发的$\varepsilon\text{-clos}$:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_3.png" alt="NFA_Example_3_step_3"></p>
+<p>这一次的闭包就特别少，只有<code>DE</code>。于是我们把这个闭包加入DFA:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_2.png" alt="result_DFA_step_2"></p>
+<p>效仿同样的步骤，我们可以计算出$\varepsilon\text{-clos(J)}$，并将它加入到DFA中:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_4.png" alt="NFA_Example_3_step_4"></p>
+<p>可以看到，<code>DE</code>还有一条边可以向外走，也就是<code>E</code>到<code>F</code>的那条边。于是我们给<code>DE</code>加上<code>0</code>这条边，然后计算$\varepsilon\text{-clos(F)}$:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_5.png" alt="NFA_Example_3_step_5"></p>
+<p>看起来结束了? naïve!</p>
+<p>注意，$\varepsilon\text{-clos(F)}$中包含状态<code>C</code>，而<code>C</code>有一条边指向<code>D</code>。因此，我们还需要在<code>FGHBC</code>和<code>DE</code>之间加一条边:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_6.png" alt="NFA_Example_3_step_6"></p>
+<p><em>特地用黄色标出了这条边2333</em></p>
+<p>最后简化一下DFA中的状态，我们就获得了该NFA对应的DFA:</p>
+<p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_3.png" alt="result_DFA_step_3"></p>
+<p>核心还是要注意各种$\varepsilon\text{-clos}$的出边，在草稿纸上没有多种颜色的笔来标记的话可能会非常难做，哈哈</p>
+<hr>
+<p>后续待更新…</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>RE2NFA: <a href="https://cyberzhg.github.io/toolbox/regex2nfa" target="_blank" rel="noopener">https://cyberzhg.github.io/toolbox/regex2nfa</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CS143笔记"><span class="toc-number">1.</span> <span class="toc-text">CS143笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compiler-Structure"><span class="toc-number">1.1.</span> <span class="toc-text">Compiler Structure</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lexical-Analyze"><span class="toc-number">1.2.</span> <span class="toc-text">Lexical Analyze</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Finite-Automaton"><span class="toc-number">1.2.1.</span> <span class="toc-text">Finite Automaton</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Regular-Expression"><span class="toc-number">1.2.2.</span> <span class="toc-text">Regular Expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA"><span class="toc-number">1.2.3.</span> <span class="toc-text">NFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DFA"><span class="toc-number">1.2.4.</span> <span class="toc-text">DFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA-to-DFA"><span class="toc-number">1.2.5.</span> <span class="toc-text">NFA to DFA</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">2.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://medioqrity.github.io/2019/09/04/CS143笔记/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&text=CS143笔记"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&is_video=false&description=CS143笔记"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CS143笔记&body=Check out this article: https://medioqrity.github.io/2019/09/04/CS143笔记/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&title=CS143笔记"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://medioqrity.github.io/2019/09/04/CS143笔记/&name=CS143笔记&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 medioqrity
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
