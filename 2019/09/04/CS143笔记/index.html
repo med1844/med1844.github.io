@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_5.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_6.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_3.png">
-<meta property="og:updated_time" content="2019-09-04T11:40:41.484Z">
+<meta property="og:updated_time" content="2019-09-06T04:21:31.138Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CS143笔记">
 <meta name="twitter:description" content="CS143笔记至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方">
@@ -82,6 +82,8 @@
     <br>
     <span id="actions">
       <ul>
+        
+        <li><a class="icon" href="/2019/09/13/JavaEE笔记整理/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" href="/2019/08/19/小学期开发记录-后日谈/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -179,6 +181,7 @@
 <p>其实之前在学习计算机网络的时候，描述TCP可靠传输的时候就已经使用过自动机来描述状态之间的转移。也算是一种预习吧（笑）</p>
 <p><em>说句题外话，一直很佩服前人，连一个模式匹配都能和数学理论挂钩。对于数学苦手的我来说可能就和理论研究无缘了吧。</em></p>
 <h3 id="Regular-Expression"><a href="#Regular-Expression" class="headerlink" title="Regular Expression"></a>Regular Expression</h3><p>不得不说把正则表达式和有限自动机放在一起教是非常天才的教法。相比网上的垃圾RE教程（像是直接告诉你什么代表什么含义的那种），显然这种教法更加容易让人学会并理解并应用正则表达式。</p>
+<p>不过这里就不对正则表达式作过多的叙述了，因为确实就那么点规则，我再复制粘贴也是违反原则的。</p>
 <h3 id="NFA"><a href="#NFA" class="headerlink" title="NFA"></a>NFA</h3><p>全名是Nondeterministic Finite Automata。它的特性就是可能同时处在多个状态，比方说:</p>
 <p><img src="//medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example.png" alt="NFA_Example"></p>
 <p>从<code>A</code>出发，我们不能确定下一步到底是状态<code>B</code>还是<code>C</code>。我想在某种意义上可以看作，我们现在同时处在<code>B</code>和<code>C</code>两个状态上:</p>
