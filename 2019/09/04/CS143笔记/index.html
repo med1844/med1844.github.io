@@ -6,13 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="CS143笔记至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方">
+    <meta name="description" content="至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方说:  if是">
 <meta name="keywords" content="CS,Compiler">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CS143笔记">
 <meta property="og:url" content="https://medioqrity.github.io/2019/09/04/CS143笔记/index.html">
 <meta property="og:site_name" content="Medioqrity&#39;s Blog">
-<meta property="og:description" content="CS143笔记至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方">
+<meta property="og:description" content="至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方说:  if是">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_2.png">
@@ -26,10 +26,10 @@
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_5.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example_3_step_6.png">
 <meta property="og:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/result_DFA_step_3.png">
-<meta property="og:updated_time" content="2019-09-06T04:21:31.138Z">
+<meta property="og:updated_time" content="2019-09-13T11:35:48.882Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CS143笔记">
-<meta name="twitter:description" content="CS143笔记至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方">
+<meta name="twitter:description" content="至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。 Compiler Structure编译一般分为5个阶段，分别是:  Lexical Analyze Parsing Syntax Analyze Optimization Code Generation  Lexical Analyze总结一下就是这部分是用来对Token进行分类的。 比方说:  if是">
 <meta name="twitter:image" content="https://medioqrity.github.io/2019/09/04/CS143笔记/NFA_Example.png">
     
     
@@ -113,8 +113,8 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CS143笔记"><span class="toc-number">1.</span> <span class="toc-text">CS143笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compiler-Structure"><span class="toc-number">1.1.</span> <span class="toc-text">Compiler Structure</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lexical-Analyze"><span class="toc-number">1.2.</span> <span class="toc-text">Lexical Analyze</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Finite-Automaton"><span class="toc-number">1.2.1.</span> <span class="toc-text">Finite Automaton</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Regular-Expression"><span class="toc-number">1.2.2.</span> <span class="toc-text">Regular Expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA"><span class="toc-number">1.2.3.</span> <span class="toc-text">NFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DFA"><span class="toc-number">1.2.4.</span> <span class="toc-text">DFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA-to-DFA"><span class="toc-number">1.2.5.</span> <span class="toc-text">NFA to DFA</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">2.</span> <span class="toc-text">Reference</span></a></li></ol>
-    </div>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compiler-Structure"><span class="toc-number">1.</span> <span class="toc-text">Compiler Structure</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lexical-Analyze"><span class="toc-number">2.</span> <span class="toc-text">Lexical Analyze</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Finite-Automaton"><span class="toc-number">2.1.</span> <span class="toc-text">Finite Automaton</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Regular-Expression"><span class="toc-number">2.2.</span> <span class="toc-text">Regular Expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA"><span class="toc-number">2.3.</span> <span class="toc-text">NFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DFA"><span class="toc-number">2.4.</span> <span class="toc-text">DFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA-to-DFA"><span class="toc-number">2.5.</span> <span class="toc-text">NFA to DFA</span></a></li></ol></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number"></span> <span class="toc-text">Reference</span></a>
+    </li></div>
   </span>
 </div>
 
@@ -157,7 +157,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h1 id="CS143笔记"><a href="#CS143笔记" class="headerlink" title="CS143笔记"></a>CS143笔记</h1><p>至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。</p>
+    <p>至今为止已经或多或少学了一些编译原理相关的知识。我决定趁自己还记得它们的时候将它们记录下来。</p>
 <h2 id="Compiler-Structure"><a href="#Compiler-Structure" class="headerlink" title="Compiler Structure"></a>Compiler Structure</h2><p>编译一般分为5个阶段，分别是:</p>
 <ul>
 <li>Lexical Analyze</li>
@@ -243,8 +243,8 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CS143笔记"><span class="toc-number">1.</span> <span class="toc-text">CS143笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compiler-Structure"><span class="toc-number">1.1.</span> <span class="toc-text">Compiler Structure</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lexical-Analyze"><span class="toc-number">1.2.</span> <span class="toc-text">Lexical Analyze</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Finite-Automaton"><span class="toc-number">1.2.1.</span> <span class="toc-text">Finite Automaton</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Regular-Expression"><span class="toc-number">1.2.2.</span> <span class="toc-text">Regular Expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA"><span class="toc-number">1.2.3.</span> <span class="toc-text">NFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DFA"><span class="toc-number">1.2.4.</span> <span class="toc-text">DFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA-to-DFA"><span class="toc-number">1.2.5.</span> <span class="toc-text">NFA to DFA</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">2.</span> <span class="toc-text">Reference</span></a></li></ol>
-    </div>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Compiler-Structure"><span class="toc-number">1.</span> <span class="toc-text">Compiler Structure</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lexical-Analyze"><span class="toc-number">2.</span> <span class="toc-text">Lexical Analyze</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Finite-Automaton"><span class="toc-number">2.1.</span> <span class="toc-text">Finite Automaton</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Regular-Expression"><span class="toc-number">2.2.</span> <span class="toc-text">Regular Expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA"><span class="toc-number">2.3.</span> <span class="toc-text">NFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DFA"><span class="toc-number">2.4.</span> <span class="toc-text">DFA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NFA-to-DFA"><span class="toc-number">2.5.</span> <span class="toc-text">NFA to DFA</span></a></li></ol></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number"></span> <span class="toc-text">Reference</span></a>
+    </li></div>
 
     <div id="share-footer" style="display: none">
       <ul>
