@@ -14,10 +14,12 @@
 <meta property="og:site_name" content="Medioqrity&#39;s Blog">
 <meta property="og:description" content="这个项目已经完成整整一个月了。但是我还不想让它就此止步。 所以我决定在这后日谈里，不定期地贴出更新的内容。 由于升学和课内的压力，我想可能近期（指未来半年到一年）不会有特别多的闲暇时间可以用于更新。且更且珍惜吧！ 2019/08/19更新了CameraSelectionDetector的算法: 123456789101112131415161718192021222324252627private">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-28T06:47:15.564Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/08/19/小学期开发记录-后日谈/ScreenshotCompressed.jpg">
+<meta property="og:updated_time" content="2019-11-12T13:06:11.301Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小学期开发记录 - 后日谈">
 <meta name="twitter:description" content="这个项目已经完成整整一个月了。但是我还不想让它就此止步。 所以我决定在这后日谈里，不定期地贴出更新的内容。 由于升学和课内的压力，我想可能近期（指未来半年到一年）不会有特别多的闲暇时间可以用于更新。且更且珍惜吧！ 2019/08/19更新了CameraSelectionDetector的算法: 123456789101112131415161718192021222324252627private">
+<meta name="twitter:image" content="https://medioqrity.github.io/2019/08/19/小学期开发记录-后日谈/ScreenshotCompressed.jpg">
     
     
         
@@ -49,8 +51,7 @@
     
     <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
-<body class="max-width mx-auto px3 ltr">
-    
+<body class="max-width mx-auto px3 ltr">    
       <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
   <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -101,7 +102,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-08-19"><span class="toc-number">1.</span> <span class="toc-text">2019/08/19</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-08-19"><span class="toc-number">1.</span> <span class="toc-text">2019/08/19</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-11-1"><span class="toc-number">2.</span> <span class="toc-text">2019/11/1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-11-5"><span class="toc-number">3.</span> <span class="toc-text">2019/11/5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-11-9"><span class="toc-number">4.</span> <span class="toc-text">2019/11/9</span></a></li></ol>
     </div>
   </span>
 </div>
@@ -152,6 +153,43 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Vector3f <span class="title">selectBlock</span><span class="params">(ChunkManager chunkManager, Vector3f center, Vector3f dir)</span> </span>&#123;</span><br><span class="line">    Block block;</span><br><span class="line">    Block selectedBlock = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">float</span> blockClosestDistance = Float.POSITIVE_INFINITY;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">float</span> distance = <span class="number">5.5f</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> x = (<span class="keyword">int</span>) (center.x - distance); x &lt;= (<span class="keyword">int</span>) (center.x + distance); ++x) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> y = (<span class="keyword">int</span>) (center.y - distance); y &lt;= (<span class="keyword">int</span>) (center.y + distance); ++y) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> z = (<span class="keyword">int</span>) (center.z - distance); z &lt;= (<span class="keyword">int</span>) (center.z + distance); ++z) &#123;</span><br><span class="line">                block = chunkManager.getBlock(x, y, z);</span><br><span class="line">                <span class="keyword">if</span> (block == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (block.getBlockID() == TextureManager.AIR) <span class="keyword">continue</span>;</span><br><span class="line">                min.set(block.getPosition());</span><br><span class="line">                max.set(block.getPosition());</span><br><span class="line">                max.add(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">if</span> (Intersectionf.intersectRayAab(center, dir, min, max, nearFar) &amp;&amp; nearFar.x &lt;= <span class="number">5</span></span><br><span class="line">                        &amp;&amp; nearFar.x &lt; blockClosestDistance) &#123;</span><br><span class="line">                    blockClosestDistance = nearFar.x;</span><br><span class="line">                    selectedBlock = block;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (selectedBlock == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">return</span> selectedBlock.getPosition();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这样的话每次需要访问的方块数就变成了恒定的$10\times 10\times 10 = 1000$块。虽然看起来性能比之前的600块要更差，但是那个数据是没有把空气方块计入在内的。</p>
 <p>值得注意的一点是，先前的检测方法就算是距离特别远的方块也可以被选中，并且效率相对来说还算不错。而新的检测方法则绝对不可以用在检测距离过远的方块上。现在的方法对于距离为$n$的候选距离，需要检测的方块数是$\mathcal{O}(n^3)$级别的。而前一种方法通过对区块等进行剪枝，可以确保就算是远距离的方块也可以用较少的访问次数就可以确定选中的方块。</p>
+<h2 id="2019-11-1"><a href="#2019-11-1" class="headerlink" title="2019/11/1"></a>2019/11/1</h2><p>学了JavaEE之后，发现maven打包成war还挺方便的。既然<code>mvn package</code>可以产生可用的<code>war</code>，那应该也能产生独立的jar包吧！这样我就能提供游戏下载了。</p>
+<p>可惜现实还是太残酷了，花了几个小时之后，虽然可以使用maven进行打包了，但是打包出来的jar，即便是把依赖都装进去，照样找不到<code>lwjgl.dll</code>。考虑到第二天还有事就睡了。</p>
+<h2 id="2019-11-5"><a href="#2019-11-5" class="headerlink" title="2019/11/5"></a>2019/11/5</h2><p>打算翘了编译去上高级C语言，想着利用没课的时间先继续CS143，然后不知道怎么就开始修起minecrash了。</p>
+<p>首先是修复了方块选择器的bug:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> x = max((<span class="keyword">int</span>) (center.x - distance), <span class="number">0</span>); x &lt;= min((<span class="keyword">int</span>) (center.x + distance), Chunk.getY()); ++x) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> y = max((<span class="keyword">int</span>) (center.y - distance), <span class="number">0</span>); y &lt;= min((<span class="keyword">int</span>) (center.y + distance), Chunk.getY()); ++y) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> z = max((<span class="keyword">int</span>) (center.z - distance), <span class="number">0</span>); z &lt;= min((<span class="keyword">int</span>) (center.z + distance), Chunk.getY()); ++z) &#123;</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>否则对于超出边界的block，<code>ChunkManager</code>自动返回<code>null</code>，而根据<code>if (block == null) return null;</code>，所以站在世界的边界时，是选不中任何东西的。</p>
+<p>何等愚蠢的逻辑漏洞啊。简直是在玷污前ACMer这一称号。</p>
+<p>之后稍微调整了一下工程文件的结构，并且对所有文件的import顺序做了修正。同时也发现了不少设计上的缺陷，比方说fog在一天中的浓度，居然是在<code>DayNightCycle.java</code>中计算的。这种逻辑难道不应该封装在<code>fog</code>类内吗? 同样的道理，既然很多天气因素都是根据昼夜来计算的，那显然可以写一个<code>timeParser.java</code>之类的，返回四个<code>boolean</code>，分别表示当前是<em>日出，白昼，日落，黑夜</em>，以及一个<code>double</code>，表示当前时间阶段的进度。而光照角度等都应该根据<code>timeParser.java</code>返回的值进行计算。这样，要修改光照的逻辑，也只需要对光照类的对应部分进行修改就可以了。 再看看现在，不论是改雾的浓度也好还是光照角度光照颜色也好全部都要在一个函数里完成，是多么愚蠢的设计啊。</p>
+<h2 id="2019-11-9"><a href="#2019-11-9" class="headerlink" title="2019/11/9"></a>2019/11/9</h2><p>闲逛的过程中发现了这种浮空的岛屿，虽然有点像彩蛋一样，但是正常来说应该把这种情况消除才对。</p>
+<p><img src="//medioqrity.github.io/2019/08/19/小学期开发记录-后日谈/ScreenshotCompressed.jpg" alt="ScreenshotCompressed"></p>
+<p>于是可以简单地梳理一下想要做的事情:</p>
+<ul>
+<li>优化区块生成算法，确保移动时不会卡顿</li>
+<li>实现远距离投影的影子的边缘模糊效果，即soft shadows</li>
+<li>实现skybox</li>
+<li>实现体积云</li>
+<li>实现体积光</li>
+<li>实现月光与影子</li>
+<li>将渲染替换为deferred shading</li>
+<li>加入对<code>.obj</code>文件的支持</li>
+<li>修复跳跃时头会卡进头顶方块里的bug</li>
+<li>对代码结构进行重构</li>
+</ul>
+<p>想要在更远的将来实现的事情:</p>
+<ul>
+<li>背包系统</li>
+<li>合成与物品栏</li>
+<li>无限高度</li>
+<li>球形的世界与外太空</li>
+<li><del><em>mine</em> kerbal space <em>crash</em> program</del></li>
+</ul>
+<p>甚至给自己找了一点读物，有的还是小学期见过的那种:</p>
+<ul>
+<li><a href="http://codeflow.org/entries/2013/feb/15/soft-shadow-mapping/" target="_blank" rel="noopener">http://codeflow.org/entries/2013/feb/15/soft-shadow-mapping/</a> </li>
+<li><a href="https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter17.html" target="_blank" rel="noopener">https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter17.html</a> </li>
+<li><a href="https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch13.html" target="_blank" rel="noopener">https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch13.html</a> </li>
+</ul>
 
   </div>
 </article>
@@ -175,7 +213,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-08-19"><span class="toc-number">1.</span> <span class="toc-text">2019/08/19</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-08-19"><span class="toc-number">1.</span> <span class="toc-text">2019/08/19</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-11-1"><span class="toc-number">2.</span> <span class="toc-text">2019/11/1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-11-5"><span class="toc-number">3.</span> <span class="toc-text">2019/11/5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-11-9"><span class="toc-number">4.</span> <span class="toc-text">2019/11/9</span></a></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
@@ -239,8 +277,23 @@
 
 <!-- Baidu Analytics -->
 
-<!-- Disqus Comments --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- Disqus Comments -->
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
