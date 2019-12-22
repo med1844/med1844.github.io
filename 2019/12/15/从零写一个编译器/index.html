@@ -6,17 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="A mediocre guy.">
+    <meta name="description" content="施工中 代码已经敲得差不多了。但是由于备考的缘故，暂时不能整理成文。 贴一张AST:  敬请期待。">
+<meta name="keywords" content="编译原理">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从零写一个编译器">
 <meta property="og:url" content="https://medioqrity.github.io/2019/12/15/从零写一个编译器/index.html">
 <meta property="og:site_name" content="Medioqrity&#39;s Blog">
-<meta property="og:description" content="A mediocre guy.">
+<meta property="og:description" content="施工中 代码已经敲得差不多了。但是由于备考的缘故，暂时不能整理成文。 贴一张AST:  敬请期待。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-15T10:18:38.292Z">
+<meta property="og:image" content="https://medioqrity.github.io/2019/12/15/从零写一个编译器/AST.png">
+<meta property="og:updated_time" content="2019-12-22T07:30:15.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从零写一个编译器">
-<meta name="twitter:description" content="A mediocre guy.">
+<meta name="twitter:description" content="施工中 代码已经敲得差不多了。但是由于备考的缘故，暂时不能整理成文。 贴一张AST:  敬请期待。">
+<meta name="twitter:image" content="https://medioqrity.github.io/2019/12/15/从零写一个编译器/AST.png">
     
     
         
@@ -48,8 +51,7 @@
     
     <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
-<body class="max-width mx-auto px3 ltr">
-    
+<body class="max-width mx-auto px3 ltr">    
       <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
   <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -131,13 +133,23 @@
       
 
       
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/编译原理/">编译原理</a>
+    </div>
+
 
     </div>
   </header>
   
 
   <div class="content" itemprop="articleBody">
-    
+    <p><strong><em>施工中</em></strong></p>
+<p>代码已经敲得差不多了。但是由于备考的缘故，暂时不能整理成文。</p>
+<p>贴一张AST:</p>
+<p><img src="//medioqrity.github.io/2019/12/15/从零写一个编译器/AST.png" alt="AST"></p>
+<p>敬请期待。</p>
+
   </div>
 </article>
 
@@ -224,8 +236,23 @@
 
 <!-- Baidu Analytics -->
 
-<!-- Disqus Comments --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- Disqus Comments -->
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
