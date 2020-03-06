@@ -1,176 +1,199 @@
 <!DOCTYPE html>
-<html lang=zh>
-<head><meta name="generator" content="Hexo 3.8.0">
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
-<meta name="keywords" content="java">
-<meta property="og:type" content="article">
-<meta property="og:title" content="小学期开发记录 - 第二周">
-<meta property="og:url" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/index.html">
-<meta property="og:site_name" content="Medioqrity&#39;s Blog">
-<meta property="og:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Chunk.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Chunk_Inside.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/stupid_implementation.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/multiTextureSupplement.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/multiTextureSupplement_other.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/directionalLightBug.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ambientLightBug.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ambientLightBug2.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle.gif">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle_updated.gif">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/perlin_first.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowBug.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMeshCode.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMesh.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/400.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Shadow.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowAcne.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycleWithShadow.gif">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/niceShadow.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/VoxelAO.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/StupidCode.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/playSimplex.gif">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/FullSizeChunk.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowMapIssue.png">
-<meta property="og:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowOnCliff.png">
-<meta property="og:updated_time" content="2019-07-07T15:06:40.499Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="小学期开发记录 - 第二周">
-<meta name="twitter:description" content="2019/07/01感觉一步登天直接写类似于Chunk.generateMesh()这种东西果然还是太不靠谱了。原因如下:  很难debug  做出成果之前要花不少时间   所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。 花了两个小时，经过无数次简化实现之后，终于">
-<meta name="twitter:image" content="https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Chunk.png">
-    
-    
-        
-          
-              <link rel="shortcut icon" href="/images/favicon.ico">
-          
-        
-        
-          
-            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
-          
-        
-        
-          
-            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-          
-        
-    
-    <!-- title -->
-    <title>小学期开发记录 - 第二周</title>
-    <!-- styles -->
-    <link rel="stylesheet" href="/css/style.css">
-    <!-- persian styles -->
-    
-      <link rel="stylesheet" href="/css/rtl.css">
-    
-    <!-- rss -->
-    
-    
-    <link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</head>
-<body class="max-width mx-auto px3 ltr">    
-      <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="header-post">
-  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
-  <span id="menu">
-    <span id="nav">
-      <ul>
-         
-          <li><a href="/">首页</a></li>
-         
-          <li><a href="/archives/">文章</a></li>
-         
-          <li><a href="/about/">关于</a></li>
-        
-      </ul>
-    </span>
-    <br>
-    <span id="actions">
-      <ul>
-        
-        <li><a class="icon" href="/2019/07/08/小学期开发记录-第三周/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
-        
-        
-        <li><a class="icon" href="/2019/06/24/小学期开发记录-第一周/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
-        
-        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
-      </ul>
-      <span id="i-prev" class="info" style="display:none;">上一篇</span>
-      <span id="i-next" class="info" style="display:none;">下一篇</span>
-      <span id="i-top" class="info" style="display:none;">返回顶部</span>
-      <span id="i-share" class="info" style="display:none;">分享文章</span>
-    </span>
-    <br>
-    <div id="share" style="display: none">
-      <ul>
-  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&text=小学期开发记录 - 第二周"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&is_video=false&description=小学期开发记录 - 第二周"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=小学期开发记录 - 第二周&body=Check out this article: https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&name=小学期开发记录 - 第二周&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-</ul>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>小学期开发记录 - 第二周 | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
     </div>
-    <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-07"><span class="toc-number">7.</span> <span class="toc-text">2019/07/07</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
-    </li></div>
-  </span>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
 </div>
 
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
     
-    <div class="content index py4">
-        
-        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-  <header>
+
     
-    <h1 class="posttitle" itemprop="name headline">
-        小学期开发记录 - 第二周
-    </h1>
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">小学期开发记录 - 第二周</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">medioqrity</a>
+                    
 
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2019/07/04&nbsp;&nbsp;0:16:12</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
 
-
-    <div class="meta">
-      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">Medioqrity's Blog</span>
-      </span>
-      
-    <div class="postdate">
-      
-        <time datetime="2019-07-03T16:16:12.000Z" itemprop="datePublished">2019-07-04</time>
-        
-      
-    </div>
-
-
-      
-
-      
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/java/">java</a>
-    </div>
-
-
-    </div>
-  </header>
-  
-
-  <div class="content" itemprop="articleBody">
-    <h2 id="2019-07-01"><a href="#2019-07-01" class="headerlink" title="2019/07/01"></a>2019/07/01</h2><p>感觉一步登天直接写类似于<code>Chunk.generateMesh()</code>这种东西果然还是太不靠谱了。原因如下:</p>
+        <div class="post-content">
+            <h2 id="2019-07-01"><a href="#2019-07-01" class="headerlink" title="2019/07/01"></a>2019/07/01</h2><p>感觉一步登天直接写类似于<code>Chunk.generateMesh()</code>这种东西果然还是太不靠谱了。原因如下:</p>
 <ul>
 <li><p>很难debug</p>
 </li>
@@ -179,9 +202,9 @@
 </ul>
 <p>所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。</p>
 <p>花了两个小时，经过无数次简化实现之后，终于跑出了这么个玩意:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Chunk.png" alt="First_Chunk"></p>
+<p><img src="/.io//First_Chunk.png" alt="First_Chunk"></p>
 <p>实现了最基本的优化，也就是只有与空气接触才会渲染这个方块。所以从内部看是这样的:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Chunk_Inside.png" alt="First_Chunk_Inside"></p>
+<p><img src="/.io//First_Chunk_Inside.png" alt="First_Chunk_Inside"></p>
 <p>结果写到最后还是变成怎样写比较方便怎么来了…可能之前还是太理想主义了?</p>
 <p>虽然看起来挺不错的，但是实际上还是有非常多没有必要的面被渲染了…生成mesh这件事可能要尽早解决。现在想想也许可以通过类似于<code>chunk.addFace(x, y, z, UP, textureID)</code>之类的方法来实现?</p>
 <p>同时还有材质包的问题，本来打算在这一次更新里就把石头放进去，但是对着<code>float[] indices = new float[6 * 6];</code>还是退缩了。对于每个方块都手写这么多坐标我可能真的会疯…</p>
@@ -192,12 +215,12 @@
 <p>在晚上把<code>TextureManager</code>类写好了。其实最后发现，它所做的事情很简单，就是输入每个面的贴图位置，然后生成对应方块的<code>textureCoord</code>数组。这个东西用Python写还是很简单的:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">SIZE = <span class="number">16</span></span><br><span class="line">FULL_SIZE = <span class="number">256</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Face</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, texture_index, coord)</span>:</span></span><br><span class="line">        print(<span class="string">', '</span>.join([<span class="string">"new Vector3d%s"</span> % str(_) <span class="keyword">for</span> _ <span class="keyword">in</span> coord]))</span><br><span class="line">        self.coord = coord</span><br><span class="line">        x1 = ((texture_index // (FULL_SIZE // SIZE)) * SIZE) / FULL_SIZE</span><br><span class="line">        y1 = ((texture_index % (FULL_SIZE // SIZE)) * SIZE) / FULL_SIZE</span><br><span class="line">        x2 = x1 + SIZE / FULL_SIZE</span><br><span class="line">        y2 = y1 + SIZE / FULL_SIZE</span><br><span class="line">        self.textureCoord = [(y, x) <span class="keyword">for</span> x <span class="keyword">in</span> [x1, x2] <span class="keyword">for</span> y <span class="keyword">in</span> [y1, y2]]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self)</span>:</span></span><br><span class="line">        a, b, c, d = self.coord</span><br><span class="line">        e, f, g, h = self.textureCoord</span><br><span class="line">        <span class="keyword">return</span> a + c + d + a + b + d, e + g + h + e + f + h</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Texture</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.faces = []</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, up, down, left, right, front, back)</span>:</span></span><br><span class="line">        self.faces.append(Face(up, [</span><br><span class="line">            (x, <span class="number">.5</span>, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(down, [</span><br><span class="line">            (x, <span class="number">-.5</span>, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(left, [</span><br><span class="line">            (x, y, <span class="number">-.5</span>) <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(right, [</span><br><span class="line">            (x, y, <span class="number">.5</span>) <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(front, [</span><br><span class="line">            (<span class="number">.5</span>, x, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(back, [</span><br><span class="line">            (<span class="number">-.5</span>, x, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        position, texture_coord = [], []</span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> self.faces:</span><br><span class="line">            <span class="keyword">assert</span> isinstance(f, Face)</span><br><span class="line">            pos, tex = f.get()</span><br><span class="line">            position.extend(pos)</span><br><span class="line">            texture_coord.extend(tex)</span><br><span class="line">        <span class="keyword">return</span> position, texture_coord</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pprint</span><span class="params">(position, texture_coord)</span>:</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">    pos_render, tex_render = [], []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(position) // <span class="number">3</span>):</span><br><span class="line">        pos_render.append(<span class="string">', '</span>.join([str(position[i * <span class="number">3</span> + d]) + <span class="string">'f'</span> <span class="keyword">for</span> d <span class="keyword">in</span> range(<span class="number">3</span>) <span class="keyword">if</span> i + d &lt; len(position)]))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(texture_coord) // <span class="number">2</span>):</span><br><span class="line">        tex_render.append(<span class="string">', '</span>.join([str(texture_coord[i * <span class="number">2</span> + d]) + <span class="string">'f'</span> <span class="keyword">for</span> d <span class="keyword">in</span> range(<span class="number">2</span>) <span class="keyword">if</span> i + d &lt; len(texture_coord)]))</span><br><span class="line">    print(<span class="string">', \n'</span>.join(pos_render))</span><br><span class="line">    print(<span class="string">', \n'</span>.join(tex_render))</span><br><span class="line">    <span class="comment"># assert len(pos_render) == len(tex_render)</span></span><br><span class="line">    <span class="comment"># for i in range(len(pos_render)):</span></span><br><span class="line">    <span class="comment">#     print("%s: %s" % (pos_render[i], tex_render[i]))</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">l = [Texture() <span class="keyword">for</span> _ <span class="keyword">in</span> range(<span class="number">10</span>)]</span><br><span class="line">pprint(*l[<span class="number">1</span>].get(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>))  <span class="comment"># stone</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">pprint(*l[2].get(1, 3, 2, 2, 2, 2))  # grass</span></span><br><span class="line"><span class="string">pprint(*l[4].get(4, 4, 4, 4, 4, 4))  # cobblestone</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
 <p>不过对于java来说，因为经验还是太少了，于是用最蠢的办法实现了同样的逻辑:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/stupid_implementation.png" alt="stupid_implementation"></p>
+<p><img src="/.io//stupid_implementation.png" alt="stupid_implementation"></p>
 <p>个人还是不太喜欢这种需要复制粘贴很多次才能实现的东西，本能地有畏难心理，可能也只是我的实现方法太蠢了。</p>
 <p>然后稍微对Chunk类之类的改一改就可以看到结果啦！</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/multiTextureSupplement.png" alt="multiTextureSupplement"></p>
+<p><img src="/.io//multiTextureSupplement.png" alt="multiTextureSupplement"></p>
 <p>来一张近照:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/multiTextureSupplement_other.png" alt="multiTextureSupplement_other"></p>
+<p><img src="/.io//multiTextureSupplement_other.png" alt="multiTextureSupplement_other"></p>
 <p>下一步本来应该是研究地形生成，但是可能应该先往光照，阴影，skybox方面走一走。至少卖相还是要好看点的嘛233</p>
 <h2 id="2019-07-02"><a href="#2019-07-02" class="headerlink" title="2019/07/02"></a>2019/07/02</h2><p>看到这个日期突然想起来在中小学的时候已经是放假的第二天了。</p>
 <p>其实只要我愿意的话，我也可以把小学期过得像真正的暑假一样。网课和华为云的题目，两个小时内就能全部解决。java也只需要稍微学一学就能很快上手，毕竟c++和python的底子虽说浅薄，但还是有的。</p>
@@ -215,28 +238,28 @@
 <hr>
 <p>结果debug了一整天都没有找出怎么解决问题来。</p>
 <p>现在虽然平行光实现了，但是通篇全是bug:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/directionalLightBug.png" alt="directionalLightBug"></p>
+<p><img src="/.io//directionalLightBug.png" alt="directionalLightBug"></p>
 <p>对<code>fragment.fsh</code>稍微做了点手脚，来测试到底是哪出了问题:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setupColours(material, outTextureCoord);</span><br><span class="line"></span><br><span class="line">    vec4 diffuseSpecular = calcDirectionalLight(directionalLight, vertexPos, vertexNormal);</span><br><span class="line"></span><br><span class="line">    fragColor = ambientC * vec4(ambientLight, <span class="number">1</span>) + diffuseSpecular;</span><br><span class="line">    fragColor = vec4(ambientLight, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其中<code>ambientLight</code>是一个<code>uniform vec3</code>变量。按照<code>fragColor = vec4(ambientLight, 1)</code>，应该所有方块都会被渲染成<code>ambientLight</code>的颜色，但是结果却是一片黑色:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ambientLightBug.png" alt="ambientLightBug"></p>
+<p><img src="/.io//ambientLightBug.png" alt="ambientLightBug"></p>
 <p>它照理说应该在renderer初始化的时候就被赋值了:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Renderer</span> </span>&#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Vector3f ambientLight = <span class="keyword">new</span> Vector3f(.<span class="number">3f</span>, .<span class="number">3f</span>, .<span class="number">3f</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Camera camera)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        shader = <span class="keyword">new</span> Shader();</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        shader.createUniform(<span class="string">"ambientLight"</span>);</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        shader.setUniform(<span class="string">"ambientLight"</span>, ambientLight);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如果把<code>fragment.fsh</code>改成这样:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setupColours(material, outTextureCoord);</span><br><span class="line"></span><br><span class="line">    vec4 diffuseSpecular = calcDirectionalLight(directionalLight, vertexPos, vertexNormal);</span><br><span class="line"></span><br><span class="line">    fragColor = ambientC * vec4(ambientLight, <span class="number">1</span>) + diffuseSpecular;</span><br><span class="line">    fragColor = vec4(<span class="number">.3</span>f, <span class="number">.3</span>f, <span class="number">.3</span>f, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>就会得到正确的结果:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ambientLightBug2.png" alt="ambientLightBug2"></p>
+<p><img src="/.io//ambientLightBug2.png" alt="ambientLightBug2"></p>
 <p>这到底是为什么呢…可能mc就是因为这个才放弃的光影?</p>
 <h2 id="2019-07-03"><a href="#2019-07-03" class="headerlink" title="2019/07/03"></a>2019/07/03</h2><p>看起来好像是因为<code>setUniform</code>距离<code>setDirectionalLight</code>太远了导致的，因为我跟着lwjglbook的代码，把光照部分放进<code>renderLight()</code>函数里就好了…</p>
 <p>太玄学了…不过好在最后还是把光照跑出来了。顺手就写了个日夜交替:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle.gif" alt="dayNightCycle"></p>
+<p><img src="/.io//dayNightCycle.gif" alt="dayNightCycle"></p>
 <p>夜晚的时候方块的各个面还是不太好分辨，回头稍微改改。</p>
 <hr>
 <p>然后一整天都花在完成课内，摸鱼，以及优化日夜交替上了。说好的阴影也没来得及做。</p>
 <p>首先是通过<code>glEnable(GL_CULL_FACE)</code>减少了一半左右的需要渲染的面数。</p>
 <p>一开始因为当初<code>TextureManager</code>是乱写的，于是经常会出现定义顺序是顺时针从而导致有些面在应该渲染的时候却没有被渲染的惨状。图我就不贴了，实在是有点精神污染。</p>
 <p>之后是对日夜交替的优化，不多说，直接贴一张最新的成品:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycle_updated.gif" alt="dayNightCycle_updated"></p>
+<p><img src="/.io//dayNightCycle_updated.gif" alt="dayNightCycle_updated"></p>
 <p>首先是增加了背景颜色的变化。这主要还是通过根据当前时间来混合颜色而做到的:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Vector3f <span class="title">mixColor</span><span class="params">(Vector3f colorA, Vector3f colorB, </span></span></span><br><span class="line"><span class="function"><span class="params">                                <span class="keyword">double</span> mixRatio)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">assert</span> <span class="number">0</span> &lt;= mixRatio &amp;&amp; mixRatio &lt;= <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">float</span> r = (<span class="keyword">float</span>) (colorA.x + (colorB.x - colorA.x) * mixRatio);</span><br><span class="line">    <span class="keyword">float</span> g = (<span class="keyword">float</span>) (colorA.y + (colorB.y - colorA.y) * mixRatio);</span><br><span class="line">    <span class="keyword">float</span> b = (<span class="keyword">float</span>) (colorA.z + (colorB.z - colorA.z) * mixRatio);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Vector3f(r, g, b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后，仔细观察夜晚时的方块，相比之前的版本，不同的面会有不同的亮度。</p>
@@ -249,7 +272,7 @@
 </ul>
 <p>其实仔细一看的话，今天并没有做什么事情…</p>
 <p>顺便，队友开始学习怎么使用perlin噪声来产生地形了。目前的效果是这样的:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/perlin_first.png" alt="perlin_first"></p>
+<p><img src="/.io//perlin_first.png" alt="perlin_first"></p>
 <p>因为这是一个分支，所以暂时还没有最新的日夜交替效果。</p>
 <p>我接下来会继续研究实现动态阴影，并且抽空研究怎么使用perlin噪声生成地形。</p>
 <p>要做的还有很多，像是:</p>
@@ -275,7 +298,7 @@
 <p>于是这要求我们新建一堆东西，包括对texture类进行修改以支持空材质供shadow map使用，或者是全新的shadow.vsh和shadow.fsh。考虑到工作量，我决定还是留到白天再做。</p>
 <hr>
 <p>然后接下来一整天都浪费在这个东西上面了，并且做出来的成果，虽然有，但全是bug:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowBug.png" alt="shadowBug"></p>
+<p><img src="/.io//shadowBug.png" alt="shadowBug"></p>
 <p>这玩意可以说就是照抄教程吧。毕竟原理懂了之后就只剩下实现了。</p>
 <p>但是因为教程的结构和我们的项目的结构不一样，所以即便是抄也得搞明白教程的每个语句在做什么才行。</p>
 <p>然后就出现了这种莫名奇妙并且怎么都找不到原因的bug。</p>
@@ -292,34 +315,34 @@
 <p>不过最终还是暂时放弃了做阴影，先花了些时间把队友的初版地图生成器Merge了。</p>
 <p>当区块数增加后，FPS也下降到了30多。要知道当时只有$4 \times 4 = 16$个区块啊。</p>
 <p>于是我就花了点时间把<code>Chunk.generateMesh()</code>给写好了:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMeshCode.png" alt="ChunkMeshCode"></p>
+<p><img src="/.io//ChunkMeshCode.png" alt="ChunkMeshCode"></p>
 <p>由于现在每个区块暂时还是$16 \times 16 \times 16$的大小，所以现在100个区块只需要渲染100个Mesh就可以啦！而之前的话，只要是与空气接触的方块，每个都会被调用一次render函数。100个区块，就是至少16000个<code>render()</code>，肯定是吃不消的。更不用说那些地形崎岖的区块了。</p>
 <p>配合<code>glEnable(GL_CULL_FACE)</code>，FPS已经回到60了，可喜可贺:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ChunkMesh.png" alt="ChunkMesh"></p>
+<p><img src="/.io//ChunkMesh.png" alt="ChunkMesh"></p>
 <p>可以注意到几乎每个区块的侧面都没有被渲染。这是通过<code>ChunkManager.getBlock(x, y, z)</code>做到的，它可以跨区块获取方块数据。有了这样的优化后，渲染的面数相比之前又少了非常多。</p>
 <p>但是我不能理解的是为什么区块之间隔了这么远。</p>
 <p>既然我记录了每个Chunk的Chunk坐标，那么它的世界坐标显然是<code>new Vector3f(x &lt;&lt; 4, 0, z &lt;&lt; 4)</code>吧?</p>
 <p>找了半天bug之后发现原来是因为block本身存的是世界坐标…所以chunk的世界坐标只要设成<code>0, 0, 0</code>就行了…</p>
 <p>贴一张400个区块的截图！</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/400.png" alt="400"></p>
+<p><img src="/.io//400.png" alt="400"></p>
 <p>接下来该回到阴影啦！虽然阴影真的很烦人，但是它能够做到的效果是真的非常迷人的。</p>
 <p>我已经迫不及待想要看到夕阳投下的阴影笼罩这片丘陵的样子了。</p>
 <h2 id="2019-07-06"><a href="#2019-07-06" class="headerlink" title="2019/07/06"></a>2019/07/06</h2><p>最后发现问题出在了calcShadow上，于是在凌晨搞出了第一个可以正常跑的shadow:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/First_Shadow.png" alt="First_Shadow"></p>
+<p><img src="/.io//First_Shadow.png" alt="First_Shadow"></p>
 <p>完全重写了原本教程里的<code>calcShadow(vec4)</code>，并且做了最最简单的shadow acne去除工作:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">calcShadow</span><span class="params">(vec4 position)</span> </span>&#123;</span><br><span class="line">    vec3 projCoords = position.xyz / position.w;</span><br><span class="line">    projCoords = projCoords * <span class="number">0.5</span> + <span class="number">0.5</span>;</span><br><span class="line">    <span class="keyword">float</span> closestDepth = texture(shadowMap, projCoords.xy).r;</span><br><span class="line">    <span class="keyword">float</span> currentDepth = projCoords.z;</span><br><span class="line">    <span class="keyword">return</span> currentDepth - closestDepth &gt; <span class="number">1e-3</span> ? <span class="number">0.0</span> : <span class="number">1.0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这代码的可读性简直高到爆炸了好吗！！</p>
 <p>可能会有人想问<code>currentDepth - closestDepth &gt; 1e-3</code>为什么不直接写成<code>currentDepth &gt; closestDepth</code>，对此我就贴一张图:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowAcne.png" alt="ShadowAcne"></p>
+<p><img src="/.io//ShadowAcne.png" alt="ShadowAcne"></p>
 <p><em><del>感受Shadow Acne的力量吧！</del></em></p>
 <p>其实细微处还是有不少问题存在的，不过这些就留到稍微靠后一点再优化。先考虑怎么正确的设置<code>directionalLight</code>的<code>viewMatrix</code>，毕竟让阴影动起来可能更重要，也更震撼。</p>
 <p>肝了一小段时间之后做出了动态的阴影，顺带做成了GIF。为了限制文件大小只能把画面和质量都砍了…</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/dayNightCycleWithShadow.gif" alt="dayNightCycleWithShadow"></p>
+<p><img src="/.io//dayNightCycleWithShadow.gif" alt="dayNightCycleWithShadow"></p>
 <p>不过意境在那就足够了，对吧。; )</p>
 <hr>
 <p>能够睡到自然醒，然后躺在床上玩手机直到饭点再下床，真是难得的奢侈啊。</p>
 <p>根据<a href="https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank" rel="noopener">这个教程</a>的优化方法，把阴影的边缘改得至少能够让人接受了:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/niceShadow.png" alt="niceShadow"></p>
+<p><img src="/.io//niceShadow.png" alt="niceShadow"></p>
 <p>阴影的效果加上之后，总归还是让人感觉非常不满意，因为相比原版MC少了平滑光照。</p>
 <p>这使得方块之间的关系还是不够明确。所以我去查了一下，最后得知只需要实现Ambient Occlusion就可以啦。</p>
 <blockquote>
@@ -330,21 +353,21 @@
 <p>不过要实现SSAO的话，需要先把着色器部分改成Deferred Shading，目前来说有点没必要。</p>
 <p>于是就采用了相对来说更加投机取巧的办法，也就是根据voxel的特性，直接根据方块所处位置周围的情况来确定AO就可以了。这甚至可以在生成chunk的时候就顺带完成。</p>
 <p> 贴一张结果:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/VoxelAO.png" alt="VoxelAO"></p>
+<p><img src="/.io//VoxelAO.png" alt="VoxelAO"></p>
 <p>看起来有质感多了！相比之下，用于实现它的代码是真的写的毫无质感:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/StupidCode.png" alt="StupidCode"></p>
+<p><img src="/.io//StupidCode.png" alt="StupidCode"></p>
 <p>下一步就该把太阳和月亮放进天空啦！</p>
 <hr>
 <p>然后就把自己的脸给打了，跑去研究了一下Simplex Noise然后整出了这个:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/playSimplex.gif" alt="playSimplex"></p>
+<p><img src="/.io//playSimplex.gif" alt="playSimplex"></p>
 <p>FPS瞬间爆炸啊！！</p>
 <p>太可怕了，这种程度的地形对MC来说不是塞牙缝的吗！！</p>
 <p>自闭了，看来优化之路还远得很啊…</p>
 <p>贴一下全景图:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/FullSizeChunk.png" alt="FullSizeChunk"></p>
+<p><img src="/.io//FullSizeChunk.png" alt="FullSizeChunk"></p>
 <hr>
 <p>跑完步回来近距离欣赏了一会，发现为了能够让Shadow Map正常渲染远处的影子，所以正投影矩阵必须开得特别大。这样，就会导致阴影的质量非常低:</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/shadowMapIssue.png" alt="shadowMapIssue"></p>
+<p><img src="/.io//shadowMapIssue.png" alt="shadowMapIssue"></p>
 <p>有三个解决方法:</p>
 <ul>
 <li>实现Cascaded Shadowing</li>
@@ -353,7 +376,7 @@
 </ul>
 <p>考虑到实现Cascaded Shadowing实在是过于繁琐<del>（其实就是懒+心累）</del>，直接把后两个优化做了。</p>
 <p>在一周的最后，来好好欣赏一下这一周的努力的成果吧。</p>
-<p><img src="//medioqrity.github.io/2019/07/04/小学期开发记录-第二周/ShadowOnCliff.png" alt="ShadowOnCliff"></p>
+<p><img src="/.io//ShadowOnCliff.png" alt="ShadowOnCliff"></p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li>关于光照:<ul>
 <li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert%27s_cosine_law</a></li>
@@ -381,109 +404,46 @@
 </li>
 </ul>
 
-  </div>
-</article>
-
-
+        </div>
 
         
-          <div id="footer-post-container">
-  <div id="footer-post">
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/java/"># java</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/07/08/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E4%B8%89%E5%91%A8/">小学期开发记录 - 第三周</a>
+            
+            
+            <a class="next" rel="next" href="/2019/06/24/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E4%B8%80%E5%91%A8/">小学期开发记录 - 第一周</a>
+            
+        </section>
 
-    <div id="nav-footer" style="display: none">
-      <ul>
-         
-          <li><a href="/">首页</a></li>
-         
-          <li><a href="/archives/">文章</a></li>
-         
-          <li><a href="/about/">关于</a></li>
-        
-      </ul>
-    </div>
 
-    <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-01"><span class="toc-number">1.</span> <span class="toc-text">2019/07/01</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-02"><span class="toc-number">2.</span> <span class="toc-text">2019/07/02</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-03"><span class="toc-number">3.</span> <span class="toc-text">2019/07/03</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-04"><span class="toc-number">4.</span> <span class="toc-text">2019/07/04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-05"><span class="toc-number">5.</span> <span class="toc-text">2019/07/05</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-06"><span class="toc-number">6.</span> <span class="toc-text">2019/07/06</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2019-07-07"><span class="toc-number">7.</span> <span class="toc-text">2019/07/07</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number"></span> <span class="toc-text">References</span></a>
-    </li></div>
-
-    <div id="share-footer" style="display: none">
-      <ul>
-  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&text=小学期开发记录 - 第二周"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&is_video=false&description=小学期开发记录 - 第二周"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=小学期开发记录 - 第二周&body=Check out this article: https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&title=小学期开发记录 - 第二周"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://medioqrity.github.io/2019/07/04/小学期开发记录-第二周/&name=小学期开发记录 - 第二周&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-</ul>
-
-    </div>
-
-    <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
-        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
-    </div>
-
-  </div>
+    </article>
 </div>
 
-        
-        <footer id="footer">
-  <div class="footer-left">
-    Copyright &copy; 2020 medioqrity
-  </div>
-  <div class="footer-right">
-    <nav>
-      <ul>
-         
-          <li><a href="/">首页</a></li>
-         
-          <li><a href="/archives/">文章</a></li>
-         
-          <li><a href="/about/">关于</a></li>
-        
-      </ul>
-    </nav>
-  </div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
 </footer>
 
-    </div>
-    <!-- styles -->
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
-<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
-
-    <!-- jquery -->
-<script src="/lib/jquery/jquery.min.js"></script>
-<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
-<script src="/js/main.js"></script>
-<!-- search -->
-
-<!-- Google Analytics -->
-
-<!-- Baidu Analytics -->
-
-<!-- Disqus Comments -->
-
-
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
