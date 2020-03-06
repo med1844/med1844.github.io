@@ -143,13 +143,6 @@ template {
   display: none;
 }
 @font-face {
-  font-family: 'lanting';
-  src: url("../fonts/lanting/lanting.eot"); /* IE9 */
-  src: url("../fonts/lanting/lanting.eot?#iefix") format('embedded-opentype'), /* IE6-IE8 */ url("../fonts/lanting/lanting.woff2") format('woff2'), url("../fonts/lanting/lanting.woff") format('woff'), url("../fonts/lanting/lanting.ttf") format('truetype'); /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
-  font-weight: 300;
-  font-display: swap;
-}
-@font-face {
   font-family: 'Roboto Slab';
   font-style: normal;
   font-weight: 400;
@@ -164,7 +157,7 @@ template {
   src: local(''), url("../fonts/fira-code-v8-latin-regular.eot?#iefix") format('embedded-opentype'), url("../fonts/fira-code-v8-latin-regular.woff2") format('woff2'), url("../fonts/fira-code-v8-latin-regular.woff") format('woff'), url("../fonts/fira-code-v8-latin-regular.ttf") format('truetype'), url("../fonts/fira-code-v8-latin-regular.svg#FiraCode") format('svg'); /* Legacy iOS */
 }
 html {
-  font-family: 'Roboto Slab', Source Han Sans, 'Microsoft Jhenghei', Lantinghei SC, 'lanting', PingFang SC, Seguo UI, Microsoft Yahei, Arial;
+  font-family: 'Roboto Slab', Source Han Sans, 'Microsoft Jhenghei', PingFang SC, Seguo UI, Microsoft Yahei, Arial;
 }
 html::-webkit-scrollbar {
   width: 10px;

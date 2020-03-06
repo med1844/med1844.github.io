@@ -232,44 +232,51 @@
         </header>
 
         <div class="post-content">
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>虽然在很久很久以前刚入门ACM的时候就已经知道辗转相除法的存在，并且也用GCD解了不少题，不过说实话辗转相除法的原理一直不是很清楚。</p>
+            <h2 id="前言">前言</h2>
+<p>虽然在很久很久以前刚入门ACM的时候就已经知道辗转相除法的存在，并且也用GCD解了不少题，不过说实话辗转相除法的原理一直不是很清楚。</p>
 <p>直到最近做到这样一道题: <a href="https://codeforces.com/contest/343/problem/A" target="_blank" rel="noopener">Codeforces - 343A</a>，本以为是一道憨批构造，结果构造了两个小时都没出来，立刻自闭。</p>
 <p>看了题解之后当即觉得基础数论白学了。毕竟能够证明$\gcd(a, b) = \gcd(b, a \bmod b)$并不代表对其有直观的理解。</p>
 <p>后来终于在中文维基上找到了辗转相除法的直观展示，出于加强记忆以及造福他人的缘由，决定自己也多做几个例子来展示。</p>
-<h2 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h2><p>首先通过几个例子图解辗转相除法，以直观地进行理解其正确性。</p>
+<h2 id="图解">图解</h2>
+<p>首先通过几个例子图解辗转相除法，以直观地进行理解其正确性。</p>
 <p>在理解了其直观含义后，再对Codeforces - 343A进行讲解。</p>
-<h3 id="第一个例子"><a href="#第一个例子" class="headerlink" title="第一个例子"></a>第一个例子</h3><p>无中生有地想两个数字出来作为例子是很困难的（大嘘），所以我请出了我最信赖的随机数生成器（棒读）:</p>
+<h3 id="第一个例子">第一个例子</h3>
+<p>无中生有地想两个数字出来作为例子是很困难的（大嘘），所以我请出了我最信赖的随机数生成器（棒读）:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(randint(<span class="number">1</span>, <span class="number">20</span>), randint(<span class="number">1</span>, <span class="number">20</span>))</span><br><span class="line"><span class="number">12</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
 <p>于是我们将通过一个$12 \times 10$的矩形来理解这一算法:</p>
-<p><img src="/.io//12by10.png" alt="12by10"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C12by10.png" alt="12by10"></p>
 <p>$\min(12, 10) = 10$，所以，我们从中削去$10\times 10$大小的矩形:</p>
-<p><img src="/.io//12by10_1.png" alt="12by10_1"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C12by10_1.png" alt="12by10_1"></p>
 <p>现在我们还剩下一个$2 \times 10$的矩形。可以认为问题被转化成了求$\gcd(2, 10)$。</p>
 <p>$\min(2, 10) = 2$，所以我们从中削去尽可能多的$2\times 2$的矩形:</p>
-<p><img src="/.io//12by10_2.png" alt="12by10_2"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C12by10_2.png" alt="12by10_2"></p>
 <p>简直完美！最后还剩下$2\times 2$的矩形。这说明$\gcd(12, 10) = 2$，因为$\gcd(2, 2) = 2$。</p>
-<h3 id="第二个例子"><a href="#第二个例子" class="headerlink" title="第二个例子"></a>第二个例子</h3><p>上一个例子的$\gcd = 2$，所以这一次我们来看看$\gcd = 1$的例子:</p>
+<h3 id="第二个例子">第二个例子</h3>
+<p>上一个例子的$\gcd = 2$，所以这一次我们来看看$\gcd = 1$的例子:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(randint(<span class="number">1</span>, <span class="number">20</span>), randint(<span class="number">1</span>, <span class="number">20</span>))</span><br><span class="line"><span class="number">17</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
-<p><img src="/.io//17by5.png" alt="17by5"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5.png" alt="17by5"></p>
 <p>首先，重复上面的步骤，首先尽可能多地削去$5 \times 5$:</p>
-<p><img src="/.io//17by5_2.png" alt="17by5_2"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_2.png" alt="17by5_2"></p>
 <p>可以看到蓝色的部分变成了$2 \times 5$，等价于将问题转化为$\gcd(2, 5)$了。</p>
 <p>现在我们继续削去$2 \times 2$:</p>
-<p><img src="/.io//17by5_3.png" alt="17by5_3"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_3.png" alt="17by5_3"></p>
 <p>可以看到蓝色的部分变成了$2 \times 1$，等价于将问题转化为$\gcd(2, 1)$了。</p>
 <p>现在我们继续削去$1\times 1$:</p>
-<p><img src="/.io//17by5_4.png" alt="17by5_4"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_4.png" alt="17by5_4"></p>
 <p>显然$\gcd(1, 1) = 1$，这说明$\gcd(17, 5) = 1$。</p>
-<h3 id="最后一个例子"><a href="#最后一个例子" class="headerlink" title="最后一个例子"></a>最后一个例子</h3><p>只看到最大公约数为$1$和$2$总觉得还是不太够，所以这一次试试看$\gcd = 7$的:</p>
+<h3 id="最后一个例子">最后一个例子</h3>
+<p>只看到最大公约数为$1$和$2$总觉得还是不太够，所以这一次试试看$\gcd = 7$的:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(randint(<span class="number">1</span>, <span class="number">60</span>), randint(<span class="number">1</span>, <span class="number">60</span>))</span><br><span class="line"><span class="number">35</span> <span class="number">14</span></span><br></pre></td></tr></table></figure>
 <p><em>（我才不会告诉你们为了凑出这俩数字随机了好多次呢）</em></p>
-<p><img src="/.io//35by14.png" alt="35by14"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14.png" alt="35by14"></p>
 <p>挖掉$14 \times 14$:</p>
-<p><img src="/.io//35by14_1.png" alt="35by14_1"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_1.png" alt="35by14_1"></p>
 <p>问题转化成了$\gcd(14, 7)$。挖掉$7\times 7$:</p>
-<p><img src="/.io//35by14_2.png" alt="35by14_2"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_2.png" alt="35by14_2"></p>
 <p>问题转化成了$\gcd(7, 7) = 7$。于是$\gcd(35, 14) = 7$。</p>
-<h2 id="Codeforces-343A"><a href="#Codeforces-343A" class="headerlink" title="Codeforces 343A"></a>Codeforces 343A</h2><h3 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h3><p>你有无限个阻值为$1\Omega$的电阻。</p>
+<h2 id="Codeforces-343A">Codeforces 343A</h2>
+<h3 id="题意">题意</h3>
+<p>你有无限个阻值为$1\Omega$的电阻。</p>
 <p>你要组成一个阻值为$\displaystyle\frac{a}{b}\Omega$的元件。</p>
 <p>一个元件的定义为:</p>
 <ol>
@@ -278,9 +285,12 @@
 <li>一个电阻与另一个元件并联</li>
 </ol>
 <p>请问最少需要多少个电阻?</p>
-<h3 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h3><p>一行，两个整数$a, b ~ (1\le a, b \le 10^{18})$。</p>
-<h3 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h3><p>一行，一个整数，代表答案。</p>
-<h3 id="解"><a href="#解" class="headerlink" title="解"></a>解</h3><p>首先，假定我们现在已经用$k$个电阻组成了一个阻值为$\frac{c}{d}$的元件。</p>
+<h3 id="输入">输入</h3>
+<p>一行，两个整数$a, b ~ (1\le a, b \le 10^{18})$。</p>
+<h3 id="输出">输出</h3>
+<p>一行，一个整数，代表答案。</p>
+<h3 id="解">解</h3>
+<p>首先，假定我们现在已经用$k$个电阻组成了一个阻值为$\frac{c}{d}$的元件。</p>
 <p>那么通过增加一个电阻，也就是使用$k+1$个电阻，我们可以获得:</p>
 <ul>
 <li>串联，$\displaystyle \frac{c}{d} + 1 = \frac{c+d}{d}$</li>
@@ -288,18 +298,20 @@
 </ul>
 <p>现在我们把它跟$\gcd$联系起来。</p>
 <p>我们使用最后一个例子来加以说明，我们的目标分数是$\displaystyle\frac{35}{14}$。</p>
-<p><img src="/.io//35by14_1.png" alt="35by14_1"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_1.png" alt="35by14_1"></p>
 <p>我们从目标分数向回推，也就是说假定倒数第二步时的分数为$\displaystyle\frac{c}{d}$，那么显然有:</p>
-<script type="math/tex; mode=display">
-\frac{c + d}{d} = \frac{35}{14}\\
-\therefore c = 35 - 14 = 21</script><p>所以上一步的分数是$\displaystyle\frac{21}{14}$，而这正等于上图去掉红色正方形之后的矩形:</p>
-<p><img src="/.io//35by14_3.png" alt="35by14_3"></p>
+<p>$$<br>
+\frac{c + d}{d} = \frac{35}{14}\<br>
+\therefore c = 35 - 14 = 21<br>
+$$</p>
+<p>所以上一步的分数是$\displaystyle\frac{21}{14}$，而这正等于上图去掉红色正方形之后的矩形:</p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_3.png" alt="35by14_3"></p>
 <p>所以，如果把这一过程反过来考虑的话，可以认为我们通过在水平方向上增加了一个$14 \times 14$大小的正方形，使得分子增加了$14$。</p>
 <p>再考虑倒数第二个例子:</p>
-<p><img src="/.io//17by5_5.png" alt="17by5_5"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_5.png" alt="17by5_5"></p>
 <p>由于一行的宽度为$2$，一列的长度为$3$，所以现在我们拥有的分数是$\displaystyle \frac{2}{3}$。</p>
 <p>当我们去掉淡灰色的$2\times 2$矩形之后，我们就会得到$\displaystyle \frac{2}{1}$:</p>
-<p><img src="/.io//17by5_6.png" alt="17by5_6"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_6.png" alt="17by5_6"></p>
 <p>所以，如果像上面一样反过来考虑的话，可以认为我们通过在竖直方向上增加一个$2 \times 2$大小的正方形，使得分母增加了$2$。</p>
 <p>事实上:</p>
 <ul>
@@ -311,10 +323,12 @@
 <p>注意，这里是减法，而不是<strong>取模</strong>次数。</p>
 <p>这很好理解，因为从$\displaystyle \frac{7}{14}$到$\displaystyle \frac{35}{14}$需要增加<strong>两个电阻</strong>，而通过取模，从$\displaystyle\frac{35}{14}$到$\displaystyle\frac{7}{14}$只需要<strong>一次运算</strong>:$35 \equiv 7 \bmod 14.$</p>
 <p><em>当然，通过上面的论证你也会发现，其实答案就等于<strong>最后所划分出来的正方形的个数</strong>。</em></p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> ll = <span class="keyword">long</span> <span class="keyword">long</span>;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">gcd</span><span class="params">(ll a, ll b)</span> </span>&#123;</span><br><span class="line">    ll temp, cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (b) &#123;</span><br><span class="line">        cnt += a / b;</span><br><span class="line">        a %= b;</span><br><span class="line">        swap(a, b);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cnt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ios::sync_with_stdio(<span class="literal">false</span>);</span><br><span class="line">    ll a, b;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; a &gt;&gt; b;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; gcd(a, b) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="正确性证明"><a href="#正确性证明" class="headerlink" title="正确性证明"></a>正确性证明</h2><p>上面只解释了为什么通过这种方法可以获得正确的解，但是并没有说明<strong>为什么是正确的</strong>。</p>
+<h3 id="代码">代码</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> ll = <span class="keyword">long</span> <span class="keyword">long</span>;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">gcd</span><span class="params">(ll a, ll b)</span> </span>&#123;</span><br><span class="line">    ll temp, cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (b) &#123;</span><br><span class="line">        cnt += a / b;</span><br><span class="line">        a %= b;</span><br><span class="line">        swap(a, b);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cnt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ios::sync_with_stdio(<span class="literal">false</span>);</span><br><span class="line">    ll a, b;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; a &gt;&gt; b;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; gcd(a, b) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="正确性证明">正确性证明</h2>
+<p>上面只解释了为什么通过这种方法可以获得正确的解，但是并没有说明<strong>为什么是正确的</strong>。</p>
 <p>首先引入$\text{Calkin-Wilf Tree}$:</p>
-<p><img src="/.io//Calkin-Wilf.png" alt="Calkin-Wilf"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5CCalkin-Wilf.png" alt="Calkin-Wilf"></p>
 <p>这棵树的特点是:</p>
 <ul>
 <li>它是一棵二叉树，但不是二叉搜索树。</li>
@@ -327,7 +341,7 @@
 <li>向右子节点走，等于增加一个串联电阻 / 在水平方向上放置一个$b \times b$大小的正方形。</li>
 </ul>
 <p>由树的性质可知，从一个节点到另一个节点的路径有且只有一条。所以，从任何一个分数，也就是树中的某个节点出发，到$\displaystyle \frac{1}{1}$，也就是根节点，<strong>有且只有一条路径</strong>。</p>
-<p>这说明，<strong>答案总是存在，并且唯一</strong>。所以，题干中要求的”使用电阻数<em>最少</em>“，可以说只是迷惑人的。</p>
+<p>这说明，<strong>答案总是存在，并且唯一</strong>。所以，题干中要求的&quot;使用电阻数<em>最少</em>&quot;，可以说只是迷惑人的。</p>
 <p>因为答案是唯一的，所以我们求出来的值就一定是正确的，而不用去担心是否还有用更少电阻实现的可能。</p>
 <p>同时你也应该注意到了，由于路径本身就说明了要增加的是并联电阻还是串联电阻，所以我们甚至可以画出对应的电路图来！</p>
 <p><em>P.S:Calkin-Wilf Tree是一颗二叉树这一点也在一定程度上直观地说明了为什么辗转相除法的时间复杂度是</em>$\mathcal{O}(\log n)$<em>级别的。</em></p>
@@ -374,6 +388,21 @@
     </div>
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>

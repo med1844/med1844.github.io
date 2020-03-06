@@ -234,34 +234,38 @@
         <div class="post-content">
             <p>本来我觉得没有必要为一门两学分的课专门开一篇文章，不过现在这门课用上机作业告诉我，确实是我想多了。相比之下，小学期的minecrash简直就是弟弟。</p>
 <p>看着新生群里那些连hello world都吃力的孩子们，有种莫名的羡慕。</p>
-<h2 id="第一次作业"><a href="#第一次作业" class="headerlink" title="第一次作业"></a>第一次作业</h2><p>总的来说就是实现一个搜索引擎，名为”软院找人”。当然因为数据量相当小，所以其实效率方面不用特别担心。</p>
+<h2 id="第一次作业">第一次作业</h2>
+<p>总的来说就是实现一个搜索引擎，名为&quot;软院找人&quot;。当然因为数据量相当小，所以其实效率方面不用特别担心。</p>
 <p>首先是定义学生的信息，包括姓名，学号，电话，QQ，以及邮箱，一共5个字段。</p>
-<p>学号是主码。<del>不过话说回来，既然是用txt或者xlsx存储，那应该也用不着数据库吧…</del></p>
+<p>学号是主码。<s>不过话说回来，既然是用txt或者xlsx存储，那应该也用不着数据库吧…</s></p>
 <p>不限制内存的使用，但是一定要确保性能。</p>
 <p>必须支持模糊搜索，但不必支持到subsequence的程度（substring即可）</p>
-<h3 id="存储结构的设计"><a href="#存储结构的设计" class="headerlink" title="存储结构的设计"></a>存储结构的设计</h3><p>为了确保查询效率，我思考了很多实现方案。但是既然要模糊搜索，那么肯定要涉及到字串匹配了。</p>
+<h3 id="存储结构的设计">存储结构的设计</h3>
+<p>为了确保查询效率，我思考了很多实现方案。但是既然要模糊搜索，那么肯定要涉及到字串匹配了。</p>
 <p>如果不是模糊搜索的话，直接5个字典就完事了。</p>
 <p>字串匹配，最经典的KMP，还有一些其他的启发式算法，再怎么样复杂度也都是$\mathcal{O}(n + m)$的水准。为了能够把所有信息搜出来，显然每次查询都要把所有的学生数据都跑一遍。这样，每次查询的复杂度就是$\mathcal{O}(\sum_i s_i + |s| \times m)$，其中sum是所有学生信息的长度总和，而$|s|$是学生信息的条数。</p>
 <p>这等于每次查询都要把每个表都跑一遍才行，我反正是觉得这样不太好…</p>
 <p>所以最后我觉得还是应该考虑使用Trie树。当然肯定就有人会感到好奇，Trie树怎么实现模糊查询呢?</p>
 <p>以前在自学后缀数组的时候，学到了一个非常重要的概念:</p>
 <blockquote>
-<p> <em>所有的substring都是某个后缀的某个前缀</em></p>
+<p><em>所有的substring都是某个后缀的某个前缀</em></p>
 </blockquote>
 <p>听起来有点拗口，总归来个简单例子帮助理解:</p>
 <p>对于字符串<code>abcabedcf</code>，<code>abed</code>是后缀<code>abedcf</code>的前缀，<code>cab</code>是<code>cabedcf</code>的一个前缀。</p>
 <p><strong>于是要利用只能查询前缀的Trie树来查询SubString，只需要把字符串的每个后缀都放进Trie树里就好了。</strong></p>
-<h3 id="查询效率迷思"><a href="#查询效率迷思" class="headerlink" title="查询效率迷思"></a>查询效率迷思</h3><p>作为一个ACM半途而废的菜鸡，分析时间复杂度的功夫一直不到家。不过尝试总归还是要尝试的！</p>
+<h3 id="查询效率迷思">查询效率迷思</h3>
+<p>作为一个ACM半途而废的菜鸡，分析时间复杂度的功夫一直不到家。不过尝试总归还是要尝试的！</p>
 <p>采用Trie树的话，插入一条长度为$|s|$的数据的时间复杂度是$\mathcal{O}(|s|^2)$级别的。而查询一条长度为$|q|$的关键字，并且以关键字末端节点为根节点的子树里一共有$n$个节点的话，则时间复杂度是$\mathcal{O}(|q| + n)$的。</p>
 <p>听起来很拗口，总归上图:</p>
-<p><img src="/.io//Trie.png" alt="Trie"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5CTrie.png" alt="Trie"></p>
 <p>这张图中黑色的结点表示根据关键字<code>hhkb</code>，从根节点出发所走的路径。灰色三角形表示该节点的其他子树。红色节点表示关键字末端节点。红色三角形表示关键字末端节点的所有子树。</p>
 <p>那么对于关键字<code>hhkb</code>，$|q| = 4$，$n$等于红色三角形中，所有节点的个数。</p>
 <p>我想，采用这种方法，跟暴力KMP匹配的效率相比，关键就是那些灰色三角形: <strong>无脑KMP则会导致试图匹配灰色三角形中的字符串，而Trie树根本不会考虑去那些子树里查询答案。</strong></p>
 <p>也就是说，我相信采用Trie树来存储数据并用于处理查询的效率能够比KMP要高，就是因为Trie树直接抛弃了那些灰色三角形，自带剪枝效果。</p>
-<p><em>但是实际效率到底是不是真的比无脑KMP要快呢?</em> 通常来说应该做实验来确定，但是<del>因为我写的代码的耦合性还是太强了，分离查询部分出去，再替换成另一种查询，是非常麻烦的，再加上</del>因为太懒了，所以最后还是决定就偷懒吧。</p>
+<p><em>但是实际效率到底是不是真的比无脑KMP要快呢?</em> 通常来说应该做实验来确定，但是<s>因为我写的代码的耦合性还是太强了，分离查询部分出去，再替换成另一种查询，是非常麻烦的，再加上</s>因为太懒了，所以最后还是决定就偷懒吧。</p>
 <p>代码就不贴了。这部分内容是非常简单的。</p>
-<h2 id="第二次作业"><a href="#第二次作业" class="headerlink" title="第二次作业"></a>第二次作业</h2><p>相对前一次增加了分页功能，同时需要支持定义每页的结果显示条数。</p>
+<h2 id="第二次作业">第二次作业</h2>
+<p>相对前一次增加了分页功能，同时需要支持定义每页的结果显示条数。</p>
 <p>唯一一个重点就是使用session来保存查询结果。总不能每次都在调用<code>service(request, response)</code>的时候都查询一次。同时因为有多个用户同时查询的可能性，也不能存储在类里。这样看下来就必须放在session里。</p>
 <p>所以实际上这次作业就是帮助练习HttpSession，其他的部分基本上稍微思考一下就能完成。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> io.github.medioqrity;</span><br><span class="line"></span><br><span class="line"><span class="comment">// import ...</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@WebServlet</span>(<span class="string">"/query"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StudentQueryServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// omitted</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse res)</span> </span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        doPost(req, res);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse res)</span> </span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        res.setContentType(<span class="string">"text/html; charset=UTF-8"</span>);</span><br><span class="line">        req.setCharacterEncoding(<span class="string">"UTF-8"</span>);</span><br><span class="line">        res.setCharacterEncoding(<span class="string">"UTF-8"</span>);</span><br><span class="line"></span><br><span class="line">        String keyword = req.getParameter(<span class="string">"keyword"</span>);</span><br><span class="line">        HttpSession session = req.getSession();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> pageNumber = getIntParameter(req, <span class="string">"page"</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">int</span> resultCountPerPage = COUNT_PER_PAGE_DEFAULT;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// for security issues. e.g.: negative count per page</span></span><br><span class="line">        <span class="keyword">if</span> (session.getAttribute(<span class="string">"resultCountPerPage"</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            resultCountPerPage = (Integer) session.getAttribute(<span class="string">"resultCountPerPage"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="comment">// omitted</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -269,7 +273,7 @@
 <p>在生成页码方面采用了AtCoder的策略，也就是二次幂增长:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// generate link</span></span><br><span class="line">Set&lt;Integer&gt; pages = <span class="keyword">new</span> TreeSet&lt;&gt;();</span><br><span class="line"><span class="keyword">int</span> cur = pageNumber, step = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">while</span> (cur &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    pages.add(cur);</span><br><span class="line">    cur -= step;</span><br><span class="line">    step &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line">pages.add(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">cur = pageNumber; step = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">while</span> (cur &lt; totalPageCount) &#123;</span><br><span class="line">    pages.add(cur);</span><br><span class="line">    cur += step;</span><br><span class="line">    step &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line">pages.add(totalPageCount - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">out.println(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i : pages) &#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>最后得到的结果也确实非常令人满意:</p>
-<p><img src="/.io//result.png" alt="result"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5Cresult.png" alt="result"></p>
 <p><em>因为数据是基于真实信息及其结构随机产生的，所以为了避免任何暴露真实信息的可能性，把较为敏感的部分全部打码了。</em></p>
 <p>要说坑的话大概就是做好设置数据条数的表单之后手贱输了个<code>-1</code>进去，结果还真崩了。检查上机作业的时候跟老师讲了一下，估计坑害了不少后面检查的小朋友，总之听说后来检查时老师甚至要求往这个框里输中文进去，然后不少小朋友就直接喜提<code>500</code>了。</p>
 <p>解决方案也挺简单的，正好能用到CS143里学的RE:</p>
@@ -277,47 +281,57 @@
 <p>就是<code>input</code>元素中的<code>pattern</code>属性，放个正则表达式就完事啦！</p>
 <p>这是前端的防御，当然后端也要防御一下空白或者0的情况:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@WebServlet</span>(<span class="string">"/query"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StudentQueryServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse res)</span> </span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// for security issues. e.g.: negative count per page</span></span><br><span class="line">        <span class="keyword">if</span> (session.getAttribute(<span class="string">"resultCountPerPage"</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            resultCountPerPage = (Integer) session.getAttribute(<span class="string">"resultCountPerPage"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (req.getParameter(<span class="string">"countPerPage"</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                resultCountPerPage = verify(Integer.parseInt(req.getParameter(<span class="string">"countPerPage"</span>)), resultCountPerPage);</span><br><span class="line">                session.setAttribute(<span class="string">"resultCountPerPage"</span>, resultCountPerPage);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="comment">// do nothing</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (session.getAttribute(<span class="string">"resultCountPerPage"</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                resultCountPerPage = (Integer) session.getAttribute(<span class="string">"resultCountPerPage"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                resultCountPerPage = COUNT_PER_PAGE_DEFAULT;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h2><p>这当然不算是作业。但是我觉得完全可以记录一下自己的开发环境－－毕竟eclipse真的太烂了。</p>
-<p>每个用过的人都会明白eclipse是多么差劲的一个IDE。如果说intellij之类合格的IDE可以提升开发效率，那么eclipse就完美地处在这些IDE的反面: </p>
+<h2 id="开发环境">开发环境</h2>
+<p>这当然不算是作业。但是我觉得完全可以记录一下自己的开发环境－－毕竟eclipse真的太烂了。</p>
+<p>每个用过的人都会明白eclipse是多么差劲的一个IDE。如果说intellij之类合格的IDE可以提升开发效率，那么eclipse就完美地处在这些IDE的反面:</p>
 <ul>
-<li><p>便秘一般的代码补全体验</p>
-<p>  触发代码补全居然要输入<code>.</code>才行? 合着类型或者特别长的变量名就不用补全了呗?</p>
+<li>
+<p>便秘一般的代码补全体验</p>
+<p>触发代码补全居然要输入<code>.</code>才行? 合着类型或者特别长的变量名就不用补全了呗?</p>
 </li>
-<li><p>人工智障般的代码提示功能</p>
-<p>  把触发代码补全的关键char改成所有字母之后，你就会发现－－输一个字符卡一次。</p>
-<p>  而且，看到它给你提示的内容，你就明白为什么eclipse默认只有在输入<code>.</code>的时候才提供代码补全了。</p>
+<li>
+<p>人工智障般的代码提示功能</p>
+<p>把触发代码补全的关键char改成所有字母之后，你就会发现－－输一个字符卡一次。</p>
+<p>而且，看到它给你提示的内容，你就明白为什么eclipse默认只有在输入<code>.</code>的时候才提供代码补全了。</p>
 </li>
-<li><p>慢到令人绝望的启动速度</p>
+<li>
+<p>慢到令人绝望的启动速度</p>
 </li>
-<li><p>XP时代的丑陋UI</p>
+<li>
+<p>XP时代的丑陋UI</p>
 </li>
-<li><p>响应速度同样慢到令人绝望的UI组件</p>
+<li>
+<p>响应速度同样慢到令人绝望的UI组件</p>
 </li>
-<li><p>不自动编译</p>
+<li>
+<p>不自动编译</p>
 </li>
-<li><p>对vim支持极差</p>
+<li>
+<p>对vim支持极差</p>
 </li>
 </ul>
 <p>所以最后我毅然决然继续小学期时的操作，抛弃eclipse，转投其他编辑工具。鉴于Java EE的开发需要使用Ultimate版的intellij，而我懒得去申请免费学生版，所以最后还是选择了VSCode + maven + tomcat。</p>
-<p><img src="/.io//IDE.png" alt="IDE"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5CIDE.png" alt="IDE"></p>
 <p>颜值就不说了，是个人都能看出来是吊打eclipse的水平。而且它的vim插件对于我这种菜鸟来说已经足够了。</p>
 <p>而配合微软官方推出的Java Extension Pack，以及Maven来管理编译和dependency方面的工作，不论是代码提示还是编译运行都非常方便。</p>
-<p><img src="/.io//CodeCompletion.png" alt="CodeCompletion"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5CCodeCompletion.png" alt="CodeCompletion"></p>
 <p>甚至可以用内嵌terminal完成编译:</p>
-<p><img src="/.io//build.png" alt="build"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5Cbuild.png" alt="build"></p>
 <p>唯一的缺点大概就是每次生成war文件后都要手动复制到tomcat服务器的webapp文件夹下。当然这也可以通过写一个简单的后台小脚本来解决:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> win10toast <span class="keyword">import</span> ToastNotifier</span><br><span class="line"><span class="keyword">from</span> shutil <span class="keyword">import</span> copyfile</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SOURCE = <span class="string">"C:/School/JavaEE/Assignment_5/Assignment_5/ear/target/ear-1.0-SNAPSHOT/"</span></span><br><span class="line">DEST = [</span><br><span class="line">    <span class="string">"C:/Users/?????/Downloads/Compressed/apache-tomcat-9.0.24/webapps/"</span>, </span><br><span class="line">    <span class="string">"C:/Users/?????/Downloads/Compressed/apache-tomcat-9.0.25/webapps/"</span></span><br><span class="line">]</span><br><span class="line">FILE_NAME = <span class="string">"io.github.medioqrity-servlet-1.0-SNAPSHOT.war"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_modification_time</span><span class="params">(PATH)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> os.path.getmtime(PATH)</span><br><span class="line">    <span class="keyword">except</span> OSError:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">notify_update</span><span class="params">(last_mod_time, mod_time)</span>:</span></span><br><span class="line">    toast = ToastNotifier()</span><br><span class="line">    toast.show_toast(<span class="string">"Tomcat war updated"</span>, <span class="string">"New war file detected.\nOld modification time: %.2f\nNew modification time: %.2f\n"</span> % </span><br><span class="line">                     (last_mod_time, mod_time))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">move</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">for</span> dest <span class="keyword">in</span> DEST:</span><br><span class="line">        copyfile(SOURCE + FILE_NAME, dest + FILE_NAME)</span><br><span class="line">        print(<span class="string">"Copy %s ok..."</span> % dest, end=<span class="string">''</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">last_modification_time = get_modification_time(SOURCE + FILE_NAME)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    modification_time = get_modification_time(SOURCE + FILE_NAME)</span><br><span class="line">    print(<span class="string">"Checking updates..."</span>, end=<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">if</span> modification_time != last_modification_time:</span><br><span class="line">        print(<span class="string">"found new war file, "</span>, end=<span class="string">''</span>)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            move()</span><br><span class="line">            notify_update(last_modification_time, modification_time)</span><br><span class="line">            last_modification_time = modification_time</span><br><span class="line">            print(<span class="string">"nothing wrong."</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">"FAILURE OCCURED."</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(<span class="string">"nothing changed."</span>)</span><br><span class="line">    time.sleep(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
 <p>不论如何，总之最后的结果就是完美地避开了eclipse，可喜可贺。</p>
-<h2 id="第三次作业"><a href="#第三次作业" class="headerlink" title="第三次作业"></a>第三次作业</h2><p>实际上就是连上数据库就可以了。不过配数据库确实是比较麻烦的一件事情。</p>
+<h2 id="第三次作业">第三次作业</h2>
+<p>实际上就是连上数据库就可以了。不过配数据库确实是比较麻烦的一件事情。</p>
 <p>这里献祭出自己的<code>GenericDAO.java</code>来展示MSSQLServer的连接方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> io.github.medioqrity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.microsoft.sqlserver.jdbc.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericDAO</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> SQLServerDataSource dataSource = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GenericDAO</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        dataSource = <span class="keyword">new</span> SQLServerDataSource();</span><br><span class="line">        dataSource.setIntegratedSecurity(<span class="keyword">true</span>);</span><br><span class="line">        dataSource.setServerName(<span class="string">"DESKTOP-???????"</span>);</span><br><span class="line">        dataSource.setDatabaseName(<span class="string">"master"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>核心就是通过Integrated Security连接就可以了。最难的部分还是读mssql-jdbc的文档，然后配置它。</p>
 <p>成功配置好MSSQL之后，只能算完成了1/4的任务。首先，要做出登录和退出系统，并且还要根据用户权限来确定是否可以展示增删改查页面，剩下的增删改查，要全都写出来也不是那么容易的事情。</p>
 <p>总归肝了大概一两天之后也算是写出来了:</p>
-<p><img src="/.io//3and4.png" alt="3and4"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5C3and4.png" alt="3and4"></p>
 <p>这是管理员会看到的界面。在这里可以轻松地对数据进行更新。</p>
-<p>左侧的照片栏是第四次作业的产物—很快就会讲它。</p>
-<h2 id="第四次作业"><a href="#第四次作业" class="headerlink" title="第四次作业"></a>第四次作业</h2><p>这一次作业听起来就非常牛逼: 实现人脸搜索。</p>
+<p>左侧的照片栏是第四次作业的产物–很快就会讲它。</p>
+<h2 id="第四次作业">第四次作业</h2>
+<p>这一次作业听起来就非常牛逼: 实现人脸搜索。</p>
 <p>也就是说，你首先要对增删改查的部分进行修改，新增上传文件的功能，同时也要对数据库进行修改，以支持图片的存储，最后你还要手写一个人脸识别和匹配的引擎。</p>
 <p>虽然最后一步的引擎可以通过简单地调用各种网上现成的API就完事，但是这样就很没意思，所以我还是用python写了个调包侠脚本，作为一个服务来运行。</p>
 <p>很有趣的一点就是要怎么实现一个服务呢? 毕竟大部分程序都是执行完就走了，但服务是一直运行直到收到请求为止。</p>
@@ -331,18 +345,19 @@
 <p>最后只要在处理请求的方法中协调进程间通信即可。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> </span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        Part filePart = request.getPart(<span class="string">"file"</span>); <span class="comment">// comes from &lt;input type="file" name="file"&gt;</span></span><br><span class="line">        InputStream fileContent = filePart.getInputStream();</span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[fileContent.available()];</span><br><span class="line">        fileContent.read(buffer);</span><br><span class="line">        FileOutputStream out = <span class="keyword">new</span> FileOutputStream(getServletContext().getRealPath(IMAGE_DIRECTORY + TEMP + <span class="string">".jpg"</span>));</span><br><span class="line">        out.write(buffer);</span><br><span class="line">        out.close();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"reader, writer: "</span> + reader + <span class="string">" "</span> + writer);</span><br><span class="line"></span><br><span class="line">        writer.write(getServletContext().getRealPath(IMAGE_DIRECTORY + TEMP + <span class="string">".jpg"</span>) + <span class="string">"\n"</span>);</span><br><span class="line">        writer.flush();</span><br><span class="line"></span><br><span class="line">        HttpSession session = request.getSession();</span><br><span class="line"></span><br><span class="line">        List&lt;String&gt; ids = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">        List&lt;Double&gt; dists = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">        List&lt;String&gt; imgs = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        String temp;</span><br><span class="line">        <span class="keyword">while</span> ((temp = reader.readLine()) == <span class="keyword">null</span>);</span><br><span class="line">        System.out.println(temp);</span><br><span class="line">        <span class="keyword">int</span> n = Integer.parseInt(temp);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            String id = reader.readLine();</span><br><span class="line">            ids.add(id);</span><br><span class="line">            dists.add(Double.parseDouble(reader.readLine()));</span><br><span class="line">            imgs.add(<span class="string">"&lt;img src='"</span> + getServletContext().getContextPath() + IMAGE_DIRECTORY + id + <span class="string">".jpg'&gt;"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        session.setAttribute(<span class="string">"ids"</span>, ids);</span><br><span class="line">        session.setAttribute(<span class="string">"dists"</span>, dists);</span><br><span class="line">        session.setAttribute(<span class="string">"imgs"</span>, imgs);</span><br><span class="line"></span><br><span class="line">        response.sendRedirect(getServletContext().getContextPath() + <span class="string">"/ImageSearchResult.jsp"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这样就可以完美地实现人脸搜索的功能了。可喜可贺。花了我好几天才写出来。</p>
-<h2 id="第五-六次作业"><a href="#第五-六次作业" class="headerlink" title="第五/六次作业"></a>第五/六次作业</h2><p>两次作业合并了。</p>
+<h2 id="第五-六次作业">第五/六次作业</h2>
+<p>两次作业合并了。</p>
 <p>由于CCSP的缘故，留给这最后一次作业的时间真的不怎么多。</p>
 <p>要点就几个，首先是配置https，其次要使用nginx实现负载均衡。最后要实现一个简单的投票系统，要求防止刷票。</p>
 <p>这个其实还蛮简单的，因为你只需要配置好环境（两台tomcat，nginx的分流设置等），之后的部分其实不算太难。</p>
 <p>在开始实现之前，简单地绘制了一下流程图，基本上工作流程也就非常明晰了:</p>
-<p><img src="/.io//VOTE_4.png" alt="VOTE_4"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5CVOTE_4.png" alt="VOTE_4"></p>
 <p>身份认证的部分，主要目的是为了防止刷票，对于不想沾染过多第三方API的人来说，余下的选择里，最简单的当然就是验证码了。</p>
 <p>在深度学习横行的现在，我想一张小小的验证码并不能起到什么阻挡的作用。所以，在这里它更多的是象征意义:</p>
-<p><img src="/.io//VOTE_3.png" alt="VOTE_3"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5CVOTE_3.png" alt="VOTE_3"></p>
 <p>投票之类的当然也是存在数据库里啦！投票的界面就像之前一样，没有CSS，非常干瘪，大家都想象得到，就不贴了。</p>
 <p>最后贴一张验证码生成器的截图吧:</p>
-<p><img src="/.io//VOTE_1.png" alt="VOTE_1"></p>
+<p><img src="/2019/09/18/JavaEE%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%5CVOTE_1.png" alt="VOTE_1"></p>
 <p>完结撒花。</p>
 
         </div>
@@ -387,6 +402,21 @@
     </div>
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
