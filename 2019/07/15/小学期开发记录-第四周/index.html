@@ -197,7 +197,7 @@
 <p>明天就要开始写文档了，所以今天很可能就是最后一天开发了。</p>
 <p>突然对自己之前那些摸鱼的日子感到后悔，但是后悔又有什么用呢?</p>
 <p>按照惯例，首先开幕雷击:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CReview.png" alt="Review"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/Review.png" alt="Review"></p>
 <p>这是前三周的成果。</p>
 <p>早上起来先加了Frustum Culling，也就是把视野范围外的区块直接抛弃掉。这样就可以减少GL调用。</p>
 <p>不过FPS没有什么实质上的提升。后来看了一下是因为要正确的渲染阴影还是需要把所有的mesh都渲染一遍才行。正是这一步骤使得FPS降到了20。</p>
@@ -211,19 +211,19 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">renderSolid</span><span class="params">(FrustumCullFilter frustumCullFilter)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; (Y &gt;&gt; <span class="number">4</span>); ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (isEmpty[i]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">if</span> (frustumCullFilter == <span class="keyword">null</span> || frustumCullFilter.insideFrustum((x &lt;&lt; <span class="number">4</span>) + (X &gt;&gt; <span class="number">1</span>), (i &lt;&lt; <span class="number">4</span>) + <span class="number">8</span>, (z &lt;&lt; <span class="number">4</span>) + (Z &gt;&gt; <span class="number">1</span>), <span class="number">13.856406460551018f</span>)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (solid[i] != <span class="keyword">null</span>) &#123;</span><br><span class="line">                solid[i].render();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">renderTransparencies</span><span class="params">(FrustumCullFilter frustumCullFilter)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; (Y &gt;&gt; <span class="number">4</span>); ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (isEmpty[i]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">if</span> (frustumCullFilter == <span class="keyword">null</span> || frustumCullFilter.insideFrustum((x &lt;&lt; <span class="number">4</span>) + (X &gt;&gt; <span class="number">1</span>), (i &lt;&lt; <span class="number">4</span>) + <span class="number">8</span>, (z &lt;&lt; <span class="number">4</span>) + (Z &gt;&gt; <span class="number">1</span>), <span class="number">13.856406460551018f</span>)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (transparencies[i] != <span class="keyword">null</span>) &#123;</span><br><span class="line">                transparencies[i].render();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>看到<code>isEmpty[i]</code>了吗?</p>
 <p>这减少了非常多无用的GL Call。现在我们的帧率又回到了60:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CISEMPTY.png" alt="ISEMPTY"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/ISEMPTY.png" alt="ISEMPTY"></p>
 <p>动图看起来是这样:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5C60fps.gif" alt="60fps"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/60fps.gif" alt="60fps"></p>
 <p>看起来质量应该很低…没办法了，毕竟动图的size不能太大呀…</p>
 <p>大概还是能够看出晨雾是最浓的。</p>
 <p>准备在写文档之前最后再搞一下物品栏和物品系统。</p>
 <h2 id="2019-07-16">2019/07/16</h2>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CDynamicMap.png" alt="DynamicMap"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/DynamicMap.png" alt="DynamicMap"></p>
 <p>但是先搞的不是物品栏，而是队友那边的动态地图。也确实没办法，因为单线程的缘故，移动的时候都会很卡…</p>
 <p>先把这个修复完再开始写文档吧…</p>
 <hr>
 <p>因为实在太慢了，打算用多线程优化一下。结果就凉了:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CMultiThread.png" alt="MultiThread"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/MultiThread.png" alt="MultiThread"></p>
 <p>新枪战地图的感觉?</p>
 <hr>
 <p>出了一堆莫名其妙的bug，果然是minecrash。总之最后直接重写了多线程生成地图，以及多线程生成Mesh的方法。</p>
@@ -232,18 +232,18 @@
 <h2 id="2019-07-17">2019/07/17</h2>
 <p>DDL是第一生产力！</p>
 <p>实现了行走功能:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CLeapOfFaith.gif" alt="LeapOfFaith"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/LeapOfFaith.gif" alt="LeapOfFaith"></p>
 <p>在测试行走的过程中，发现把生成Mesh放到多轮update中偶尔会产生NullPointerException。现在要先把这个Bug排除掉。</p>
 <p>暂时用最简单的方式，也就是在出错的函数周围圈上同步解决了。但是这并不能说明这个bug已经被完全修复了。暂时还是不能够确定它产生的原因的。</p>
 <p>之后是发现了另一个bug，也就是在判定碰撞箱是否与人物碰撞箱相交的地方，在第62格处会神奇的判断为不相交。我想这大概是精度问题?</p>
 <hr>
 <p>花了一天时间把物品栏做好了。</p>
 <p>首先是根据HUD的教程把物品栏加了进去:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CInventory.png" alt="Inventory"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/Inventory.png" alt="Inventory"></p>
 <p>然后，把选择框加了进去，并且建立了鼠标回调函数来与之相连:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CSelection.png" alt="Selection"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/Selection.png" alt="Selection"></p>
 <p>最后，由于时间关系简单地用面填充了一下物品栏，顺便把放置方块的逻辑和物品栏类连起来了。于是很愉快地<s>种</s>建出了minecrash的第一颗树:</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CTree.png" alt="Tree"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/Tree.png" alt="Tree"></p>
 <p>该写报告啦…可能minecrash也就到此为止了。</p>
 <p>多少还是感到有点可惜的。</p>
 <h2 id="2019-07-18">2019/07/18</h2>
@@ -251,13 +251,13 @@
 <p>RIP，京アニ。</p>
 <hr>
 <p>在做答辩PPT了。最后来贴几张其中的项目展示部分的截图吧…</p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CPresentation1.png" alt="Presentation1"></p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CPresentation2.png" alt="Presentation2"></p>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CPresentation3.png" alt="Presentation3"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/Presentation1.png" alt="Presentation1"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/Presentation2.png" alt="Presentation2"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/Presentation3.png" alt="Presentation3"></p>
 <h2 id="2019-07-19">2019/07/19</h2>
 <p>顺利完成答辩。休息一天，明天就要回到ACM训练中了。</p>
 <h2 id="2019-07-20">2019/07/20</h2>
-<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8%5CTheFinal.png" alt="TheFinal"></p>
+<p><img src="/2019/07/15/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E5%9B%9B%E5%91%A8/TheFinal.png" alt="TheFinal"></p>
 <h1>Reference</h1>
 <ul>
 <li>PPSM:

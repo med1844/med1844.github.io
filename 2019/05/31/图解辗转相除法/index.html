@@ -244,35 +244,35 @@
 <p>无中生有地想两个数字出来作为例子是很困难的（大嘘），所以我请出了我最信赖的随机数生成器（棒读）:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(randint(<span class="number">1</span>, <span class="number">20</span>), randint(<span class="number">1</span>, <span class="number">20</span>))</span><br><span class="line"><span class="number">12</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
 <p>于是我们将通过一个$12 \times 10$的矩形来理解这一算法:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C12by10.png" alt="12by10"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/12by10.png" alt="12by10"></p>
 <p>$\min(12, 10) = 10$，所以，我们从中削去$10\times 10$大小的矩形:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C12by10_1.png" alt="12by10_1"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/12by10_1.png" alt="12by10_1"></p>
 <p>现在我们还剩下一个$2 \times 10$的矩形。可以认为问题被转化成了求$\gcd(2, 10)$。</p>
 <p>$\min(2, 10) = 2$，所以我们从中削去尽可能多的$2\times 2$的矩形:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C12by10_2.png" alt="12by10_2"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/12by10_2.png" alt="12by10_2"></p>
 <p>简直完美！最后还剩下$2\times 2$的矩形。这说明$\gcd(12, 10) = 2$，因为$\gcd(2, 2) = 2$。</p>
 <h3 id="第二个例子">第二个例子</h3>
 <p>上一个例子的$\gcd = 2$，所以这一次我们来看看$\gcd = 1$的例子:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(randint(<span class="number">1</span>, <span class="number">20</span>), randint(<span class="number">1</span>, <span class="number">20</span>))</span><br><span class="line"><span class="number">17</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5.png" alt="17by5"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/17by5.png" alt="17by5"></p>
 <p>首先，重复上面的步骤，首先尽可能多地削去$5 \times 5$:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_2.png" alt="17by5_2"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/17by5_2.png" alt="17by5_2"></p>
 <p>可以看到蓝色的部分变成了$2 \times 5$，等价于将问题转化为$\gcd(2, 5)$了。</p>
 <p>现在我们继续削去$2 \times 2$:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_3.png" alt="17by5_3"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/17by5_3.png" alt="17by5_3"></p>
 <p>可以看到蓝色的部分变成了$2 \times 1$，等价于将问题转化为$\gcd(2, 1)$了。</p>
 <p>现在我们继续削去$1\times 1$:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_4.png" alt="17by5_4"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/17by5_4.png" alt="17by5_4"></p>
 <p>显然$\gcd(1, 1) = 1$，这说明$\gcd(17, 5) = 1$。</p>
 <h3 id="最后一个例子">最后一个例子</h3>
 <p>只看到最大公约数为$1$和$2$总觉得还是不太够，所以这一次试试看$\gcd = 7$的:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(randint(<span class="number">1</span>, <span class="number">60</span>), randint(<span class="number">1</span>, <span class="number">60</span>))</span><br><span class="line"><span class="number">35</span> <span class="number">14</span></span><br></pre></td></tr></table></figure>
 <p><em>（我才不会告诉你们为了凑出这俩数字随机了好多次呢）</em></p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14.png" alt="35by14"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/35by14.png" alt="35by14"></p>
 <p>挖掉$14 \times 14$:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_1.png" alt="35by14_1"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/35by14_1.png" alt="35by14_1"></p>
 <p>问题转化成了$\gcd(14, 7)$。挖掉$7\times 7$:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_2.png" alt="35by14_2"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/35by14_2.png" alt="35by14_2"></p>
 <p>问题转化成了$\gcd(7, 7) = 7$。于是$\gcd(35, 14) = 7$。</p>
 <h2 id="Codeforces-343A">Codeforces 343A</h2>
 <h3 id="题意">题意</h3>
@@ -298,20 +298,20 @@
 </ul>
 <p>现在我们把它跟$\gcd$联系起来。</p>
 <p>我们使用最后一个例子来加以说明，我们的目标分数是$\displaystyle\frac{35}{14}$。</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_1.png" alt="35by14_1"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/35by14_1.png" alt="35by14_1"></p>
 <p>我们从目标分数向回推，也就是说假定倒数第二步时的分数为$\displaystyle\frac{c}{d}$，那么显然有:</p>
 <p>$$<br>
 \frac{c + d}{d} = \frac{35}{14}\<br>
 \therefore c = 35 - 14 = 21<br>
 $$</p>
 <p>所以上一步的分数是$\displaystyle\frac{21}{14}$，而这正等于上图去掉红色正方形之后的矩形:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C35by14_3.png" alt="35by14_3"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/35by14_3.png" alt="35by14_3"></p>
 <p>所以，如果把这一过程反过来考虑的话，可以认为我们通过在水平方向上增加了一个$14 \times 14$大小的正方形，使得分子增加了$14$。</p>
 <p>再考虑倒数第二个例子:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_5.png" alt="17by5_5"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/17by5_5.png" alt="17by5_5"></p>
 <p>由于一行的宽度为$2$，一列的长度为$3$，所以现在我们拥有的分数是$\displaystyle \frac{2}{3}$。</p>
 <p>当我们去掉淡灰色的$2\times 2$矩形之后，我们就会得到$\displaystyle \frac{2}{1}$:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5C17by5_6.png" alt="17by5_6"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/17by5_6.png" alt="17by5_6"></p>
 <p>所以，如果像上面一样反过来考虑的话，可以认为我们通过在竖直方向上增加一个$2 \times 2$大小的正方形，使得分母增加了$2$。</p>
 <p>事实上:</p>
 <ul>
@@ -328,7 +328,7 @@ $$</p>
 <h2 id="正确性证明">正确性证明</h2>
 <p>上面只解释了为什么通过这种方法可以获得正确的解，但是并没有说明<strong>为什么是正确的</strong>。</p>
 <p>首先引入$\text{Calkin-Wilf Tree}$:</p>
-<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95%5CCalkin-Wilf.png" alt="Calkin-Wilf"></p>
+<p><img src="/2019/05/31/%E5%9B%BE%E8%A7%A3%E8%BE%97%E8%BD%AC%E7%9B%B8%E9%99%A4%E6%B3%95/Calkin-Wilf.png" alt="Calkin-Wilf"></p>
 <p>这棵树的特点是:</p>
 <ul>
 <li>它是一棵二叉树，但不是二叉搜索树。</li>
