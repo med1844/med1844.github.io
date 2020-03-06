@@ -743,6 +743,7 @@ header label {
 }
 .post-wrap .post-meta a {
   color: #2d96bd;
+  margin-inline-end: 1em;
 }
 .dark-theme .post-wrap .post-meta a {
   color: #eee;
