@@ -215,7 +215,7 @@
 <blockquote>
 <p>kaga的<a href="https://tieba.baidu.com/p/2844121646" target="_blank" rel="noopener">涂鸦</a></p>
 </blockquote>
-<p>很不幸的是，作为一个沙盒游戏，其创造力却被移动平台，合成时间机制以及纯生存所禁锢:</p>
+<p>然而很不幸的是，作为一个沙盒游戏，其创造力却被移动平台，合成时间机制以及纯生存所禁锢:</p>
 <ul>
 <li>移动平台使得更改其存档极其困难。要么root要么越狱，除此之外没有别的办法。</li>
 <li>合成时间机制。由于合成物品需要时间，引入用来加速合成的道具自然也就能带来除了广告之外的另一笔收入。但是对于巨型建筑工程来说，所需要的合成时间通常会高达上万小时。要么修改水晶，要么开启服务器号召大家一起建造。在玩家群体如此式微的现在，想要召集高质量的建筑师大概不怎么可行。这样看来的话，要解决合成时间的问题可能只剩下root然后改水晶数量了吧。</li>
@@ -230,7 +230,7 @@
 <p>无奈，上网查了一下<code>.mdb</code>还可能是什么存储格式，但还是无功而返。针对文件内容的分析也同样失败了。</p>
 <p>心态有点小崩，返回存档又看了几眼，发现不仅是world_db，lightBlocks和server_db同样也都只有<code>data.mdb</code>和<code>lock.mdb</code>。由于db的全称是database，不免让人想到这一数据库的特点就是同时存储<code>data.mdb</code>和<code>lock.mdb</code>来作为整个数据库。因此把这两个名字一起搜一下，果然…</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/caffe.png" alt="caffe"></p>
-<p>卧槽，为什么会跳出来caffe的结果啊? <s>现在已经先进到要用机器学习来保存存档了吗?</s></p>
+<p>??? 为什么会跳出来caffe的结果啊?</p>
 <p>不过也总比什么证据都得不到要好，毕竟提到了个叫lmdb的东西。我想可能就是它了。遂搜索，然而一个GUI工具都没找着，只找到一个python的模块和一个<a href="https://lmdb.readthedocs.io/en/release/" target="_blank" rel="noopener">文档</a>。嗬，感情我还得学完这API才能确定自己猜的对不对呗?</p>
 <p>想着似乎也就这么一个可能的可行路径了，就还是试了下去。好在最后的确成功读出了数据。</p>
 <hr>
@@ -313,7 +313,7 @@
 <p>不是，加个土块，至于这么激动吗?? 这一个土块咋能干出这么多字节来呢??😳😳😳</p>
 <p>然后仔细一看，看到<code>\x1f\x8b</code>我就知道事情不对…这不是gzip文件头吗…</p>
 <p>gzip解压之后如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE plist PUBLIC &quot;-&#x2F;&#x2F;Apple&#x2F;&#x2F;DTD PLIST 1.0&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.apple.com&#x2F;DTDs&#x2F;PropertyList-1.0.dtd&quot;&gt;</span><br><span class="line">&lt;plist version&#x3D;&quot;1.0&quot;&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">        &lt;key&gt;s&lt;&#x2F;key&gt;</span><br><span class="line">        &lt;array&gt;</span><br><span class="line">                &lt;array&#x2F;&gt;</span><br><span class="line">                &lt;array&#x2F;&gt;</span><br><span class="line">                &lt;array&#x2F;&gt;</span><br><span class="line">                &lt;array&gt;</span><br><span class="line">                        &lt;data&gt;</span><br><span class="line">                        GAQAAAAAAAw&#x3D;</span><br><span class="line">                        &lt;&#x2F;data&gt;</span><br><span class="line">                &lt;&#x2F;array&gt;</span><br><span class="line">        &lt;&#x2F;array&gt;</span><br><span class="line">&lt;&#x2F;dict&gt;</span><br><span class="line">&lt;&#x2F;plist&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plist</span> <span class="attr">version</span>=<span class="string">"1.0"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dict</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">key</span>&gt;</span>s<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">array</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">array</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">array</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line">                        GAQAAAAAAAw=</span><br><span class="line">                        <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dict</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plist</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>高，实在是高。<code>GAQAAAAAAAw=</code>解码后正是<code>18 04 00 00 00 00 00 0c</code>。</p>
 <p>这样的话，岂不是可以自己乱加<code>&lt;array/&gt;</code>?? 这个<code>&lt;key&gt;s&lt;/key&gt;</code>又是什么鬼?</p>
 <p>不过也算是大致确定了一个物品的格式。对于长度只有8字节的，就是单个物品。对于长度大于8字节的，就是一个容器。对于长度大于8字节的，把第8字节开始到后面所有的部分都拿去解压并递归解析即可。</p>
@@ -341,11 +341,87 @@
 <p>接下来测试一下同样是<code>3e</code>的损耗，其他物品的表现如何呢? 这次直接请出游戏中最耐用的工具之一: 钛镐。</p>
 <p>简单地在之前的代码中加上<code>item.set_id(285)</code>，就能把flint spade变成titanium pickaxe。测试结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_titanium.png" alt="durability_titanium"></p>
-<p><em>黑人问号.jpg</em> 如果损耗只有一位的话，那要怎么确定钛镐能够挖多少次啊?? 毕竟上限只有<code>3e</code>… 还是说，其实<code>00 3e</code>才是真正的损耗值?</p>
+<p><em>黑人问号.jpg</em> 如果损耗只有一位的话，那要怎么确定钛镐能够挖多少次啊? 毕竟上限只有<code>3e</code>… 还是说，其实<code>00 3e</code>才是真正的损耗值?</p>
 <p>感觉后一个猜想可行，随便敲几个石头试试，然后看看损耗值。结果如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Game\BH\BHCore (master -&gt; origin) </span><br><span class="line">λ c:&#x2F;python27&#x2F;python inventory_tester.py</span><br><span class="line">&#39;\x1d\x01!&gt;\x00\x00\x00\x0c&#39;</span><br></pre></td></tr></table></figure>
 <p>看来第二个猜想是正确的，所以最大的损耗是<code>ff 3f</code>。可以理解为，每个物品都有16384的耐久。等级越低的物品，每使用一次耐久减少得越多。我用钛镐挖了11块石头，损耗从<code>\x00&gt;</code>变成了<code>!&gt;</code>，也就是<code>21 3e</code>。损耗增加了33点，说明钛镐挖一次石头会损失3耐久。显然不难计算出钛镐的使用次数为<code>16384 / 3 = 5461.33</code>次。</p>
-<p>后续待更新…</p>
+<p>那同样我们也可以测试出每种镐子的耐久。由于不同的稿子挖石头可能会有不同的加成，因此测试方法是用镐子挖一块沙子，观察损耗值，并除以手敲一块沙子所需次数，即可计算出每次镐击带来的损耗。我决定把这称为<strong>基本损耗</strong>。</p>
+<p>结果如下:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/base_damage.png" alt="base_damage"></p>
+<p>但不要忘了，方块也是有<em>生命值</em>的（听起来很怪但是没想到更好的词儿）。有的镐子给方块的伤害比较高，有的比较低。这就会导致基本损耗相同的镐子，挖同种方块，最后却是其中一把先爆。</p>
+<p>为此，显然有必要测试方块的生命值。镐子有加成，所以用铲子测试。结果…</p>
+<p>呃，不论我怎么调整方块的硬度，永远都只有一个字节有改动…所以试了一下把这个改动的字节从0 ~ 255枚举一遍:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/damage_gradient.png" alt="damage_gradient"></p>
+<p>看来损伤值确实是只有一个字节来存储…可是工业方块的硬度显然已经超过了256的范围啊? 那到底是把真实的方块硬度放在哪里了呢…</p>
+<p>惆怅的时候，两个之前被我拿来测试的方块居然复原了！这说明一定是在blocks以外的地方存储了损伤值以及损伤时间。于是打开dw，把对应区块所有文件扒拉出来。里面一个叫<code>466_17/26</code>的dw让我觉得很可疑:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;'dynamicObjects': [&#123;'floatPos': [14918.5, 544.0],</span><br><span class="line">                     'lastKnownGatherValue': 201,</span><br><span class="line">                     'pos_x': 14918,</span><br><span class="line">                     'pos_y': 544,</span><br><span class="line">                     'timer': 7.865746974945068,</span><br><span class="line">                     'uniqueID': 5815&#125;,</span><br><span class="line">                    &#123;'floatPos': [14914.5, 544.0],</span><br><span class="line">                     'lastKnownGatherValue': 2,</span><br><span class="line">                     'pos_x': 14914,</span><br><span class="line">                     'pos_y': 544,</span><br><span class="line">                     'timer': 0.43180203437805176,</span><br><span class="line">                     'uniqueID': 6437&#125;]&#125;</span><br></pre></td></tr></table></figure>
+<p>由于我做测试的点分别是区块<code>466, 17</code>的第<code>2, 0</code>和<code>6, 0</code>方块，简单换算一下就是<code>14914</code>和<code>14918</code>。而它们的高度又正好是<code>544</code>。此外，我是先挖的<code>6, 0</code>，再挖的<code>2, 0</code>，所以<code>timer</code>的数据也没有错。</p>
+<p>所以想必是<code>lastKnownGatherValue</code>在控制损伤了。话虽如此，确切的机制还需要进一步的探究。</p>
+<h2 id="物品测序">物品测序</h2>
+<p><s>这标题整得跟基因测序似的，不懂的人还以为很高大上，往下一看就发现就测个id而已，失望至极，转而怒骂作者，拉黑离去。</s></p>
+<p>数年前，曾经有过一场unknown收集热。所谓unknown，就是没有名字的物品。不知道为什么，似乎一时间，服务器中就开始流传这些来历不明的物品，并以收集为乐。</p>
+<p>那时的我虽然不清楚怎么修改物品的id，但是却知道怎么更改掉在地上的物品的id。这是因为地上的物品是被存放在dw里的，而dw就是普普通通的bplist。于是，凭借着这样低级却有效的技术，我也成功自制了一批unknown。</p>
+<p>但利用这种方法，每次只能测一个物品的id。如此高重复的动作，很难不让人厌倦。</p>
+<p>好在，如今有了代码的支持，想要测序就变得异常简单了。</p>
+<p>7个basket，每个basket4个slot，一次能测28个物品。代码很简单:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">inv = gs.get_inventory(bh[<span class="number">0</span>])</span><br><span class="line">offset = <span class="number">28</span> * <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">8</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">3</span>, <span class="number">-1</span>, <span class="number">-1</span>):</span><br><span class="line">        item = inv[i][<span class="number">0</span>][<span class="string">'s'</span>][j]</span><br><span class="line">        item.set_id(((i - <span class="number">1</span>) &lt;&lt; <span class="number">2</span> | (<span class="number">3</span> - j)) + offset)</span><br><span class="line">        item.set_count(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>以下是id 0 ~ 27的所有物品:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_id_test.png" alt="item_id_test"></p>
+<p>前前后后测了大概十几次，总归也测完了。由于实在太多，就不在这里贴出了。</p>
+<p>记录一些神奇的事情:</p>
+<ul>
+<li>
+<p>在测序过程中把改id获得的diamond portal放下来，却发现它变成了普通portal。</p>
+</li>
+<li>
+<p>通过改id获得的paint， 涂在方块上不会有任何效果。</p>
+</li>
+<li>
+<p>通过改id获得的所有工具台都可以工作，但都是最低等级。</p>
+</li>
+<li>
+<p>可以通过设定id获得一些原始方块:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_id_test_14.png" alt="item_id_test_14"></p>
+<p>上图中就获得了未被挖掘的<code>limestone</code>，<code>marble</code>，<code>red marble</code>以及<code>rock</code>。但是，任何试图放置它们的尝试都会被游戏阻止而失败。</p>
+</li>
+</ul>
+<p>我猜，物品数据中剩下的<code>00 00 00 0c</code>中，应该就包含了描述工作台等级和paint颜色的字节。这也需要进一步测试来确定。</p>
+<h2 id="方块数据格式">方块数据格式</h2>
+<p>一直以来，我都只关注过方块的第0和第2位，分别代表着前景方块和背景方块的ID。</p>
+<p>但是这怎么可能够呢? 矿物，染色，探索与否，是否人为放置，亮度，温度，水的高度以及雪的高度目前都还不确定。所以，还需要进一步的测试。</p>
+<h3 id="矿物">矿物</h3>
+<p>首先是矿物。注意到出生点旁边有这么一块clay:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/test_ore_type.png" alt="test_ore_type"></p>
+<p>就从这里下手吧！</p>
+<p>先把区块打印出来:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/test_ore_type_step1.png" alt="test_ore_type_step1"></p>
+<p>简单数一下就能确定它的位置是<code>6, 27</code>。为了做对比，我们顺便把它下面的普通土块拉出来，然后打印它们俩的数据:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dirt_clay = chunk.get_block(<span class="number">6</span>, <span class="number">27</span>)</span><br><span class="line">dirt_normal = chunk.get_block(<span class="number">6</span>, <span class="number">26</span>)</span><br><span class="line">binary = <span class="string">''</span>.join([struct.pack(<span class="string">'b'</span>, dirt_clay[i]) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">64</span>)])</span><br><span class="line">binary_normal = <span class="string">''</span>.join([struct.pack(<span class="string">'b'</span>, dirt_normal[i]) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">64</span>)])</span><br><span class="line">print(repr(binary))</span><br><span class="line">print(repr(binary_normal))</span><br></pre></td></tr></table></figure>
+<p>看一眼输出:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'\x06\x06\x02\x02\xff\x00\xff\xbe\x00...'</span></span><br><span class="line"><span class="string">'\x06\x06\x02\x00\xff\x00\xff\x8f\x00...'</span></span><br></pre></td></tr></table></figure>
+<p>虽然后面也有个<code>0xbe</code>和<code>0x8f</code>不一样，但是显然矿物种类应该会放在更靠前的位置，而且也不会出现那么大的数字。考虑到泥土只有<code>flint</code>和<code>clay</code>两种矿物，那么<code>flint</code>是<code>\x01</code>的可能性就很大了。</p>
+<p>所以，在block类里面新加一个部分<code>sub_type</code>，然后调用一下试试:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirt_clay.set(<span class="string">"sub_type"</span>, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>保存，导入，打开游戏，一气呵成~~，是bh中的豪杰~~。</p>
+<p>结果如下:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/test_ore_type_step2.png" alt="test_ore_type_step2"></p>
+<p>既然成功了那肯定得整活啊！所以就有了如下恶趣味的画面:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/hell.png" alt="hell"></p>
+<p>那么其他块应该也只需要看一下有多少种可能的子类就行了吧?</p>
+<p>然后我试了一下石头:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/sub_type1.png" alt="sub_type1"></p>
+<p>??? 这为啥能隔的这么开??</p>
+<p>感觉很奇怪，于是我往下翻了一下…</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/sub_type.png" alt="sub_type"></p>
+<p>这第二层不太对吧！！</p>
+<p>如果是这样的话，dave岂不是把所有方块的子类都丢一块了…</p>
+<p>为了验证猜想，于是我把block_id换成了air之后又试了一次:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/sub_type2.png" alt="sub_type2"></p>
+<p>得，看来是实锤了。为了把所有种类都套出来我估计又得花不少时间…</p>
+<p>在测之前先试试看把所有矿都堆一起吧！</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/oresoresores.png" alt="oresoresores"></p>
+<p>显然根据目前的结果，已经不能叫它矿物了。</p>
+<p>未完待续…</p>
 <h2 id="Reference">Reference</h2>
 <ul>
 <li><a href="http://deepdish.io/2015/04/28/creating-lmdb-in-python/" target="_blank" rel="noopener">http://deepdish.io/2015/04/28/creating-lmdb-in-python/</a></li>
