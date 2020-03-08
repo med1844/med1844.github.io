@@ -14,7 +14,7 @@
 
 
 
-<title>The Blockheads存档修改工具开发记录 | Medioqrity&#39;s Blog</title>
+<title>The Blockheads存档修改工具开发记录（一） | Medioqrity&#39;s Blog</title>
 
 
 
@@ -175,7 +175,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">The Blockheads存档修改工具开发记录</h1>
+            <h1 class="post-title">The Blockheads存档修改工具开发记录（一）</h1>
             
                 <div class="post-meta">
                     
@@ -225,8 +225,7 @@
 <p>在建造巨型建筑的时候，想要复制一个非常复杂的结构，并粘贴到某个位置，显然不可能。看腻了BH自带的地形，想要自己写个地形生成器，发现没有API。将一些不可分割的元素拆分后也许能做出相当棒的效果，然而因为不可拆分所以同样做不到。利用程序生成迷宫，自定义空岛生存，这些都是很棒的点子，但就是做不到。</p>
 <p>多可惜啊。</p>
 <p>上github转了一圈，反正没看到有谁写过类似的东西，大多不过是聊天机器人。这样的话，就只能自己动手了。</p>
-<h2 id="读存档">读存档</h2>
-<p>上手一看，存档文件夹里就躺着个world_db，里面就俩文件，<code>data.mdb</code>和<code>lock.mdb</code>。照理说<code>.mdb</code>应该是Access的格式，然而很可惜并打不开。</p>
+<h2 id="读存档"><a href="#读存档" class="headerlink" title="读存档"></a>读存档</h2><p>上手一看，存档文件夹里就躺着个world_db，里面就俩文件，<code>data.mdb</code>和<code>lock.mdb</code>。照理说<code>.mdb</code>应该是Access的格式，然而很可惜并打不开。</p>
 <p>无奈，上网查了一下<code>.mdb</code>还可能是什么存储格式，但还是无功而返。针对文件内容的分析也同样失败了。</p>
 <p>心态有点小崩，返回存档又看了几眼，发现不仅是world_db，lightBlocks和server_db同样也都只有<code>data.mdb</code>和<code>lock.mdb</code>。由于db的全称是database，不免让人想到这一数据库的特点就是同时存储<code>data.mdb</code>和<code>lock.mdb</code>来作为整个数据库。因此把这两个名字一起搜一下，果然…</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/caffe.png" alt="caffe"></p>
@@ -234,7 +233,7 @@
 <p>不过也总比什么证据都得不到要好，毕竟提到了个叫lmdb的东西。我想可能就是它了。遂搜索，然而一个GUI工具都没找着，只找到一个python的模块和一个<a href="https://lmdb.readthedocs.io/en/release/" target="_blank" rel="noopener">文档</a>。嗬，感情我还得学完这API才能确定自己猜的对不对呗?</p>
 <p>想着似乎也就这么一个可能的可行路径了，就还是试了下去。好在最后的确成功读出了数据。</p>
 <hr>
-<p>总的来说，1.7的存档格式相比之前有些改动。现在的1.7采用的是lmdb，将数据全部存放在几个数据库里。而以前各个文件都分散地存储在不同的文件夹里。新的存储方式提供了完整性保证，杜绝了通过<em>复制物品栏文件后，把物品栏的物品放进箱子里，再把物品栏复制回来</em>的方法刷物品。另外，由于lmdb提供ACID的事务，因此不用再担心存档在读写过程中出现问题而导致存档损坏的情况了。<s>要是再出问题那就可以实锤dave的代码有bug了。</s></p>
+<p>总的来说，1.7的存档格式相比之前有些改动。现在的1.7采用的是lmdb，将数据全部存放在几个数据库里。而以前各个文件都分散地存储在不同的文件夹里。新的存储方式提供了完整性保证，杜绝了通过<em>复制物品栏文件后，把物品栏的物品放进箱子里，再把物品栏复制回来</em>的方法刷物品。另外，由于lmdb提供ACID的事务，因此不用再担心存档在读写过程中出现问题而导致存档损坏的情况了。<del>要是再出问题那就可以实锤dave的代码有bug了。</del></p>
 <p>只是单纯的读出来而不做任何处理的话，会得到这种申必数据:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/raw_data.png" alt="raw_data"></p>
 <p>就是二进制和xml plist组成的地狱绘图。</p>
@@ -248,9 +247,8 @@
 <p>随便打开一个看看:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/parsed_output_dw.png" alt="parsed_output_dw"></p>
 <p>能读了！！</p>
-<p>不过只是能读那有个🔨用，改不了还不是个鸡肋? 修改工具的脸都给你丢完了（东北腔</p>
-<h2 id="写存档">写存档</h2>
-<p>写存档说实话还挺麻烦的。在这里就不透露过多技术细节了。</p>
+<p>不过只是能读那有个🔨用，改不了还不是个鸡肋?</p>
+<h2 id="写存档"><a href="#写存档" class="headerlink" title="写存档"></a>写存档</h2><p>写存档说实话还挺麻烦的。在这里就不透露过多技术细节了。</p>
 <p>简而言之，world_db下会分有几个子数据库，子数据库内存储的都是键值对。值全部都是二进制数据，而且类型各不相同。而有些类型又是容器，容器内又有不同的格式，总之相当混乱。</p>
 <p>目前已知的有下面这些:</p>
 <ul>
@@ -259,7 +257,7 @@
 <li>base64</li>
 <li>gzip</li>
 </ul>
-<p>那么核心目标就是，在分辨并解析这些内容的同时，确保有办法能够让它们正确地被打包成二进制数据。为此，我设置了一个抽象类，名为<code>Exportable</code>，表示这是可以导出成二进制数据的类。这样的类必须提供一个名为<code>export</code>的方法，用于在导出时使用。</p>
+<p>那么核心目标就是，在分辨并解析这些内容的同时，确保有办法能够让它们被重新正确地打包成二进制数据。为此，我设置了一个抽象类，名为<code>Exportable</code>，表示这是可以导出成二进制数据的类。这样的类必须提供一个名为<code>export</code>的方法，用于在导出时使用。</p>
 <p>大致上就是如此。</p>
 <p>一个很好的检测<code>export</code>是否在正确工作的方法就是把export出来的二进制数据丢进该类的构造方法里，看看能不能解析出同样的数据来。我想，能够通过这样的测试的话，大概率也就不会在真实数据上翻车了。</p>
 <p>实现过程总之还是有点头疼的，毕竟总是要处理递归的结构。debug体验也不是很友好。稍微写错一点，游戏就不认这个存档，也不告诉你错哪了。不过逆向分析别人的东西，本来就不会有什么debug体验就是了。</p>
@@ -277,8 +275,7 @@
 <p>可以看到有不少不能确定的方块。神奇的是，对于0号和78~127号方块来说，尽管它们是透明的，但它们却都是实打实的实体方块:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/solid_unknown_block.png" alt="solid_unknown_block"></p>
 <p>矿物并没有出现。我猜可能是存在类似mc染色玻璃和木板那样的方块附加值。毕竟一个方块花了64个字节描述，而现在只知道其中两个字节的意思。</p>
-<h2 id="Inventory迷思">Inventory迷思</h2>
-<p>在能基本改造世界后，就该考虑物品栏了。</p>
+<h2 id="Inventory迷思"><a href="#Inventory迷思" class="headerlink" title="Inventory迷思"></a>Inventory迷思</h2><p>在能基本改造世界后，就该考虑物品栏了。</p>
 <p>要测Inventory的存储方式，自然只能依靠控制变量法了。</p>
 <p>首先先丢掉身上所有物品。然后把Inventory解出来，可以得到下面的数据:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[[&#39;\x01\x00\x00\x00\x00\x00\x00\x0c&#39;], [], [], [], [], [], [], []]</span><br></pre></td></tr></table></figure>
@@ -324,8 +321,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gs = GameSave(<span class="string">"./test_data/saves/c8185b81198a1890dac4b621677a9229/"</span>)</span><br><span class="line">bh = gs.get_blockheads()</span><br><span class="line">inv = gs.get_inventory(bh[<span class="number">0</span>])</span><br><span class="line">inv[<span class="number">1</span>].set_id(<span class="number">1049</span>)</span><br><span class="line">inv[<span class="number">1</span>].set_count(<span class="number">1919</span>)</span><br><span class="line">gs.save(<span class="string">"./test_data/saves/out/"</span>)</span><br></pre></td></tr></table></figure>
 <p>跑完之后，结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_count_test.png" alt="item_count_test"></p>
-<h2 id="损耗">损耗</h2>
-<p>之前实现时，假定物品id占用4字节。结果实现了repr之后发现居然出现了item 229553894这种表示…显然占用了用来表示其他内容的字节，因此id只能是2字节了。</p>
+<h2 id="损耗"><a href="#损耗" class="headerlink" title="损耗"></a>损耗</h2><p>之前实现时，假定物品id占用4字节。结果实现了repr之后发现居然出现了item 229553894这种表示…显然占用了用来表示其他内容的字节，因此id只能是2字节了。</p>
 <p>而很显然的是，对于little-endian而言的高位出现了变动，导致了item id出现了离谱的数字。而它们对应的物品id在恢复正常后，指向的都是工具。难免让人怀疑后面的位数是耐久。</p>
 <p>于是写一点简单代码跑一下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_code_output.png" alt="durability_code_output"></p>
@@ -337,7 +333,7 @@
 <p>在那之前，为了满足自己的恶趣味，来试试把flint spade的损耗改到7f:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_negative_test.png" alt="durability_negative_test"></p>
 <p>看起来就跟p的一样，不过游戏画面的确就是这样😂😂有被笑到hhhh</p>
-<p>大概dave大认为控制损耗的代码不会出错，就没有在读取物品的时候添加对应的检测。<s>也算是人之常情吧，我也经常偷这种懒来着…</s></p>
+<p>大概dave大认为控制损耗的代码不会出错，就没有在读取物品的时候添加对应的检测。<del>也算是人之常情吧，我也经常偷这种懒来着…</del></p>
 <p>接下来测试一下同样是<code>3e</code>的损耗，其他物品的表现如何呢? 这次直接请出游戏中最耐用的工具之一: 钛镐。</p>
 <p>简单地在之前的代码中加上<code>item.set_id(285)</code>，就能把flint spade变成titanium pickaxe。测试结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_titanium.png" alt="durability_titanium"></p>
@@ -345,24 +341,35 @@
 <p>感觉后一个猜想可行，随便敲几个石头试试，然后看看损耗值。结果如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Game\BH\BHCore (master -&gt; origin) </span><br><span class="line">λ c:&#x2F;python27&#x2F;python inventory_tester.py</span><br><span class="line">&#39;\x1d\x01!&gt;\x00\x00\x00\x0c&#39;</span><br></pre></td></tr></table></figure>
 <p>看来第二个猜想是正确的，所以最大的损耗是<code>ff 3f</code>。可以理解为，每个物品都有16384的耐久。等级越低的物品，每使用一次耐久减少得越多。我用钛镐挖了11块石头，损耗从<code>\x00&gt;</code>变成了<code>!&gt;</code>，也就是<code>21 3e</code>。损耗增加了33点，说明钛镐挖一次石头会损失3耐久。显然不难计算出钛镐的使用次数为<code>16384 / 3 = 5461.33</code>次。</p>
-<p>那同样我们也可以测试出每种镐子的耐久。由于不同的稿子挖石头可能会有不同的加成，因此测试方法是用镐子挖一块沙子，观察损耗值，并除以手敲一块沙子所需次数，即可计算出每次镐击带来的损耗。我决定把这称为<strong>基本损耗</strong>。</p>
+<p>那同样我们也可以测试出每种镐子的耐久。由于不同的稿子挖石头可能会有不同的加成，因此测试方法是用镐子挖一块沙子，观察损耗值，并除以手敲一块沙子所需次数，即可计算出每次镐击带来的损耗。为了方便起见，下文就把这简称为<strong>基本损耗</strong>。</p>
 <p>结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/base_damage.png" alt="base_damage"></p>
+<p>再根据之前的结论，只要用16384除以对应工具的基本损耗就可以得到它的敲击次数限制了。结果如下:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_res.png" alt="durability_res"></p>
 <p>但不要忘了，方块也是有<em>生命值</em>的（听起来很怪但是没想到更好的词儿）。有的镐子给方块的伤害比较高，有的比较低。这就会导致基本损耗相同的镐子，挖同种方块，最后却是其中一把先爆。</p>
 <p>为此，显然有必要测试方块的生命值。镐子有加成，所以用铲子测试。结果…</p>
 <p>呃，不论我怎么调整方块的硬度，永远都只有一个字节有改动…所以试了一下把这个改动的字节从0 ~ 255枚举一遍:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/damage_gradient.png" alt="damage_gradient"></p>
 <p>看来损伤值确实是只有一个字节来存储…可是工业方块的硬度显然已经超过了256的范围啊? 那到底是把真实的方块硬度放在哪里了呢…</p>
-<p>惆怅的时候，两个之前被我拿来测试的方块居然复原了！这说明一定是在blocks以外的地方存储了损伤值以及损伤时间。于是打开dw，把对应区块所有文件扒拉出来。里面一个叫<code>466_17/26</code>的dw让我觉得很可疑:</p>
+<p>一筹莫展的时候，两个之前被我拿来测试的方块居然复原了！这说明一定是在blocks以外的地方存储了损伤值以及损伤时间。于是打开dw，把对应区块所有文件扒拉出来。里面一个叫<code>466_17/26</code>的dw让我觉得很可疑:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;'dynamicObjects': [&#123;'floatPos': [14918.5, 544.0],</span><br><span class="line">                     'lastKnownGatherValue': 201,</span><br><span class="line">                     'pos_x': 14918,</span><br><span class="line">                     'pos_y': 544,</span><br><span class="line">                     'timer': 7.865746974945068,</span><br><span class="line">                     'uniqueID': 5815&#125;,</span><br><span class="line">                    &#123;'floatPos': [14914.5, 544.0],</span><br><span class="line">                     'lastKnownGatherValue': 2,</span><br><span class="line">                     'pos_x': 14914,</span><br><span class="line">                     'pos_y': 544,</span><br><span class="line">                     'timer': 0.43180203437805176,</span><br><span class="line">                     'uniqueID': 6437&#125;]&#125;</span><br></pre></td></tr></table></figure>
 <p>由于我做测试的点分别是区块<code>466, 17</code>的第<code>2, 0</code>和<code>6, 0</code>方块，简单换算一下就是<code>14914</code>和<code>14918</code>。而它们的高度又正好是<code>544</code>。此外，我是先挖的<code>6, 0</code>，再挖的<code>2, 0</code>，所以<code>timer</code>的数据也没有错。</p>
-<p>所以想必是<code>lastKnownGatherValue</code>在控制损伤了。话虽如此，确切的机制还需要进一步的探究。</p>
-<h2 id="物品测序">物品测序</h2>
-<p><s>这标题整得跟基因测序似的，不懂的人还以为很高大上，往下一看就发现就测个id而已，失望至极，转而怒骂作者，拉黑离去。</s></p>
-<p>数年前，曾经有过一场unknown收集热。所谓unknown，就是没有名字的物品。不知道为什么，似乎一时间，服务器中就开始流传这些来历不明的物品，并以收集为乐。</p>
+<p>所以想必是<code>lastKnownGatherValue</code>在控制损伤了。但是，做了几次测试之后（用手敲了几下钢块），发现这个值完全没有变… 如果游戏内是用浮点数存储的话，那大概率就是方块的生命值在存储时会被强制转换成unsigned short了吧。</p>
+<p>无奈之下重新审视测得的损耗数据，和基本损耗相除后就可以得到每种镐子敲每种方块的敲击次数。绘制成图像后如下:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/relative_hardness.png" alt="relative_hardness"></p>
+<p>并找不到什么规律…钢块对铜镐之类的竟然还有抗性…真的摸不透。</p>
+<p>所以，最后得出的结论如下:</p>
+<ul>
+<li>每种工具每次敲击消耗的耐久是固定的。</li>
+<li>不同的工具对不同的方块的攻击力不同。</li>
+<li>所有方块的生命值都只有256。</li>
+</ul>
+<p>说实话没什么建设性的发现…</p>
+<h2 id="物品测序"><a href="#物品测序" class="headerlink" title="物品测序"></a>物品测序</h2><p><del>这标题整得跟基因测序似的，不懂的人还以为很高大上，往下一看就发现就测个id而已，失望至极，转而怒骂作者，拉黑离去。</del></p>
+<p>数年前，曾经有过一场unknown收集热。所谓unknown，就是没有名字的物品。不知道为什么，似乎一时间，服务器中就开始流传这些来历不明的物品，并且挂起了<em>收集得越多就越是大佬</em>这种神奇的风气。</p>
 <p>那时的我虽然不清楚怎么修改物品的id，但是却知道怎么更改掉在地上的物品的id。这是因为地上的物品是被存放在dw里的，而dw就是普普通通的bplist。于是，凭借着这样低级却有效的技术，我也成功自制了一批unknown。</p>
-<p>但利用这种方法，每次只能测一个物品的id。如此高重复的动作，很难不让人厌倦。</p>
-<p>好在，如今有了代码的支持，想要测序就变得异常简单了。</p>
+<p>尝到了甜头的我在那时就有过要测序的念头。但利用这种方法，每次只能测一个物品的id。如此高重复的动作，很难不让人厌倦。</p>
+<p>好在如今有了代码的支持，想要测序就变得异常简单了。</p>
 <p>7个basket，每个basket4个slot，一次能测28个物品。代码很简单:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">inv = gs.get_inventory(bh[<span class="number">0</span>])</span><br><span class="line">offset = <span class="number">28</span> * <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">8</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">3</span>, <span class="number">-1</span>, <span class="number">-1</span>):</span><br><span class="line">        item = inv[i][<span class="number">0</span>][<span class="string">'s'</span>][j]</span><br><span class="line">        item.set_id(((i - <span class="number">1</span>) &lt;&lt; <span class="number">2</span> | (<span class="number">3</span> - j)) + offset)</span><br><span class="line">        item.set_count(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 <p>以下是id 0 ~ 27的所有物品:</p>
@@ -370,27 +377,48 @@
 <p>前前后后测了大概十几次，总归也测完了。由于实在太多，就不在这里贴出了。</p>
 <p>记录一些神奇的事情:</p>
 <ul>
-<li>
-<p>在测序过程中把改id获得的diamond portal放下来，却发现它变成了普通portal。</p>
+<li><p>在测序过程中把改id获得的diamond portal放下来，却发现它变成了普通portal。</p>
 </li>
-<li>
-<p>通过改id获得的paint， 涂在方块上不会有任何效果。</p>
+<li><p>通过改id获得的paint， 涂在方块上不会有任何效果。</p>
 </li>
-<li>
-<p>通过改id获得的所有工具台都可以工作，但都是最低等级。</p>
+<li><p>通过改id获得的所有工具台都可以工作，但都是最低等级。</p>
 </li>
-<li>
-<p>可以通过设定id获得一些原始方块:</p>
-<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_id_test_14.png" alt="item_id_test_14"></p>
-<p>上图中就获得了未被挖掘的<code>limestone</code>，<code>marble</code>，<code>red marble</code>以及<code>rock</code>。但是，任何试图放置它们的尝试都会被游戏阻止而失败。</p>
+<li><p>可以通过设定id获得一些原始方块:</p>
+<p>  <img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_id_test_14.png" alt="item_id_test_14"></p>
+<p>  上图中就获得了未被挖掘的<code>limestone</code>，<code>marble</code>，<code>red marble</code>以及<code>rock</code>。但是，任何试图放置它们的尝试都会被游戏阻止而失败。</p>
 </li>
 </ul>
-<p>我猜，物品数据中剩下的<code>00 00 00 0c</code>中，应该就包含了描述工作台等级和paint颜色的字节。这也需要进一步测试来确定。</p>
-<h2 id="方块数据格式">方块数据格式</h2>
-<p>一直以来，我都只关注过方块的第0和第2位，分别代表着前景方块和背景方块的ID。</p>
+<p>我猜，物品数据中剩下的<code>00 00 00 0c</code>中，应该就包含了描述工作台等级和paint颜色的字节。这样的话，准备几个石头让小人升级一下最基础的workbench，再看看物品的数据大概就可以了。</p>
+<h2 id="物品格式"><a href="#物品格式" class="headerlink" title="物品格式"></a>物品格式</h2><p>于是根据上面所设想的测试步骤，升级了一个workbench，然后得到了看着就很麻烦的输出:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/workbench_test.png" alt="workbench_test"></p>
+<p>就是说，一个workbench item里，会带有很多很多附加信息，而不是之前设想的那样用某个位表示等级。这信息实在是太多了，我怀疑dave是直接把所有类成员都丢了出来。</p>
+<p>试着把<code>[&#39;d&#39;][&#39;level&#39;]</code>改成了3，成功获得了一枚最高等级的workbench:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/workbench_test_success.png" alt="workbench_test_success"></p>
+<p>也算是发现了后面的部分应该称为附加数据，于是添加了构造和删除附加数据的方法。<del>然而还是不怎么好用就是了。</del></p>
+<p>然后试着造了一桶白油漆，并把数据读了出来:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/paint_item_data.png" alt="paint_item_data"></p>
+<p>这一次确实没有附加数据了，我猜想的位置也出现了改变。不过，具体每一位代表什么还有着许多不确定。</p>
+<p>于是我先把最基本的8种颜色做了出来，获得了它们的数据:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/paint_item_data_2.png" alt="paint_item_data_2"></p>
+<p>然后把它们一一对应到油漆上:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/paint_item_data_res.png" alt="paint_item_data_res"></p>
+<p>简单观察一下就能发现，数字大小和它们在mixing bench中的出现顺序一致。</p>
+<p>不过光有一个颜料肯定是不够的，接下来试试白+黑以及白+白+黑。命令行的输出结果分别是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Game\BH\BHCore (master -&gt; origin)</span><br><span class="line">λ c:&#x2F;python27&#x2F;python workbench_paint_tester.py</span><br><span class="line">&#39;g\x00\x00\x00\x00\x12\x00\x0c&#39;</span><br><span class="line">&#39;g\x00\x00\x00\x20\x11\x00\x0c&#39;</span><br></pre></td></tr></table></figure>
+<p>所以第二个染料会被放在第5字节的低4位，第三个染料会被放在第4字节的高4位? 第4字节的低4位会起效吗?</p>
+<p>总归，先加上对应的支持函数<code>set_color(*args)</code>。为了能满足测试第4字节的低4位的恶趣味，就把函数写成比较通用的形式吧:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_color</span><span class="params">(self, *colors)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> <span class="number">1</span> &lt;= len(colors) &lt;= <span class="number">4</span></span><br><span class="line">    val = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">        val &lt;&lt;= <span class="number">4</span></span><br><span class="line">        <span class="keyword">if</span> i &lt; len(colors):</span><br><span class="line">            val |= colors[i]</span><br><span class="line">    self._data = self._data[:<span class="number">4</span>] + struct.pack(<span class="string">"&lt;H"</span>, val) + self._data[<span class="number">6</span>:]</span><br></pre></td></tr></table></figure>
+<p>逻辑很简单。如果把先前的<code>\x20\x11</code>转换成一个unsigned short来看待的话，就是<code>11 20</code>。 不难看出染料顺序与位数高低的关系。因此，只需要暴力左移即可。</p>
+<p>之后测了一下<code>set_color(1, 1, 2, 3)</code>。如果成功的话，得到的油漆应该带有一点暗红色。可惜的是并没有识别出来…所以就不贴截图了。</p>
+<p>那么衣服之类的呢? 我想应该不会有太大出入，所以直接上手试一下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">item = inv[<span class="number">2</span>].get(<span class="number">2</span>)</span><br><span class="line">item.set_color(<span class="number">3</span>, <span class="number">4</span>, <span class="number">7</span>)</span><br><span class="line"></span><br><span class="line">item = inv[<span class="number">4</span>].get(<span class="number">3</span>)</span><br><span class="line">item.set_color(<span class="number">5</span>, <span class="number">6</span>, <span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<p>把修改后的存档丢回去，打开看看:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/paint_item_data_res_2.png" alt="paint_item_data_res_2"></p>
+<p>它们之前的颜色分别是<code>(1, 1, 2)</code>和<code>(0, 0, 0)</code>，说明修改成功了！</p>
+<p>这样的话，想要生成所有油漆，似乎也不是什么难事啊。</p>
+<h2 id="方块数据格式"><a href="#方块数据格式" class="headerlink" title="方块数据格式"></a>方块数据格式</h2><p>一直以来，我都只关注过方块的第0和第2位，分别代表着前景方块和背景方块的ID。</p>
 <p>但是这怎么可能够呢? 矿物，染色，探索与否，是否人为放置，亮度，温度，水的高度以及雪的高度目前都还不确定。所以，还需要进一步的测试。</p>
-<h3 id="矿物">矿物</h3>
-<p>首先是矿物。注意到出生点旁边有这么一块clay:</p>
+<h3 id="矿物"><a href="#矿物" class="headerlink" title="矿物"></a>矿物</h3><p>首先是矿物。注意到出生点旁边有这么一块clay:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/test_ore_type.png" alt="test_ore_type"></p>
 <p>就从这里下手吧！</p>
 <p>先把区块打印出来:</p>
@@ -402,13 +430,13 @@
 <p>虽然后面也有个<code>0xbe</code>和<code>0x8f</code>不一样，但是显然矿物种类应该会放在更靠前的位置，而且也不会出现那么大的数字。考虑到泥土只有<code>flint</code>和<code>clay</code>两种矿物，那么<code>flint</code>是<code>\x01</code>的可能性就很大了。</p>
 <p>所以，在block类里面新加一个部分<code>sub_type</code>，然后调用一下试试:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirt_clay.set(<span class="string">"sub_type"</span>, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
-<p>保存，导入，打开游戏，一气呵成~~，是bh中的豪杰~~。</p>
+<p>保存，导入，打开游戏，一气呵成，<del>是BH中的豪杰。</del></p>
 <p>结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/test_ore_type_step2.png" alt="test_ore_type_step2"></p>
 <p>既然成功了那肯定得整活啊！所以就有了如下恶趣味的画面:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/hell.png" alt="hell"></p>
 <p>那么其他块应该也只需要看一下有多少种可能的子类就行了吧?</p>
-<p>然后我试了一下石头:</p>
+<p>于是我试了一下石头:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/sub_type1.png" alt="sub_type1"></p>
 <p>??? 这为啥能隔的这么开??</p>
 <p>感觉很奇怪，于是我往下翻了一下…</p>
@@ -420,10 +448,9 @@
 <p>得，看来是实锤了。为了把所有种类都套出来我估计又得花不少时间…</p>
 <p>在测之前先试试看把所有矿都堆一起吧！</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/oresoresores.png" alt="oresoresores"></p>
-<p>显然根据目前的结果，已经不能叫它矿物了。</p>
+<p>显然根据目前的结果，已经不能叫它矿物了。但是，如果不叫矿物的话，又该怎么称呼它呢?</p>
 <p>未完待续…</p>
-<h2 id="Reference">Reference</h2>
-<ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
 <li><a href="http://deepdish.io/2015/04/28/creating-lmdb-in-python/" target="_blank" rel="noopener">http://deepdish.io/2015/04/28/creating-lmdb-in-python/</a></li>
 <li><a href="https://blog.separateconcerns.com/2016-04-03-lmdb-format.html" target="_blank" rel="noopener">https://blog.separateconcerns.com/2016-04-03-lmdb-format.html</a></li>
 <li><a href="https://lmdb.readthedocs.io/en/release/" target="_blank" rel="noopener">https://lmdb.readthedocs.io/en/release/</a></li>
