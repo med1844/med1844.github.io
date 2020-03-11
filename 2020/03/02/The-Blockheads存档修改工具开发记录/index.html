@@ -225,7 +225,8 @@
 <p>在建造巨型建筑的时候，想要复制一个非常复杂的结构，并粘贴到某个位置，显然不可能。看腻了BH自带的地形，想要自己写个地形生成器，发现没有API。将一些不可分割的元素拆分后也许能做出相当棒的效果，然而因为不可拆分所以同样做不到。利用程序生成迷宫，自定义空岛生存，这些都是很棒的点子，但就是做不到。</p>
 <p>多可惜啊。</p>
 <p>上github转了一圈，反正没看到有谁写过类似的东西，大多不过是聊天机器人。这样的话，就只能自己动手了。</p>
-<h2 id="读存档"><a href="#读存档" class="headerlink" title="读存档"></a>读存档</h2><p>上手一看，存档文件夹里就躺着个world_db，里面就俩文件，<code>data.mdb</code>和<code>lock.mdb</code>。照理说<code>.mdb</code>应该是Access的格式，然而很可惜并打不开。</p>
+<h2 id="读存档">读存档</h2>
+<p>上手一看，存档文件夹里就躺着个world_db，里面就俩文件，<code>data.mdb</code>和<code>lock.mdb</code>。照理说<code>.mdb</code>应该是Access的格式，然而很可惜并打不开。</p>
 <p>无奈，上网查了一下<code>.mdb</code>还可能是什么存储格式，但还是无功而返。针对文件内容的分析也同样失败了。</p>
 <p>心态有点小崩，返回存档又看了几眼，发现不仅是world_db，lightBlocks和server_db同样也都只有<code>data.mdb</code>和<code>lock.mdb</code>。由于db的全称是database，不免让人想到这一数据库的特点就是同时存储<code>data.mdb</code>和<code>lock.mdb</code>来作为整个数据库。因此把这两个名字一起搜一下，果然…</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/caffe.png" alt="caffe"></p>
@@ -233,7 +234,7 @@
 <p>不过也总比什么证据都得不到要好，毕竟提到了个叫lmdb的东西。我想可能就是它了。遂搜索，然而一个GUI工具都没找着，只找到一个python的模块和一个<a href="https://lmdb.readthedocs.io/en/release/" target="_blank" rel="noopener">文档</a>。嗬，感情我还得学完这API才能确定自己猜的对不对呗?</p>
 <p>想着似乎也就这么一个可能的可行路径了，就还是试了下去。好在最后的确成功读出了数据。</p>
 <hr>
-<p>总的来说，1.7的存档格式相比之前有些改动。现在的1.7采用的是lmdb，将数据全部存放在几个数据库里。而以前各个文件都分散地存储在不同的文件夹里。新的存储方式提供了完整性保证，杜绝了通过<em>复制物品栏文件后，把物品栏的物品放进箱子里，再把物品栏复制回来</em>的方法刷物品。另外，由于lmdb提供ACID的事务，因此不用再担心存档在读写过程中出现问题而导致存档损坏的情况了。<del>要是再出问题那就可以实锤dave的代码有bug了。</del></p>
+<p>总的来说，1.7的存档格式相比之前有些改动。现在的1.7采用的是lmdb，将数据全部存放在几个数据库里。而以前各个文件都分散地存储在不同的文件夹里。新的存储方式提供了完整性保证，杜绝了通过<em>复制物品栏文件后，把物品栏的物品放进箱子里，再把物品栏复制回来</em>的方法刷物品。另外，由于lmdb提供ACID的事务，因此不用再担心存档在读写过程中出现问题而导致存档损坏的情况了。<s>要是再出问题那就可以实锤dave的代码有bug了。</s></p>
 <p>只是单纯的读出来而不做任何处理的话，会得到这种申必数据:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/raw_data.png" alt="raw_data"></p>
 <p>就是二进制和xml plist组成的地狱绘图。</p>
@@ -248,7 +249,8 @@
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/parsed_output_dw.png" alt="parsed_output_dw"></p>
 <p>能读了！！</p>
 <p>不过只是能读那有个🔨用，改不了还不是个鸡肋?</p>
-<h2 id="写存档"><a href="#写存档" class="headerlink" title="写存档"></a>写存档</h2><p>写存档说实话还挺麻烦的。在这里就不透露过多技术细节了。</p>
+<h2 id="写存档">写存档</h2>
+<p>写存档说实话还挺麻烦的。在这里就不透露过多技术细节了。</p>
 <p>简而言之，world_db下会分有几个子数据库，子数据库内存储的都是键值对。值全部都是二进制数据，而且类型各不相同。而有些类型又是容器，容器内又有不同的格式，总之相当混乱。</p>
 <p>目前已知的有下面这些:</p>
 <ul>
@@ -275,7 +277,8 @@
 <p>可以看到有不少不能确定的方块。神奇的是，对于0号和78~127号方块来说，尽管它们是透明的，但它们却都是实打实的实体方块:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/solid_unknown_block.png" alt="solid_unknown_block"></p>
 <p>矿物并没有出现。我猜可能是存在类似mc染色玻璃和木板那样的方块附加值。毕竟一个方块花了64个字节描述，而现在只知道其中两个字节的意思。</p>
-<h2 id="Inventory迷思"><a href="#Inventory迷思" class="headerlink" title="Inventory迷思"></a>Inventory迷思</h2><p>在能基本改造世界后，就该考虑物品栏了。</p>
+<h2 id="Inventory迷思">Inventory迷思</h2>
+<p>在能基本改造世界后，就该考虑物品栏了。</p>
 <p>要测Inventory的存储方式，自然只能依靠控制变量法了。</p>
 <p>首先先丢掉身上所有物品。然后把Inventory解出来，可以得到下面的数据:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[[&#39;\x01\x00\x00\x00\x00\x00\x00\x0c&#39;], [], [], [], [], [], [], []]</span><br></pre></td></tr></table></figure>
@@ -321,7 +324,8 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gs = GameSave(<span class="string">"./test_data/saves/c8185b81198a1890dac4b621677a9229/"</span>)</span><br><span class="line">bh = gs.get_blockheads()</span><br><span class="line">inv = gs.get_inventory(bh[<span class="number">0</span>])</span><br><span class="line">inv[<span class="number">1</span>].set_id(<span class="number">1049</span>)</span><br><span class="line">inv[<span class="number">1</span>].set_count(<span class="number">1919</span>)</span><br><span class="line">gs.save(<span class="string">"./test_data/saves/out/"</span>)</span><br></pre></td></tr></table></figure>
 <p>跑完之后，结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_count_test.png" alt="item_count_test"></p>
-<h2 id="损耗"><a href="#损耗" class="headerlink" title="损耗"></a>损耗</h2><p>之前实现时，假定物品id占用4字节。结果实现了repr之后发现居然出现了item 229553894这种表示…显然占用了用来表示其他内容的字节，因此id只能是2字节了。</p>
+<h2 id="损耗">损耗</h2>
+<p>之前实现时，假定物品id占用4字节。结果实现了repr之后发现居然出现了item 229553894这种表示…显然占用了用来表示其他内容的字节，因此id只能是2字节了。</p>
 <p>而很显然的是，对于little-endian而言的高位出现了变动，导致了item id出现了离谱的数字。而它们对应的物品id在恢复正常后，指向的都是工具。难免让人怀疑后面的位数是耐久。</p>
 <p>于是写一点简单代码跑一下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_code_output.png" alt="durability_code_output"></p>
@@ -333,7 +337,7 @@
 <p>在那之前，为了满足自己的恶趣味，来试试把flint spade的损耗改到7f:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_negative_test.png" alt="durability_negative_test"></p>
 <p>看起来就跟p的一样，不过游戏画面的确就是这样😂😂有被笑到hhhh</p>
-<p>大概dave大认为控制损耗的代码不会出错，就没有在读取物品的时候添加对应的检测。<del>也算是人之常情吧，我也经常偷这种懒来着…</del></p>
+<p>大概dave大认为控制损耗的代码不会出错，就没有在读取物品的时候添加对应的检测。<s>也算是人之常情吧，我也经常偷这种懒来着…</s></p>
 <p>接下来测试一下同样是<code>3e</code>的损耗，其他物品的表现如何呢? 这次直接请出游戏中最耐用的工具之一: 钛镐。</p>
 <p>简单地在之前的代码中加上<code>item.set_id(285)</code>，就能把flint spade变成titanium pickaxe。测试结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/durability_titanium.png" alt="durability_titanium"></p>
@@ -365,8 +369,9 @@
 <li>所有方块的生命值都只有256。</li>
 </ul>
 <p>说实话没什么建设性的发现…</p>
-<h2 id="物品测序"><a href="#物品测序" class="headerlink" title="物品测序"></a>物品测序</h2><p><del>这标题整得跟基因测序似的，不懂的人还以为很高大上，往下一看就发现就测个id而已，失望至极，转而怒骂作者，拉黑离去。</del></p>
-<p>数年前，曾经有过一场unknown收集热。所谓unknown，就是没有名字的物品。不知道为什么，似乎一时间，服务器中就开始流传这些来历不明的物品，并且挂起了<em>收集得越多就越是大佬</em>这种神奇的风气。</p>
+<h2 id="物品测序">物品测序</h2>
+<p><s>这标题整得跟基因测序似的，不懂的人还以为很高大上，往下一看就发现就测个id而已，失望至极，转而怒骂作者，拉黑离去。</s></p>
+<p>数年前，曾经有过一场unknown收集热。所谓unknown，就是没有名字的物品。不知道为什么，似乎一时间，服务器中就开始流传这些来历不明的物品，并且刮起了<em>收集得越多就越是大佬</em>这种神奇的风气。</p>
 <p>那时的我虽然不清楚怎么修改物品的id，但是却知道怎么更改掉在地上的物品的id。这是因为地上的物品是被存放在dw里的，而dw就是普普通通的bplist。于是，凭借着这样低级却有效的技术，我也成功自制了一批unknown。</p>
 <p>尝到了甜头的我在那时就有过要测序的念头。但利用这种方法，每次只能测一个物品的id。如此高重复的动作，很难不让人厌倦。</p>
 <p>好在如今有了代码的支持，想要测序就变得异常简单了。</p>
@@ -377,24 +382,29 @@
 <p>前前后后测了大概十几次，总归也测完了。由于实在太多，就不在这里贴出了。</p>
 <p>记录一些神奇的事情:</p>
 <ul>
-<li><p>在测序过程中把改id获得的diamond portal放下来，却发现它变成了普通portal。</p>
+<li>
+<p>在测序过程中把改id获得的diamond portal放下来，却发现它变成了普通portal。</p>
 </li>
-<li><p>通过改id获得的paint， 涂在方块上不会有任何效果。</p>
+<li>
+<p>通过改id获得的paint， 涂在方块上不会有任何效果。</p>
 </li>
-<li><p>通过改id获得的所有工具台都可以工作，但都是最低等级。</p>
+<li>
+<p>通过改id获得的所有工具台都可以工作，但都是最低等级。</p>
 </li>
-<li><p>可以通过设定id获得一些原始方块:</p>
-<p>  <img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_id_test_14.png" alt="item_id_test_14"></p>
-<p>  上图中就获得了未被挖掘的<code>limestone</code>，<code>marble</code>，<code>red marble</code>以及<code>rock</code>。但是，任何试图放置它们的尝试都会被游戏阻止而失败。</p>
+<li>
+<p>可以通过设定id获得一些原始方块:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/item_id_test_14.png" alt="item_id_test_14"></p>
+<p>上图中就获得了未被挖掘的<code>limestone</code>，<code>marble</code>，<code>red marble</code>以及<code>rock</code>。但是，任何试图放置它们的尝试都会被游戏阻止而失败。</p>
 </li>
 </ul>
 <p>我猜，物品数据中剩下的<code>00 00 00 0c</code>中，应该就包含了描述工作台等级和paint颜色的字节。这样的话，准备几个石头让小人升级一下最基础的workbench，再看看物品的数据大概就可以了。</p>
-<h2 id="物品格式"><a href="#物品格式" class="headerlink" title="物品格式"></a>物品格式</h2><p>于是根据上面所设想的测试步骤，升级了一个workbench，然后得到了看着就很麻烦的输出:</p>
+<h2 id="物品格式">物品格式</h2>
+<p>于是根据上面所设想的测试步骤，升级了一个workbench，然后得到了看着就很麻烦的输出:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/workbench_test.png" alt="workbench_test"></p>
 <p>就是说，一个workbench item里，会带有很多很多附加信息，而不是之前设想的那样用某个位表示等级。这信息实在是太多了，我怀疑dave是直接把所有类成员都丢了出来。</p>
-<p>试着把<code>[&#39;d&#39;][&#39;level&#39;]</code>改成了3，成功获得了一枚最高等级的workbench:</p>
+<p>试着把<code>['d']['level']</code>改成了3，成功获得了一枚最高等级的workbench:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/workbench_test_success.png" alt="workbench_test_success"></p>
-<p>也算是发现了后面的部分应该称为附加数据，于是添加了构造和删除附加数据的方法。<del>然而还是不怎么好用就是了。</del></p>
+<p>也算是发现了后面的部分应该称为附加数据，于是添加了构造和删除附加数据的方法。<s>然而还是不怎么好用就是了。</s></p>
 <p>然后试着造了一桶白油漆，并把数据读了出来:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/paint_item_data.png" alt="paint_item_data"></p>
 <p>这一次确实没有附加数据了，我猜想的位置也出现了改变。不过，具体每一位代表什么还有着许多不确定。</p>
@@ -416,9 +426,11 @@
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/paint_item_data_res_2.png" alt="paint_item_data_res_2"></p>
 <p>它们之前的颜色分别是<code>(1, 1, 2)</code>和<code>(0, 0, 0)</code>，说明修改成功了！</p>
 <p>这样的话，想要生成所有油漆，似乎也不是什么难事啊。</p>
-<h2 id="方块数据格式"><a href="#方块数据格式" class="headerlink" title="方块数据格式"></a>方块数据格式</h2><p>一直以来，我都只关注过方块的第0和第2位，分别代表着前景方块和背景方块的ID。</p>
+<h2 id="方块数据格式">方块数据格式</h2>
+<p>一直以来，我都只关注过方块的第0和第2位，分别代表着前景方块和背景方块的ID。</p>
 <p>但是这怎么可能够呢? 矿物，染色，探索与否，是否人为放置，亮度，温度，水的高度以及雪的高度目前都还不确定。所以，还需要进一步的测试。</p>
-<h3 id="矿物"><a href="#矿物" class="headerlink" title="矿物"></a>矿物</h3><p>首先是矿物。注意到出生点旁边有这么一块clay:</p>
+<h3 id="矿物">矿物</h3>
+<p>首先是矿物。注意到出生点旁边有这么一块clay:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/test_ore_type.png" alt="test_ore_type"></p>
 <p>就从这里下手吧！</p>
 <p>先把区块打印出来:</p>
@@ -430,7 +442,7 @@
 <p>虽然后面也有个<code>0xbe</code>和<code>0x8f</code>不一样，但是显然矿物种类应该会放在更靠前的位置，而且也不会出现那么大的数字。考虑到泥土只有<code>flint</code>和<code>clay</code>两种矿物，那么<code>flint</code>是<code>\x01</code>的可能性就很大了。</p>
 <p>所以，在block类里面新加一个部分<code>sub_type</code>，然后调用一下试试:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirt_clay.set(<span class="string">"sub_type"</span>, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
-<p>保存，导入，打开游戏，一气呵成，<del>是BH中的豪杰。</del></p>
+<p>保存，导入，打开游戏，一气呵成，<s>是BH中的豪杰。</s></p>
 <p>结果如下:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/test_ore_type_step2.png" alt="test_ore_type_step2"></p>
 <p>既然成功了那肯定得整活啊！所以就有了如下恶趣味的画面:</p>
@@ -446,11 +458,57 @@
 <p>为了验证猜想，于是我把block_id换成了air之后又试了一次:</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/sub_type2.png" alt="sub_type2"></p>
 <p>得，看来是实锤了。为了把所有种类都套出来我估计又得花不少时间…</p>
-<p>在测之前先试试看把所有矿都堆一起吧！</p>
+<p>不管怎样，先试试看把所有矿都堆一起吧！</p>
 <p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/oresoresores.png" alt="oresoresores"></p>
 <p>显然根据目前的结果，已经不能叫它矿物了。但是，如果不叫矿物的话，又该怎么称呼它呢?</p>
-<p>未完待续…</p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<h3 id="雪和水的高度">雪和水的高度</h3>
+<p>首先先在温馨的小家里放点水:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/water_height.png" alt="water_height"></p>
+<p>然后把这7格水对应的方块数据把拉出来:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">24</span>, <span class="number">31</span>):</span><br><span class="line">    print(chunk.get_block(i, <span class="number">29</span>).to_hex())</span><br></pre></td></tr></table></figure>
+<p>于是就能看到下面这种申必数据:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/water_height_data.png" alt="water_height_data"></p>
+<p>可以看到后4个方块的第4位都是<code>2e</code>，所以工具台对应的sub type值是46。</p>
+<p>大致可以猜测第5位是水和雪的高度。更靠后的部分的那些申必数据我暂且还蒙在鼓里。</p>
+<p>再来看看雪的情况:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/snow_height.png" alt="snow_height"></p>
+<p>图中圈出的红色部分的对应数据如下:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/snow_height_data.png" alt="snow_height_data"></p>
+<p>我想基本可以证实第5位是水和雪的高度了。再看看后面那几位，可以看到最上面那两个方块的值都是<code>0</code>，在图中有区别的似乎也只有光照了。而光照本身需要三种颜色，也就能解释为什么会出现<code>11 0a 03</code>三个值了。</p>
+<p>不过之前水的数据中出现了<code>f7 02</code>这种光照值，让人有点搞不懂。为什么会用两个字节表示某种颜色的光照呢?</p>
+<p>光照就留到后面继续测试吧。现在试一下恶趣味，生成一整个区块的水和雪试试:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">chunk = gs.get_chunk(*chunk_pos)</span><br><span class="line"><span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">15</span>, <span class="number">-1</span>, <span class="number">-1</span>):</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">16</span>):</span><br><span class="line">        b = chunk.get_block(x, y)</span><br><span class="line">        b.set(<span class="string">"first_layer_id"</span>, choice([BlockType.SNOW, BlockType.WATER]))</span><br><span class="line">        b.set(<span class="string">"height"</span>, <span class="number">0xff</span>)</span><br></pre></td></tr></table></figure>
+<p>进游戏看一眼:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/snow_water_height_test.png" alt="snow_water_height_test"></p>
+<p>虽然看着很混乱，不过确实成功了！</p>
+<h3 id="迷雾">迷雾</h3>
+<p>游戏中没有探索过的地方是隐藏在迷雾中的。</p>
+<p>显然，为了探索迷雾，最好的方法就是往上看。</p>
+<p>将<code>465, 17</code>和<code>465, 16</code>的第17列所有方块的数据按高度降序打印了出来，结果如下:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/visibility_test.png" alt="visibility_test"></p>
+<p>红色的部分大概率就是是否有被探索过。<code>ff</code>表示完全探索，<code>00</code>表示完全处于黑暗迷雾中。但是为什么要用两个字节来表示，我暂且蒙在鼓里。</p>
+<p>黄色的部分我猜想是实心方块导致的黑暗。毕竟越处于内部，获得的外部光照就越少，越接近<code>00</code>。而对于空气这种方块，就没有这种问题，所以全部都是<code>ff</code>。</p>
+<p>绿色部分出现了奇怪的数据。然而这数据究竟代表什么，暂时还是未知。</p>
+<p>来测试一下两个红色字节的值如果不同会产生怎样的效果:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">15</span>, <span class="number">-1</span>, <span class="number">-1</span>):</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">16</span>):</span><br><span class="line">        b = chunk.get_block(x, y)</span><br><span class="line">        b.set(<span class="string">"first_layer_id"</span>, BlockType.AIR)</span><br><span class="line">        b.set(<span class="string">"visibility"</span>, ((<span class="number">15</span> ^ y) &lt;&lt; <span class="number">4</span> | x) &amp; <span class="number">255</span>, randint(<span class="number">0</span>, <span class="number">255</span>))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/visibility_test_res.png" alt="visibility_test_res"></p>
+<p>所以说，第二位这不是一点用都没有吗??</p>
+<p>把它们调换一下顺序，会得到这种鬼畜结果:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/visibility_test_res_2.png" alt="visibility_test_res_2"></p>
+<p>反正我不是很懂为什么要搞两个一模一样的位出来…</p>
+<h3 id="亮度">亮度</h3>
+<p>根据之前的观察，推测亮度是第8位。于是，把所有空气之外的方块变成没有光照后的结果如下:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/brightness_test.png" alt="brightness_test"></p>
+<p>也间接证明了<s>小人是用脚感知周围亮度的</s>:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/brightness_test2.png" alt="brightness_test2"></p>
+<p>修改所有方块的亮度和之前的可见度，就可以把所有已生成的区块都扒出来:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/world_with_no_darkness.png" alt="world_with_no_darkness"></p>
+<p>再来一张近照:</p>
+<p><img src="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/world_with_no_darkness2.png" alt="world_with_no_darkness2"></p>
+<hr>
+<p>为了控制文章的长度，这一部分就到这里为止。下一部分见！</p>
+<h2 id="Reference">Reference</h2>
+<ul>
 <li><a href="http://deepdish.io/2015/04/28/creating-lmdb-in-python/" target="_blank" rel="noopener">http://deepdish.io/2015/04/28/creating-lmdb-in-python/</a></li>
 <li><a href="https://blog.separateconcerns.com/2016-04-03-lmdb-format.html" target="_blank" rel="noopener">https://blog.separateconcerns.com/2016-04-03-lmdb-format.html</a></li>
 <li><a href="https://lmdb.readthedocs.io/en/release/" target="_blank" rel="noopener">https://lmdb.readthedocs.io/en/release/</a></li>
@@ -477,8 +535,6 @@
             </div>
         </section>
         <section class="post-nav">
-            
-                <a class="prev" rel="prev" href="/2020/03/04/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F-%E7%AC%AC%E9%9B%B6%E9%83%A8%E5%88%86/">从零写一个数据库系统 - 第零部分</a>
             
             
             <a class="next" rel="next" href="/2020/02/13/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-simpleJava-Compiler/">从零写一个编译器 - simpleJava Compiler</a>

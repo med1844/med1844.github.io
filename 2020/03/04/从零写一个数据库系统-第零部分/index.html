@@ -109,6 +109,68 @@
             <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
     <article class="post-wrap">
@@ -136,11 +198,18 @@
         </header>
 
         <div class="post-content">
-            <p>我所在的大学里总是只教一些特别浅显的东西。比方说，怎么在<code>select</code>里面套<code>select</code>里面套<code>select</code>，或者是怎么把聚合函数用出花来。完事之后再摆出十万甚至九万道概念题，考你Database和Database system的区别，或者ACID每个字母代表的意思。</p>
+            <h2 id="前言">前言</h2>
+<p>我所在的大学里总是只教一些特别浅显的东西。比方说，怎么在<code>select</code>里面套<code>select</code>里面套<code>select</code>，或者是怎么把聚合函数用出花来。完事之后再摆出十万甚至九万道概念题，考你Database和Database system的区别，或者ACID每个字母代表的意思。</p>
 <p>那么这些东西该怎么实现呢? ないです~（即答）</p>
 <p>当然我也可以理解，毕竟并不是每个进到这所学校的人都有着写数据库系统的决心与能力。而教授们的水平可能也并不足以让他们写这么个东西出来。就算他们有这样的能力，恐怕有这意愿的人数也不足以开课，甚至可能只有我一人。</p>
-<p>我的老师告诉我，我是她教了这么多年编译原理以来第一个写出编译器的人。这句话虽然听着好听，仔细想一想，多少也感到可悲。而这编译器竟又如此简陋，到了我都不好意思称它为编译器的程度。如此一来，讽刺的纯度也又大大地提升了。</p>
-
+<p>就在不久前，我的老师告诉我，我是她教了这么多年编译原理以来第一个写出编译器的人。这句话虽然听着好听，仔细想一想，多少也感到可悲。而这编译器竟又如此简陋，到了我都不好意思称它为编译器的程度。除了前端外，全是闭门造车，质量也可想而知。如此一来，讽刺的纯度也又大大地提升了。</p>
+<p><em>这里插一嘴，我准备重写编译器，用c/c++。在那之前可能会先去学习LLVM，感受工业级的水准。</em></p>
+<p>除了对实现的好奇之外，还有一个原因促使我开始写这个东西:</p>
+<p><strong>我从来没有用C / C++写过正经项目。</strong></p>
+<p>尽管有大一小学期乱搞的C++ &amp; Qt计算器，说实话学完编译回头一看，还真是naïve。而其他语言，java上手就是minecrash，外加JavaEE几个小项目，底子虽然不稳，总归也算入了门了。python的话，之前闭门造车的<a href="https://medioqrity.github.io/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/">编译器</a>、最近才写好的<a href="https://medioqrity.github.io/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">The Blockheads存档修改工具</a>，虽然硬要说的话也不怎么正经，不过也总比C++的情况要不知道高到哪里去了。</p>
+<h2 id="关系型数据库">关系型数据库</h2>
+<p>在写之前，先</p>
+<!-- flag of hidden posts -->
         </div>
 
         
@@ -163,8 +232,6 @@
         </section>
         <section class="post-nav">
             
-            
-            <a class="next" rel="next" href="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">The Blockheads存档修改工具开发记录（一）</a>
             
         </section>
 
