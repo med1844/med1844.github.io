@@ -36,39 +36,39 @@ document.ready(
         var _Blog = window._Blog || {};
         const currentTheme = window.localStorage && window.localStorage.getItem('theme');
         const isDark = currentTheme === 'dark';
+        const darkBackgroundColor = "#292a2d";
+        const lightBackgroundColor = "#ffffff";
         if (isDark) {
             document.getElementById("switch_default").checked = true;
             // mobile
             document.getElementById("mobile-toggle-theme").innerText = "· Dark";
-            // document.getElementById("meta-theme-color-tag").setAttribute("content", "#292a2d");
         } else {
             document.getElementById("switch_default").checked = false;
             // mobile
             document.getElementById("mobile-toggle-theme").innerText = "· Dark";
-            // document.getElementById("meta-theme-color-tag").setAttribute("content", "#ffffff");
         }
         _Blog.toggleTheme = function () {
             if (isDark) {
                 document.getElementsByTagName('body')[0].classList.add('dark-theme');
                 // mobile
                 document.getElementById("mobile-toggle-theme").innerText = "· Dark"
-                // document.getElementById("meta-theme-color-tag").setAttribute("content", "#292a2d");
+                document.getElementById("meta-theme-color-tag").setAttribute("content", darkBackgroundColor);
             } else {
-                // document.getElementsByTagName('body')[0].classList.remove('dark-theme');
+                document.getElementsByTagName('body')[0].classList.remove('dark-theme');
                 // mobile
                 document.getElementById("mobile-toggle-theme").innerText = "· Light";
-                // document.getElementById("meta-theme-color-tag").setAttribute("content", "#ffffff");
+                document.getElementById("meta-theme-color-tag").setAttribute("content", lightBackgroundColor);
             }
             document.getElementsByClassName('toggleBtn')[0].addEventListener('click', () => {
                 if (document.getElementsByTagName('body')[0].classList.contains('dark-theme')) {
                     document.getElementsByTagName('body')[0].classList.remove('dark-theme');
-                    // document.getElementById("meta-theme-color-tag").setAttribute("content", "#ffffff");
                 } else {
                     document.getElementsByTagName('body')[0].classList.add('dark-theme');
-                    // document.getElementById("meta-theme-color-tag").setAttribute("content", "#292a2d");
                 }
                 window.localStorage &&
                 window.localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light',)
+                document.getElementById("meta-theme-color-tag").setAttribute("content",
+                    document.body.classList.contains('dark-theme') ? darkBackgroundColor : lightBackgroundColor);
             })
             // moblie
             document.getElementById('mobile-toggle-theme').addEventListener('click', () => {
@@ -76,18 +76,18 @@ document.ready(
                     document.getElementsByTagName('body')[0].classList.remove('dark-theme');
                     // mobile
                     document.getElementById("mobile-toggle-theme").innerText = "· Light";
-                    // document.getElementById("meta-theme-color-tag").setAttribute("content", "#ffffff");
+                    document.getElementById("meta-theme-color-tag").setAttribute("content", darkBackgroundColor);
                 } else {
                     document.getElementsByTagName('body')[0].classList.add('dark-theme');
                     // mobile
                     document.getElementById("mobile-toggle-theme").innerText = "· Dark";
-                    // document.getElementById("meta-theme-color-tag").setAttribute("content", "#292a2d");
+                    document.getElementById("meta-theme-color-tag").setAttribute("content", lightBackgroundColor);
                 }
                 window.localStorage &&
                 window.localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light',)
+                document.getElementById("meta-theme-color-tag").setAttribute("content",
+                    document.body.classList.contains('dark-theme') ? darkBackgroundColor : lightBackgroundColor);
             })
-            const style = getComputedStyle(document.getElementsByTagName("body")[0]);
-            document.getElementById("meta-theme-color-tag").setAttribute("content", style.backgroundColor);
         };
         _Blog.toggleTheme();
 
