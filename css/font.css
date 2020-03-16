@@ -14,3 +14,11 @@
   src: url("../fonts/fira-code-v8-latin-regular.eot"); /* IE9 Compat Modes */
   src: local(''), url("../fonts/fira-code-v8-latin-regular.eot?#iefix") format('embedded-opentype'), url("../fonts/fira-code-v8-latin-regular.woff2") format('woff2'), url("../fonts/fira-code-v8-latin-regular.woff") format('woff'), url("../fonts/fira-code-v8-latin-regular.ttf") format('truetype'), url("../fonts/fira-code-v8-latin-regular.svg#FiraCode") format('svg'); /* Legacy iOS */
 }
+/* fira-mono-regular - latin */
+@font-face {
+  font-family: 'Fira Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/fira-mono-v8-latin-regular.eot"); /* IE9 Compat Modes */
+  src: local('Fira Mono Regular'), local('FiraMono-Regular'), url("../fonts/fira-mono-v8-latin-regular.eot?#iefix") format('embedded-opentype'), url("../fonts/fira-mono-v8-latin-regular.woff2") format('woff2'), url("../fonts/fira-mono-v8-latin-regular.woff") format('woff'), url("../fonts/fira-mono-v8-latin-regular.ttf") format('truetype'), url("../fonts/fira-mono-v8-latin-regular.svg#FiraMono") format('svg'); /* Legacy iOS */
+}

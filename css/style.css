@@ -156,8 +156,15 @@ template {
   src: url("../fonts/fira-code-v8-latin-regular.eot"); /* IE9 Compat Modes */
   src: local(''), url("../fonts/fira-code-v8-latin-regular.eot?#iefix") format('embedded-opentype'), url("../fonts/fira-code-v8-latin-regular.woff2") format('woff2'), url("../fonts/fira-code-v8-latin-regular.woff") format('woff'), url("../fonts/fira-code-v8-latin-regular.ttf") format('truetype'), url("../fonts/fira-code-v8-latin-regular.svg#FiraCode") format('svg'); /* Legacy iOS */
 }
+@font-face {
+  font-family: 'Fira Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/fira-mono-v8-latin-regular.eot"); /* IE9 Compat Modes */
+  src: local('Fira Mono Regular'), local('FiraMono-Regular'), url("../fonts/fira-mono-v8-latin-regular.eot?#iefix") format('embedded-opentype'), url("../fonts/fira-mono-v8-latin-regular.woff2") format('woff2'), url("../fonts/fira-mono-v8-latin-regular.woff") format('woff'), url("../fonts/fira-mono-v8-latin-regular.ttf") format('truetype'), url("../fonts/fira-mono-v8-latin-regular.svg#FiraMono") format('svg'); /* Legacy iOS */
+}
 html {
-  font-family: 'Roboto Slab', Source Han Sans, 'Microsoft Jhenghei', PingFang SC, Seguo UI, Microsoft Yahei, Arial;
+  font-family: 'Roboto Slab', 'Source Han Sans', 'Microsoft Jhenghei', PingFang SC, Seguo UI, Microsoft Yahei, Arial;
 }
 html::-webkit-scrollbar {
   width: 10px;
@@ -226,7 +233,7 @@ a:hover {
 }
 pre,
 code {
-  font-family: 'Fira Code', Consolas, Monaco, Menlo, Consolas, monospace;
+  font-family: 'Fira Code', 'Fira Mono', 'Source Han Sans', Consolas, Monaco, Menlo, Consolas, monospace;
 }
 .wrapper {
   display: flex;
@@ -586,7 +593,7 @@ header label {
   padding: 10px;
 }
 .intro .avatar img {
-  width: 155px;
+  width: 150px;
   height: auto;
   display: inline-block;
   -webkit-border-radius: 100%;
@@ -815,7 +822,7 @@ header label {
 .post-content pre {
   padding: 7px;
   font-size: 13px;
-  font-family: 'Fira Code', Consolas, Monaco, Menlo, Consolas, monospace;
+  font-family: 'Fira Code', 'Fira Mono', 'Source Han Sans', Consolas, Monaco, Menlo, Consolas, monospace;
 }
 .post-content code {
   padding: 3px 5px;
@@ -976,7 +983,7 @@ header label {
   line-height: 1.7em;
   padding: 7px;
   font-size: 14px;
-  font-family: 'Fira Code', Consolas, Monaco, Menlo, Consolas, monospace;
+  font-family: 'Fira Code', 'Fira Mono', 'Source Han Sans', Consolas, Monaco, Menlo, Consolas, monospace;
 }
 .post-content code {
   line-height: 1.7em;
@@ -1158,7 +1165,7 @@ header label {
   .navbar-mobile .container {
     padding: 0;
     margin: 0;
-    line-height: 5.5em;
+    line-height: 2.5em;
     background: #fff;
   }
   .navbar-mobile .container .navbar-header {
