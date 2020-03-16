@@ -14,7 +14,7 @@
 
 
 
-<title>从零写一个数据库系统 - 第零部分 | Medioqrity&#39;s Blog</title>
+<title>从零写一个数据库系统（一） | Medioqrity&#39;s Blog</title><meta name="robots" content="noindex">
 
 
 
@@ -175,7 +175,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">从零写一个数据库系统 - 第零部分</h1>
+            <h1 class="post-title">从零写一个数据库系统（一）</h1>
             
                 <div class="post-meta">
                     
@@ -198,17 +198,22 @@
         </header>
 
         <div class="post-content">
-            <h2 id="前言">前言</h2>
-<p>我所在的大学里总是只教一些特别浅显的东西。比方说，怎么在<code>select</code>里面套<code>select</code>里面套<code>select</code>，或者是怎么把聚合函数用出花来。完事之后再摆出十万甚至九万道概念题，考你Database和Database system的区别，或者ACID每个字母代表的意思。</p>
-<p>那么这些东西该怎么实现呢? ないです~（即答）</p>
+            <p>我所在的大学里总是只教一些特别浅显的东西。比方说，怎么在<code>select</code>里面套<code>select</code>里面套<code>select</code>，或者是怎么把聚合函数用出花来。之后再摆出十万甚至九万道概念题，考你Database和Database system的区别，或者ACID每个字母代表的意思。</p>
+<p>明白基础的概念固然重要，掌握基本的使用方法也无可厚非。但是，这些东西该怎么实现呢?</p>
+<p>ないです~</p>
 <p>当然我也可以理解，毕竟并不是每个进到这所学校的人都有着写数据库系统的决心与能力。而教授们的水平可能也并不足以让他们写这么个东西出来。就算他们有这样的能力，恐怕有这意愿的人数也不足以开课，甚至可能只有我一人。</p>
 <p>就在不久前，我的老师告诉我，我是她教了这么多年编译原理以来第一个写出编译器的人。这句话虽然听着好听，仔细想一想，多少也感到可悲。而这编译器竟又如此简陋，到了我都不好意思称它为编译器的程度。除了前端外，全是闭门造车，质量也可想而知。如此一来，讽刺的纯度也又大大地提升了。</p>
-<p><em>这里插一嘴，我准备重写编译器，用c/c++。在那之前可能会先去学习LLVM，感受工业级的水准。</em></p>
+<p><em>这里插一嘴，我准备重写编译器，用c/c++。在那之前可能会先去学习LLVM，学习已有的经验。</em></p>
 <p>除了对实现的好奇之外，还有一个原因促使我开始写这个东西:</p>
 <p><strong>我从来没有用C / C++写过正经项目。</strong></p>
-<p>尽管有大一小学期乱搞的C++ &amp; Qt计算器，说实话学完编译回头一看，还真是naïve。而其他语言，java上手就是minecrash，外加JavaEE几个小项目，底子虽然不稳，总归也算入了门了。python的话，之前闭门造车的<a href="https://medioqrity.github.io/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/">编译器</a>、最近才写好的<a href="https://medioqrity.github.io/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">The Blockheads存档修改工具</a>，虽然硬要说的话也不怎么正经，不过也总比C++的情况要不知道高到哪里去了。</p>
-<h2 id="关系型数据库">关系型数据库</h2>
-<p>在写之前，先</p>
+<p>尽管有大一小学期乱搞的C++ &amp; Qt计算器，说实话学完编译回头一看，还真是naïve。而其他语言，java上手就是minecrash，外加JavaEE几个小项目，底子虽然不稳，总归也算入了门了。python的话，之前闭门造车的<a href="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/">编译器</a>、最近才写好的<a href="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">The Blockheads存档修改工具</a>，虽然硬要说的话也不怎么正经，不过也总比C++的情况要不知道高到哪里去了。</p>
+<hr>
+<p><em>这篇文章的知识来自于 <strong><a href="https://www.youtube.com/playlist?list=PLSE8ODhjZXjbohkNBWQs_otTrBTrjyohi" target="_blank" rel="noopener">CMU 15-445/645: Intro to Database Systems</a></strong> ，可能会在说明实现时涉及一部分课上的内容，但绝非笔记。</em></p>
+<hr>
+<h2 id="Storage">Storage</h2>
+<p>作为一个数据库，坠坠重要的事情当然就是存储数据啦！</p>
+<p>数据库显然会把数据存储在non-volatile的存储介质上，否则就会因为断电而损失数据。通常就是SSD或者HDD。</p>
+<p>数据库会按照page来存储数据。当需要用到数据的时候，会先把相应的页读到RAM中，进而再执行各种关系代数的运算。而读到内存中的页也会就一直放在那，直到出现页置换之类的情况才被换下来，与<a href="/2019/06/21/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BB%93/#%E9%A1%B5%E7%BD%AE%E6%8D%A2%E7%AE%97%E6%B3%95">操作系统</a>很相似。</p>
 <!-- flag of hidden posts -->
         </div>
 
