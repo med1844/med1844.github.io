@@ -245,7 +245,7 @@
 <h3 id="学习资源">学习资源</h3>
 <p>我曾经看过一些扫描的乐理书，看了几页就看不下去了。</p>
 <p>扫描质量差对于看不懂五线谱的人来说，的确可以算是毁灭性的打击。</p>
-<p>而且，我必须从纸上一个一个音符打进DAW中，才能听到示例曲目。</p>
+<p>而且，我必须将纸上一个一个音符打进DAW中，才能听到示例曲目。</p>
 <p>而示例曲目总是艰深晦涩的古典音乐名作的片段，作为例子来说对于约等于零基础的人来说实在是太不友好。</p>
 <p>我想我大概还是需要依靠现代科技才能学习，于是我找到了<a href="http://openmusictheory.com/contents.html" target="_blank" rel="noopener">open music theory</a>。然后我也自闭了----就像我初中时看简明python教程一样，语言过于简洁，而且难度相当大。</p>
 <p>好吧，大概我确实太挑剔了。万幸的是，我找到了<a href="https://www.bilibili.com/video/av34032076" target="_blank" rel="noopener">av34032076</a>。也许它讲的并非我想了解的和声学或者是更进阶一些的内容，无论如何，至少它的内容我没学过，这就够了。</p>
@@ -289,7 +289,7 @@
 <li>形成了$\mathrm{B}^\circ$，有解决到$\mathrm{C}$的倾向性</li>
 </ul>
 </li>
-<li>小小七和弦
+<li>小大七和弦
 <ul>
 <li>总的来说没人会用这个东西</li>
 </ul>
@@ -336,7 +336,7 @@
 <p>对于七和弦，我们有时会舍弃五音，转而使用根音替代。这是因为:</p>
 <ul>
 <li>根音是最重要的，决定了它是什么和弦</li>
-<li>三音决定了色彩（大调还是小调?）</li>
+<li>三音决定了色彩（大三还是小三?）</li>
 <li>七音决定了它是七和弦以及功能（如Dominant Seventh Chord）</li>
 </ul>
 <h2 id="3-Basic-Progressions">3. Basic Progressions</h2>
@@ -425,13 +425,51 @@
 <p>如果对$\mathrm{I} \to \mathrm{V} \to \mathrm{I}$进行Voice Leading without Common Tones，会出现这种情况:</p>
 <p><img src="/image/loading.png" data-original="NonCommonToneApproach151.cropped.png" alt="Non Common Tone Approach 151.cropped"></p>
 <p><em>因为DAW太占地方了所以就换成了五线谱</em></p>
-<p>这里，在$\mathrm{V}$处，B处在<code>S</code>声部，是outer voice。</p>
+<p>这里，在$\mathrm{V}$中，B在<code>S</code>声部，是outer voice。</p>
 <p>第四部分的Principles of Voice Leading提到:</p>
 <blockquote>
 <p>如果Leading tone是Outer voice，必须解决到根音</p>
 </blockquote>
 <p>因此，这里并不是简单地像之前的每个练习那样将第一个和弦复制粘贴到结尾就可以，而是必须将B解决到C。</p>
 <p>接下来，$\mathrm{V} \to \mathrm{I}$的部分不加以Non Common Tone的限制。最终根据第四部分的原则填充剩下的三音和五音，可以得到上面的结果。</p>
+<hr>
+<p>如果B不是outer voice，就不需要解决到根音。</p>
+<p><img src="/image/loading.png" data-original="NonCommonToneApproach151NoResol.png" alt="NonCommonToneApproach151NoResol"></p>
+<h3 id="5-2-Resolution-of-the-V7-Chord">5.2 Resolution of the V7 Chord</h3>
+<p>将$\mathrm{V}^7$解决到$\mathrm{I}$:</p>
+<p><img src="/image/loading.png" data-original="ResolveDomSeven.cropped.png" alt="ResolveDomSeven.cropped"></p>
+<p>这里，$\mathrm{I}$没有五音。本来它的<code>S</code>应该是五音，但是因为我们希望将$\mathrm{V}^7$的<code>S</code>的$\mathrm{D}$解决到$\mathrm{C}$，所以强行删去了五音。</p>
+<p>鉴于五音只是用于丰富音色的，而不会对和弦的性质产生任何影响，因此即便移除也只会使和弦变得少许单薄一点，而功能依旧齐全。</p>
+<p>此外，$\mathrm{V}^7$中有两个tendency tone（大概就是没那么强烈的leading tone），分别是$\mathrm{B}$和$\mathrm{F}$，应该解决到只差一个半音的$\mathrm{C}$和$\mathrm{E}$。</p>
+<hr>
+<p>当然，我们也可以不将$\mathrm{V}^7$的<code>T</code>的$\mathrm{B}$解决到$\mathrm{C}$，因为它毕竟不是outer voice（正如5.1中最后提到的那样）。取而代之的是五音，用以丰富和弦的音色。</p>
+<p>这样，结果就会变成:</p>
+<p><img src="/image/loading.png" data-original="ResolveDomSeven.cropped_2.png" alt="ResolveDomSeven.cropped_2"></p>
+<hr>
+<p>我们也可以去掉七和弦中的五音:</p>
+<p><img src="/image/loading.png" data-original="ResolveDomSeven.cropped_3_un.png" alt="ResolveDomSeven.cropped_3_un"></p>
+<p>我们运用同样的方法，解决具有倾向性的音符:</p>
+<p><img src="/image/loading.png" data-original="ResolveDomSeven.cropped_3.png" alt="ResolveDomSeven.cropped_3"></p>
+<hr>
+<p>根据上面的两个例子，我们注意到:</p>
+<ul>
+<li>对于diminished fifth，它会向内解决:
+<ul>
+<li><img src="/image/loading.png" data-original="resolveDiminishedFifthScore.png" alt="resolveDiminishedFifthScore"> <img src="/image/loading.png" data-original="resolveDiminishedFifth.png" alt="resolveDiminishedFifth"></li>
+</ul>
+</li>
+<li>对于augmented forth，它会向外解决:
+<ul>
+<li><img src="/image/loading.png" data-original="resolveAugmentedFourthScore.png" alt="resolveAugmentedFourthScore"> <img src="/image/loading.png" data-original="resolveAugmentedFourth.png" alt="resolveAugmentedFourth"></li>
+</ul>
+</li>
+</ul>
+<p>其实本质上还是:</p>
+<blockquote>
+<p>$\mathrm{B}$和$\mathrm{F}$，应该解决到只差一个半音的$\mathrm{C}$和$\mathrm{E}$。</p>
+</blockquote>
+<h3 id="5-3-Voice-Leading-from-IV-V">5.3 Voice Leading from IV-V</h3>
+<p>占坑，考完试回来接着学。</p>
 
         </div>
 
@@ -486,6 +524,6 @@
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
 </html>
