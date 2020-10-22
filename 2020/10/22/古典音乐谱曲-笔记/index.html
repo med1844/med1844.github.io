@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>古典音乐谱曲-笔记 | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">古典音乐谱曲-笔记</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2020/10/22&nbsp;&nbsp;1:45:32</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E4%B9%90%E7%90%86/">乐理</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="0-前言">0. 前言</h2>
+<p>早在几年前，我就知道我该补乐理了。</p>
+<p>和弦最多了解到七和弦，而平常写不论是合成器pad还是弦乐都是无脑堆三和弦。早就知道$\mathrm{V}^7$和弦到$\mathrm{I}$的倾向性还有属功能主功能下属功能各种零碎的知识点，但实际写作中除了$\mathrm{IV} \to \mathrm{V} \to \mathrm{vi}$之外，甚至连<code>4736251</code>都没用过。</p>
+<p>所以我总是逃避，靠混音与合成器的进步来营造<em>不学乐理大概也没什么问题</em>的假象。</p>
+<p>但是问题毕竟还是存在。是时候解决了。</p>
+<h3 id="学习资源">学习资源</h3>
+<p>我曾经看过一些扫描的乐理书，看了几页就看不下去了。</p>
+<p>扫描质量差对于看不懂五线谱的人来说，的确可以算是毁灭性的打击。</p>
+<p>而且，我必须从纸上一个一个音符打进DAW中，才能听到示例曲目。</p>
+<p>而示例曲目总是艰深晦涩的古典音乐名作的片段，作为例子来说对于约等于零基础的人来说实在是太不友好。</p>
+<p>我想我大概还是需要依靠现代科技才能学习，于是我找到了<a href="http://openmusictheory.com/contents.html" target="_blank" rel="noopener">open music theory</a>。然后我也自闭了----就像我初中时看简明python教程一样，语言过于简洁，而且难度相当大。</p>
+<p>好吧，大概我确实太挑剔了。万幸的是，我找到了<a href="www.bilibili.com/video/av34032076">av34032076</a>。也许它讲的并非我想了解的和声学或者是更进阶一些的内容，无论如何，至少它的内容我没学过，这就够了。</p>
+<p>多少有点病急乱投医的感觉（笑）</p>
+<h3 id="为什么做笔记">为什么做笔记</h3>
+<p>自问自答一番。</p>
+<p>我本觉得，只要学以致用，大概也不会忘。</p>
+<p>然而，随着课程进度推进，我发现有许多零碎的知识点，要是不记录，也许就很难再想起来了。最致命的是，做电音又基本用不到这些内容。</p>
+<p>谁会没事去十几个小时长度的视频里面找自己已经记不清在哪里提到的那个知识点呢?</p>
+<h3 id="如何绘制乐谱">如何绘制乐谱</h3>
+<p>不知道什么时候了解到了<a href="http://lilypond.org/" target="_blank" rel="noopener">lilypond</a>。对于程序员来说，能够用近乎编程的方式来制作乐谱，十分合我的心意。这和$\LaTeX$一样有趣。</p>
+<p>这是我使用的编译命令:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ lilypond -dbackend=ps --png -dcrop -dresolution=600 -ddelete-intermediate-files $(filename)</span><br></pre></td></tr></table></figure>
+<p>除此之外，我还会使用现代DAW的钢琴窗来展示音符。</p>
+<p>准备工作到此为止。这样就可以正式开始了。</p>
+<h2 id="1-Chords">1. Chords</h2>
+<p>首先是刻在DNA里的C大调三和弦:</p>
+<p>![Major Diatonic Chords.cropped](古典音乐谱曲-笔记\Major Diatonic Chords.cropped.png)</p>
+<p>不必多说。接下来来看看七和弦:</p>
+<p>![Major Diatonic Seventh Chords.cropped](古典音乐谱曲-笔记\Major Diatonic Seventh Chords.cropped.png)</p>
+<p>我们知道七和弦的名称来历是:</p>
+<ul>
+<li>三音与根音的间距</li>
+<li>七音与根音的间距</li>
+</ul>
+<p>所以才会有:</p>
+<ul>
+<li>大大七和弦（$\mathrm{C}^\Delta$、$\mathrm{F}^\Delta$）
+<ul>
+<li><img src="/image/loading.png" data-original="maj7.png" alt="maj7"></li>
+</ul>
+</li>
+<li>小小七和弦（$\mathrm{Dm}^7$、$\mathrm{Em}^7$、$\mathrm{Am}^7$）
+<ul>
+<li><img src="/image/loading.png" data-original="m7.png" alt="m7"></li>
+</ul>
+</li>
+<li>大小七和弦（$\mathrm{G^7}$）
+<ul>
+<li><img src="/image/loading.png" data-original="G7.png" alt="G7"></li>
+<li>形成了$\mathrm{B}^\circ$，有解决到$\mathrm{C}$的倾向性</li>
+</ul>
+</li>
+<li>小小七和弦
+<ul>
+<li>总的来说没人会用这个东西</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-Voicing">2. Voicing</h2>
+<h3 id="SATB">SATB</h3>
+<p>四个声部的名字。分别是:</p>
+<ul>
+<li>soprano</li>
+<li>alto</li>
+<li>tenor</li>
+<li>bass</li>
+</ul>
+<p>有各自的pitch range，不过反正我也不是写给人唱的，随它去了。</p>
+<h3 id="Open-and-Close-Structure">Open and Close Structure</h3>
+<p>根据最上面三个音的音程判断是否开闭:</p>
+<p><img src="/image/loading.png" data-original="open_and_close_structure.png" alt="open_and_close_structure"></p>
+<p>若<code>S</code>和<code>T</code>相差不超过一个八度，则是close structure; 否则是open structure。</p>
+<h3 id="注意事项">注意事项</h3>
+<ul>
+<li>
+<p><code>SA</code>、<code>AT</code>不能间隔大于八度。</p>
+<ul>
+<li>
+<p><code>SAT</code>因为处于较高的频率段，为了使谐波更好地将曲目融合成一个整体，必须结合得更紧密一些。否则，跨度过大会使得它们听起来像是分离的两个部分。</p>
+</li>
+<li>
+<blockquote>
+<p>Sonority (unity) is jeopardized.</p>
+</blockquote>
+</li>
+<li>
+<p><img src="/image/loading.png" data-original="sin0.png" alt="sin0"></p>
+</li>
+</ul>
+</li>
+<li>
+<p>但是Bass可以和<code>T</code>间隔超过8度。事实上它们只要小于12度就不会有太大问题。尽量小于10度。</p>
+</li>
+</ul>
+<h3 id="Doubling">Doubling</h3>
+<p>SATB有四个声部，三和弦就必须重复一个音。通常我们重复的是根音。</p>
+<p>对于七和弦，我们有时会舍弃五音，转而使用根音替代。这是因为:</p>
+<ul>
+<li>根音是最重要的，决定了它是什么和弦</li>
+<li>三音决定了色彩（大调还是小调?）</li>
+<li>七音决定了它是七和弦以及功能（如Dominant Seventh Chord）</li>
+</ul>
+<h2 id="3-Basic-Progressions">3. Basic Progressions</h2>
+<p>如果我有一个和弦，下一个该接什么呢? 我该怎么写和弦进行呢?</p>
+<p>这需要利用Basic Progression的知识:</p>
+<ul>
+<li>
+<p>和弦进行几乎总是从$\mathrm{I}$开始</p>
+</li>
+<li>
+<p>从$\mathrm{I}$可以转移到任意和弦</p>
+</li>
+<li>
+<p>终点总是$\mathrm{I}$，它前面基本上总是原位$\mathrm{V}$</p>
+</li>
+<li>
+<p>其余的可以用这张图解释:</p>
+<p><img src="/image/loading.png" data-original="Chord_Progression.png" alt="Chord_Progression"></p>
+</li>
+</ul>
+<p>仔细观察可以发现，五度圈循环是其根基:</p>
+<p><img src="/image/loading.png" data-original="Circle_Of_The_Fifth.png" alt="Circle_Of_The_Fifth"></p>
+<p>又因为$\mathrm{IV}$和$\mathrm{ii}$都有着sub-dominant的功能，$\mathrm{V}$和$\mathrm{vii}$都有着dominant的功能，因此可以相互替换。</p>
+<p>推测这也是为什么流行音乐中总是将五度圈循环的第二个$\mathrm{vii}$改成更柔和的$\mathrm{V}$的原因，最终形成<code>4536251</code>的和弦进行。</p>
+<p>流水线电音中常见的<code>1645</code>也同样可以从这里找到影子。</p>
+<h2 id="4-Voice-Leading">4. Voice Leading</h2>
+<blockquote>
+<ul>
+<li>Strategies for moving from one chord to the next in a harmonic progression.</li>
+<li>Strategies are style-specific</li>
+</ul>
+</blockquote>
+<h3 id="Principles-of-Voice-Leading">Principles of Voice Leading</h3>
+<ul>
+<li>
+<p>For each part of <code>SAT</code>:</p>
+<ul>
+<li>尽量保持不变</li>
+<li>必须变动时，选择所有变动可能中跨度最小的那个</li>
+</ul>
+</li>
+<li>
+<p>Bass目前不考虑转位，全部使用和弦根音</p>
+</li>
+<li>
+<p>尽可能使用Contrary Motion（请看下面的Types of Motion的内容）</p>
+</li>
+<li>
+<p>如果Leading tone是Outer voice，必须解决到根音</p>
+<ul>
+<li>
+<blockquote>
+<p>Typically, <em>the</em> leading tone refers to the seventh <a href="https://en.wikipedia.org/wiki/Scale-degree" target="_blank" rel="noopener">scale degree</a> of a <a href="https://en.wikipedia.org/wiki/Major_scale" target="_blank" rel="noopener">major scale</a> (<a href="https://en.wikipedia.org/wiki/File:Scale_deg_7.svg" target="_blank" rel="noopener"><img src="/image/loading.png" data-original="8px-Scale_deg_7.svg.png" alt="scale degree 7"></a>), a <a href="https://en.wikipedia.org/wiki/Major_seventh" target="_blank" rel="noopener">major seventh</a> above the <a href="https://en.wikipedia.org/wiki/Tonic_(music)" target="_blank" rel="noopener">tonic</a>. (WIKIPEDIA)</p>
+</blockquote>
+</li>
+<li>
+<p>Outer voice是指<code>SATB</code>中的S和B，因为它们处在最外层</p>
+</li>
+<li>
+<p>后面会有解决的例子</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Types-of-Motion">Types of Motion</h3>
+<p>![Types of Motion.cropped](古典音乐谱曲-笔记\Types of Motion.cropped.png)</p>
+<h2 id="5-Voice-Leading-in-Practice">5. Voice Leading in Practice</h2>
+<h3 id="5-0-Voice-Leading-with-the-Common-Tone-Approach">5.0 Voice Leading with the Common Tone Approach</h3>
+<p>在第四部分的Principles of Voice Leading的基本原则下，通过Common Tone来连接和弦。</p>
+<p>这里是使用Common Tone Approach分别以Close &amp; Open Structure的方式，连接$\mathrm{I} \to \mathrm{V} \to \mathrm{I}$和$\mathrm{I} \to \mathrm{IV} \to \mathrm{I}$的成果:</p>
+<p><img src="/image/loading.png" data-original="CommonToneApproach_CloseAndOpenStructure.png" alt="CommonToneApproach_CloseAndOpenStructure"></p>
+<p>在$\mathrm{I} \to \mathrm{V} \to \mathrm{I}$中，由于$\mathrm{I}$和$\mathrm{V}$只有G一个共同音，所以我们总是能确认$\mathrm{V}$的<code>SAT</code>中的G应该放在哪里。</p>
+<p>在有了Bass的G和另外一个doubling出来的G之后，就只剩下三音和五音了。这时，根据Close | Open Structure的需求，以及<strong>选择跨度最小的那个方案</strong>的原则，放置三音和五音即可。</p>
+<p>对于$\mathrm{I} \to \mathrm{IV} \to \mathrm{I}$也是同样的步骤，不多赘述。</p>
+<p><em><strong>注意:</strong></em> <em>这里的Common Tone指的是<strong>SAT的某一声部的音符不变</strong>，而不是和弦之间有相同的音符。那样是不能算作Common Tone Approach的。</em></p>
+<h3 id="5-1-Voice-Leading-Without-the-Common-Tones">5.1 Voice Leading Without the Common Tones</h3>
+<p>与5.0相反，另一种Voice Leading的方法是避免各声部内出现同样的音符。</p>
+<p><img src="/image/loading.png" data-original="NonCommonToneApproach.png" alt="NonCommonToneApproach"></p>
+<p>这是对$\mathrm{I} \to \mathrm{IV} \to \mathrm{I}$做Voice Leading without Common Tones的成果。</p>
+<p>这里虽然看上去有Common Tone（三个连着的C5），但是这三个C5是属于不同的声部的。我用颜色将<code>SATB</code>区分开了，希望好懂一些。</p>
+<p>这也是为什么我之前强调:</p>
+<blockquote>
+<p><em><strong>注意:</strong></em> <em>这里的Common Tone指的是<strong>SAT的某一声部的音符不变</strong>，而不是和弦之间有相同的音符。那样是不能算作Common Tone Approach的。</em></p>
+</blockquote>
+<hr>
+<p>如果对$\mathrm{I} \to \mathrm{V} \to \mathrm{I}$进行Voice Leading without Common Tones，会出现这种情况:</p>
+<p>![Non Common Tone Approach 151.cropped](古典音乐谱曲-笔记\Non Common Tone Approach 151.cropped.png)</p>
+<p><em>因为DAW太占地方了所以就换成了五线谱</em></p>
+<p>这里，在$\mathrm{V}$处，B处在<code>S</code>声部，是outer voice。</p>
+<p>第四部分的Principles of Voice Leading提到:</p>
+<blockquote>
+<p>如果Leading tone是Outer voice，必须解决到根音</p>
+</blockquote>
+<p>因此，这里并不是简单地像之前的每个练习那样将第一个和弦复制粘贴到结尾就可以，而是必须将B解决到C。</p>
+<p>接下来，$\mathrm{V} \to \mathrm{I}$的部分不加以Non Common Tone的限制。最终根据第四部分的原则填充剩下的三音和五音，可以得到上面的结果。</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E9%9F%B3%E4%B9%90/"># 音乐</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">The Blockheads存档修改工具开发记录（一）</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body>
+</html>

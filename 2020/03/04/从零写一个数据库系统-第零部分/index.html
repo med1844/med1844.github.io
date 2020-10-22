@@ -204,6 +204,9 @@
 <p>当然我也可以理解，毕竟并不是每个进到这所学校的人都有着写数据库系统的决心与能力。而教授们的水平可能也并不足以让他们写这么个东西出来。就算他们有这样的能力，恐怕有这意愿的人数也不足以开课，甚至可能只有我一人。</p>
 <p>就在不久前，我的老师告诉我，我是她教了这么多年编译原理以来第一个写出编译器的人。这句话虽然听着好听，仔细想一想，多少也感到可悲。而这编译器竟又如此简陋，到了我都不好意思称它为编译器的程度。除了前端外，全是闭门造车，质量也可想而知。如此一来，讽刺的纯度也又大大地提升了。</p>
 <p><em>这里插一嘴，我准备重写编译器，用c/c++。在那之前可能会先去学习LLVM，学习已有的经验。</em></p>
+<p>不论讲什么东西，都只是浅尝辄止，而并不说明实现。就像是所有东西只要有了理论就有高效可靠的实现一样，仿佛总是可以心安理得地用&quot;总会有人把轮子造出来的&quot;这样的心态，永远等着从别人那里拿来轮子。而不用去做这种苦力活的自己，也仿佛晋升贵族，不用再和造轮子的乡巴佬们为伍了。反过来，还可以啐一口唾沫，咒骂这些造轮子的苦力们非得把简简单单的读写数据这么件事做得这么麻烦。</p>
+<p>若是这样的话，那我们和培训机构出来的家伙又有什么区别呢?</p>
+<hr>
 <p>除了对实现的好奇之外，还有一个原因促使我开始写这个东西:</p>
 <p><strong>我从来没有用C / C++写过正经项目。</strong></p>
 <p>尽管有大一小学期乱搞的C++ &amp; Qt计算器，说实话学完编译回头一看，还真是naïve。而其他语言，java上手就是minecrash，外加JavaEE几个小项目，底子虽然不稳，总归也算入了门了。python的话，之前闭门造车的<a href="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/">编译器</a>、最近才写好的<a href="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">The Blockheads存档修改工具</a>，虽然硬要说的话也不怎么正经，不过也总比C++的情况要不知道高到哪里去了。</p>
@@ -212,8 +215,10 @@
 <hr>
 <h2 id="Storage">Storage</h2>
 <p>作为一个数据库，坠坠重要的事情当然就是存储数据啦！</p>
-<p>数据库显然会把数据存储在non-volatile的存储介质上，否则就会因为断电而损失数据。通常就是SSD或者HDD。</p>
-<p>数据库会按照page来存储数据。当需要用到数据的时候，会先把相应的页读到RAM中，进而再执行各种关系代数的运算。而读到内存中的页也会就一直放在那，直到出现页置换之类的情况才被换下来，与<a href="/2019/06/21/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BB%93/#%E9%A1%B5%E7%BD%AE%E6%8D%A2%E7%AE%97%E6%B3%95">操作系统</a>很相似。</p>
+<p>数据库显然会把数据存储在non-volatile的存储介质上，否则就会因为断电而损失数据。这样的介质通常就是SSD或者HDD。</p>
+<p>数据库会按照page来存储数据。当需要用到数据的时候，会先把相应的页读到RAM中的Buffer Pool中，进而再执行各种关系代数的运算。而读到内存中的页也会就一直放在那，直到出现页置换之类的情况才被换下来，与<a href="/2019/06/21/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BB%93/#%E9%A1%B5%E7%BD%AE%E6%8D%A2%E7%AE%97%E6%B3%95">操作系统</a>很相似。</p>
+<p>事实上，Buffer Pool就是手动实现一个缓存。这样，就势必要避开操作系统提供的cache服务。这么做的目的是因为OS提供的缓存机制必须对任何应用都有效。而拥有更多上下文信息的数据库系统，显然比操作系统更清楚怎样使用cache能够减少IO次数。</p>
+<p>所以，在读文件时，需要采用<a href="https://linux.die.net/man/2/open" target="_blank" rel="noopener"><strong><code>O_DIRECT</code></strong></a>来避开OS的缓存。</p>
 <!-- flag of hidden posts -->
         </div>
 
@@ -252,20 +257,5 @@
 </footer>
 
     </div>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body>
 </html>

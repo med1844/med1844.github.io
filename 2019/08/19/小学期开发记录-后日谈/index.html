@@ -257,7 +257,7 @@
 <p>之后稍微调整了一下工程文件的结构，并且对所有文件的import顺序做了修正。同时也发现了不少设计上的缺陷，比方说fog在一天中的浓度，居然是在<code>DayNightCycle.java</code>中计算的。这种逻辑难道不应该封装在<code>fog</code>类内吗? 同样的道理，既然很多天气因素都是根据昼夜来计算的，那显然可以写一个<code>timeParser.java</code>之类的，返回四个<code>boolean</code>，分别表示当前是<em>日出，白昼，日落，黑夜</em>，以及一个<code>double</code>，表示当前时间阶段的进度。而光照角度等都应该根据<code>timeParser.java</code>返回的值进行计算。这样，要修改光照的逻辑，也只需要对光照类的对应部分进行修改就可以了。 再看看现在，不论是改雾的浓度也好还是光照角度光照颜色也好全部都要在一个函数里完成，是多么愚蠢的设计啊。</p>
 <h2 id="2019-11-9">2019/11/9</h2>
 <p>闲逛的过程中发现了这种浮空的岛屿，虽然有点像彩蛋一样，但是正常来说应该把这种情况消除才对。</p>
-<p><img src="/2019/08/19/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E5%90%8E%E6%97%A5%E8%B0%88/ScreenshotCompressed.jpg" alt="ScreenshotCompressed"></p>
+<p><img src="/image/loading.png" data-original="ScreenshotCompressed.jpg" alt="ScreenshotCompressed"></p>
 <p>于是可以简单地梳理一下想要做的事情:</p>
 <ul>
 <li>优化区块生成算法，确保移动时不会卡顿</li>
@@ -294,11 +294,11 @@
 <p>简单看了一遍<a href="https://raytracing.github.io/" target="_blank" rel="noopener">raytracing in one weekend</a>的代码，感觉非常神奇。就只是做了最基础的反射折射吸收逻辑，就已经自带环境光遮蔽，镜面反射，散射，透镜，高光，阴影之类的效果，而不用像之前那样为了每种效果都要写动辄上百行代码。</p>
 <p>虽然不得不说好像还是传统方法的速度更快一些就是了，但是光追的效果真的很好啊！简单明了的原理，出色的效果，听起来就像是ACM中的&quot;正解&quot;一样: 简洁与优雅并存。</p>
 <p>于是简单跟着教程走了一下。顺带一提，命令行真的很好用:</p>
-<p><img src="/2019/08/19/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E5%90%8E%E6%97%A5%E8%B0%88/cmdCompressed.jpg" alt="cmdCompressed"></p>
+<p><img src="/image/loading.png" data-original="cmdCompressed.jpg" alt="cmdCompressed"></p>
 <p>然后花了一下午一晚上跟着教程手写了一遍光线追踪的代码。虽然完全看懂了每句话在干什么，但是渲染速度真的好慢啊…</p>
-<p><img src="/2019/08/19/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E5%90%8E%E6%97%A5%E8%B0%88/rayTracingDiffuse.png" alt="rayTracingDiffuse"></p>
+<p><img src="/image/loading.png" data-original="rayTracingDiffuse.png" alt="rayTracingDiffuse"></p>
 <p>暂时做到这一步，每个像素点的光线采样是400个。这样一张，分辨率仅仅是$800 \times 400$，质量也不算特别完美的图片，就需要两分多钟才能渲染完成:</p>
-<p><img src="/2019/08/19/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E5%90%8E%E6%97%A5%E8%B0%88/SOSLOW.png" alt="SOSLOW"></p>
+<p><img src="/image/loading.png" data-original="SOSLOW.png" alt="SOSLOW"></p>
 <p>考虑到CPU是串行的，那么如果是并行的GPU呢?</p>
 <p>假定编译等各种操作花了5秒钟（<code>run.bat</code>中包含了<code>g++</code>），也就是说纯渲染部分消耗了130秒，那么每个像素点花费的时间是</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="number">130</span> / (<span class="number">800</span> * <span class="number">400</span>)</span><br><span class="line"><span class="number">0.00040625</span></span><br></pre></td></tr></table></figure>
@@ -349,20 +349,5 @@
 </footer>
 
     </div>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body>
 </html>

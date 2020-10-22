@@ -241,21 +241,21 @@
 <p>懂的道理一大堆，题目都是秒杀，各种零碎的知识点信手拈来。而真要写代码的时候，直接嗝屁，多少有几分当年纸上谈兵的风采。难不成编译器不是在电脑上跑的? 在脑子里跑得再快，能快得过每秒$10^9$数量级的运算次数吗?</p>
 <p>话说回来，同样的道理也可以用在数据库和操作系统上。尽管数据库我已经想好要怎么用编译原理的部分处理查询语句并执行查询，但操作系统果然还是需要更多知识才可以写出来。某种意义上来说，第一段的发言也算是站着说话不腰疼了吧。</p>
 <h2 id="Outline">Outline</h2>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/Structure.png" alt="Structure"></p>
+<p><img src="/image/loading.png" data-original="Structure.png" alt="Structure"></p>
 <p>偷懒，所以没有写优化部分。</p>
 <h2 id="Lexer">Lexer</h2>
 <p>Lexer负责扫描输入字符串，根据正则表达式进行匹配。每匹配到一个token，就将该token加入到结果列表中。这就是所谓的Lexical Analysis。稍微上网搜了一下，似乎也有Scanner的叫法。</p>
 <p>一个简单通俗的例子就是SQL中hello world级别的语句:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/rawToToken.png" alt="rawToToken"></p>
+<p><img src="/image/loading.png" data-original="rawToToken.png" alt="rawToToken"></p>
 <p>它会把输入字符串切分成若干个部分，并标注每个部分的类型。像是最后一个部分就是<em>标识符</em>。</p>
 <p>再来看一个更加混乱的例子:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/lexer.png" alt="lexer"></p>
+<p><img src="/image/loading.png" data-original="lexer.png" alt="lexer"></p>
 <p>源代码来自<a href="http://ioccc.org/2012/endoh1/hint.html" target="_blank" rel="noopener">IOCCC</a>，作者是Yusuke Endoh。这是一段使用ASCII字符模拟液体流动的程序。由于是IOCCC的参赛作品，因此可以看到源代码着实混乱不堪。</p>
 <p>在经过Lexer扫描过后，就会变成下半部分所展示的那样，被划分成了许多个类型不同的Token。每个Token的背景色代表着不同的类型。简单地对照表如下:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/types.png" alt="types"></p>
+<p><img src="/image/loading.png" data-original="types.png" alt="types"></p>
 <p>我希望能通过这样极度混乱的例子，说明Lexer的必要性。</p>
 <p>当然，在实际的实现中并不会利用颜色来确定类型，而是会输出类似如下的内容:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/lexer2.png" alt="lexer2"></p>
+<p><img src="/image/loading.png" data-original="lexer2.png" alt="lexer2"></p>
 <p>上面出现的<code>Types.INT_CONSTANT, Types.MULTIPLY</code>等就是实际的类型了。</p>
 <p>对于每个类型，我们都会定义一条正则表达式，说明其匹配规则。比如<em>标识符(identifier)</em>，可以用<code>r&quot;\b([a-zA-z]|\_)([a-zA-z]|[0-9]|\_){0,32}\b&quot;</code>来描述。</p>
 <p>因此，单独使用一个枚举类，来定义所有类型:</p>
@@ -270,19 +270,19 @@
 <p>解析器。任务是将输入的Token List转换为一棵Parsing Tree。</p>
 <p>举个例子，输入的是一条简单的SQL查询语句: <code>SELECT * FROM Student</code>，也就是选择<code>Student</code>表中所有的元素。</p>
 <p>它对应的AST大致如下:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/tokenToASTpng.png" alt="tokenToASTpng"></p>
+<p><img src="/image/loading.png" data-original="tokenToASTpng.png" alt="tokenToASTpng"></p>
 <p>显然，AST中出现了一些输入串中没有声明过的东西，像是<code>WHERE_COND</code>，<code>TABLES</code>，<code>COLUMNS</code>等。这就涉及到<a href="https://en.wikipedia.org/wiki/Context-free_grammar" target="_blank" rel="noopener"><strong>上下文无关文法</strong></a>了。</p>
 <h3 id="CFG">CFG</h3>
 <p>严格的定义网上有很多，这里就不复制粘贴了----几个例子应该足以说明。</p>
 <p>首先，为了简单地说明，所以使用一个非常简单的文法作为例子:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S -&gt; &quot;a&quot;</span><br></pre></td></tr></table></figure>
 <p>其中，<code>S</code>是<strong>non-terminal</strong>，<code>&quot;a&quot;</code>是<strong>terminal</strong>。它们以<code>-&gt;</code>作为链接符，合起来就是一个<strong>产生式</strong>。</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/Production.png" alt="Production"></p>
+<p><img src="/image/loading.png" data-original="Production.png" alt="Production"></p>
 <p>之所以叫这样的名字，是因为terminal不可能出现在<code>-&gt;</code>左侧。也就是说，它不可能再通过箭头，转变成其他什么内容，因而它可以被形象地理解为<em>终点</em>，也就是<em>terminal</em>。</p>
 <p>而non terminal还可以通过上面这样的产生式，转换成箭头右边的内容。</p>
 <p>上述的*“转换”<em>，有更加专业的术语，叫作</em><strong>推导</strong>*。</p>
 <p>所以，对于输入串<code>a</code>，可以简单地画出如下AST:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/CFG1.png" alt="CFG1"></p>
+<p><img src="/image/loading.png" data-original="CFG1.png" alt="CFG1"></p>
 <p><em>注: 尽管没有强制要求，但是为了写代码的时候方便识别，所以我擅自规定了如下文法书写规范:</em></p>
 <ul>
 <li><em>terminal要在两旁加上双引号</em></li>
@@ -293,12 +293,12 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S -&gt; S &quot;a&quot; | &quot;a&quot;</span><br></pre></td></tr></table></figure>
 <p>其中，<code>|</code>表示或。也就是说，对于符号<code>S</code>，既可以推导成<code>S &quot;a&quot;</code>，也可以推导成<code>&quot;a&quot;</code>。</p>
 <p>所以，对于输入串<code>&quot;aaa&quot;</code>，可以简单地获得如下AST:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/CFG2.png" alt="CFG2"></p>
+<p><img src="/image/loading.png" data-original="CFG2.png" alt="CFG2"></p>
 <p>进阶一点，来看一个简易计算器的文法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">E -&gt; E &quot;+&quot; T | E &quot;-&quot; T | T</span><br><span class="line">T -&gt; T &quot;*&quot; F | F</span><br><span class="line">F -&gt; &quot;(&quot; E &quot;)&quot; | &quot;int_const&quot;</span><br></pre></td></tr></table></figure>
 <p>由于在文法中融合了运算符优先级，因此不是那么好懂，但是仔细看看也还是能明白的。</p>
 <p>考虑输入串<code>(2 + 3) * 5 - (7 + 11)</code>，它的AST如下:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/CFG3.png" alt="CFG3"></p>
+<p><img src="/image/loading.png" data-original="CFG3.png" alt="CFG3"></p>
 <p>看起来稍微有点复杂，不过仔细观察一下多少也能看出几分意思来。</p>
 <p>现在回头看看本节开头的SQL的AST，是否多少能明白其中的non-terminal的含义了呢?</p>
 <p>作为参考，这里给出一份已简化的SQL的CFG定义:</p>
@@ -357,43 +357,45 @@ $$</p>
 <p>在调用<code>firstOfSym(E)</code>的时候，会调用<code>firstOfSeq(E + T)</code>。而由于<a href="https://github.com/medioqrity/newCompilerTest/blob/master/Parser.py#L40" target="_blank" rel="noopener"><code>for sym in sequence</code></a>和<a href="https://github.com/medioqrity/newCompilerTest/blob/master/Parser.py#L44" target="_blank" rel="noopener"><code>elif cfg.isNonTerminal(sym):</code></a>以及<a href="https://github.com/medioqrity/newCompilerTest/blob/master/Parser.py#L50" target="_blank" rel="noopener"><code>allNonTerminalHasEmpty &amp;= firstOfSym(result, cfg, sym, firstDict) </code></a>，它会又一次调用<code>firstOfSym(E)</code>，以上过程会无限循环，直到栈溢出。</p>
 <p>因此，需要消除左递归。</p>
 <h4 id="消除左递归的方法">消除左递归的方法</h4>
-<p>对于$\textbf{S} \to \textbf{S}\alpha_0 ,|, \textbf{S}\alpha_1 ,|, … ,|, \textbf{S}\alpha_n ,|, \beta_0 ,|, \beta_1 ,|, … ,|, \beta_m$，只需要将文法该写成如下形式:<br>
-$$<br>
-\begin{align*}<br>
-\textbf{S} &amp;\to \beta_0\textbf{S’}<br>
-,|, \beta_1\textbf{S’} ,|, \dots ,|, \beta_{m}\textbf{S’} \<br>
-\textbf{S’} &amp;\to \alpha_0\textbf{S’} ,|, \alpha_1\textbf{S’} ,|, \dots ,|, \alpha_{n}\textbf{S’} ,|, \varepsilon<br>
-\end{align*}<br>
-$$</p>
+<p>对于$\textbf{S} \to \textbf{S}\alpha_0 ,|, \textbf{S}\alpha_1 ,|, … ,|, \textbf{S}\alpha_n ,|, \beta_0 ,|, \beta_1 ,|, … ,|, \beta_m$，只需要将文法该写成如下形式:</p>
+
+$$
+\begin{align*}
+\textbf{S} &\to \beta_0\textbf{S'}
+\,|\, \beta_1\textbf{S'} \,|\, \dots \,|\, \beta_{m}\textbf{S'} \\
+\textbf{S'} &\to \alpha_0\textbf{S'} \,|\, \alpha_1\textbf{S'} \,|\, \dots \,|\, \alpha_{n}\textbf{S'} \,|\, \varepsilon
+\end{align*}
+$$
+
 <p>其中，$\alpha_i$和$\beta_i$均表示多个符号（terminal和non-terminal的统称）。</p>
 <p>代码实现有些冗长，如有需求，请参阅<a href="https://github.com/medioqrity/newCompilerTest/blob/master/cfg.py#L138" target="_blank" rel="noopener">源码</a>.</p>
 <h3 id="LR-1-Parsing-Algorithm-Overview">LR(1) Parsing Algorithm Overview</h3>
 <p>首先，根据CFG计算Action和Goto表。比方说，对于文法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">START</span><br><span class="line">START -&gt; E</span><br><span class="line">E -&gt; E &quot;+&quot; T | E &quot;-&quot; T | T</span><br><span class="line">T -&gt; T &quot;*&quot; F | F</span><br><span class="line">F -&gt; &quot;(&quot; E &quot;)&quot; | &quot;int_const&quot;</span><br></pre></td></tr></table></figure>
 <p>我们可以通过<strong>LR(1) Item Set自动机</strong>获得如下<strong>Action &amp; Goto表</strong>:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/ActionAndGotoExample1.png" alt="ActionAndGotoExample1"></p>
+<p><img src="/image/loading.png" data-original="ActionAndGotoExample1.png" alt="ActionAndGotoExample1"></p>
 <p>之后，根据处理好的Action &amp; Goto表，利用<strong>符号栈</strong>和<strong>状态栈</strong>进行Shift &amp; Reduce，即移进规约。以<code>1 * (2 + 3 * 4)</code>为例，符号栈和状态栈的状态变化如下:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRParsingExample1.png" alt="LRParsingExample1"></p>
+<p><img src="/image/loading.png" data-original="LRParsingExample1.png" alt="LRParsingExample1"></p>
 <p>接下来简单说明一下LR(1) Item Set。</p>
 <h3 id="LR-1-Item-Set">LR(1) Item Set</h3>
 <p>首先给出结构:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRItem0.png" alt="LRItem0"></p>
+<p><img src="/image/loading.png" data-original="LRItem0.png" alt="LRItem0"></p>
 <p>一个LR(1)项目集由多个LR(1)项目组成，也就是LR(1)Item。上图中，<code>E -&gt; . E - T, {+, -, $}</code>、<code>E -&gt; . E + T, {+, -, $}</code>都是LR(1)Item。</p>
 <p>不过，为了能够让同属于一个non-terminal的LR(1) item都聚集在一起，我没有按照<em>LR(1)项目</em>和<em>LR(1)项目集</em>来实现。取而代之，我采用了grammar和production来描述多个拥有同一左侧non-terminal的LR(1) item:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRItemSet.png" alt="LRItemSet"></p>
+<p><img src="/image/loading.png" data-original="LRItemSet.png" alt="LRItemSet"></p>
 <p>其中，Grammar由以下三部分组成:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRItemSet_Grammer.png" alt="LRItemSet_Grammer"></p>
+<p><img src="/image/loading.png" data-original="LRItemSet_Grammer.png" alt="LRItemSet_Grammer"></p>
 <h4 id="为什么要加点">为什么要加点?</h4>
 <p>每个项目中的点，表示parser在输入token list中所处的位置。</p>
 <p>比方说，假定我们正在扫描SQL的最基本的查询语句:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRItemExample_1.png" alt="LRItemExample_1"></p>
+<p><img src="/image/loading.png" data-original="LRItemExample_1.png" alt="LRItemExample_1"></p>
 <p>假定我们已经扫描完了<code>&quot;SELECT&quot;</code>和<code>&quot;*&quot;</code>，那么下一个将要扫描的token就是<code>&quot;FROM&quot;</code>。因此，按照文法<code>QUERY -&gt; &quot;SELECT&quot; COLUMNS &quot;FROM&quot; TABLES WHERE_COND</code>来看的话，就应该把点放在<code>&quot;FROM&quot;</code>前。因而，对应的LR(1) Item Set就是这样:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRItemExample_2.png" alt="LRItemExample_2"></p>
+<p><img src="/image/loading.png" data-original="LRItemExample_2.png" alt="LRItemExample_2"></p>
 <h4 id="为什么LR-1-Item-Set有多个LR-1-Item">为什么LR(1) Item Set有多个LR(1) Item?</h4>
 <p>我个人理解为，这是在<strong>枚举所有可能的情况</strong>。比方说，对于文法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">START</span><br><span class="line">START -&gt; E</span><br><span class="line">E -&gt; E &quot;+&quot; T | E &quot;-&quot; T | T</span><br><span class="line">T -&gt; T &quot;*&quot; F | F</span><br><span class="line">F -&gt; &quot;(&quot; E &quot;)&quot; | &quot;int_const&quot;</span><br></pre></td></tr></table></figure>
 <p>它的初始项目集在上面已经出现过，即:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRItem0.png" alt="LRItem0"></p>
+<p><img src="/image/loading.png" data-original="LRItem0.png" alt="LRItem0"></p>
 <p>在初始状态时，我们不能确定下一个token究竟是<code>E</code>还是<code>T</code>或者是<code>int_const</code>。因此，所有可能的情况都被列在这里。当确定了下一个token的时候，再计算下一个Item Set。</p>
 <p>比方说，对于该初始项目集，如果下一个token是<code>int_const</code>，那么就应该获得<code>F -&gt; int_const ., {*, +, -, $}</code>这样的LR(1)项目。</p>
 <h4 id="为什么要使用展望符">为什么要使用展望符?</h4>
@@ -401,13 +403,13 @@ $$</p>
 <p>当一个项目可以规约的时候，它的<strong>点</strong>应该处于<strong>产生式的末尾</strong>。</p>
 <p>比方说当到达了包含<code>F -&gt; int_const .</code>的状态时，就可以将<strong>符号栈</strong>顶的<code>int_const</code>给pop掉，再把<code>F</code>给push进栈中。对应地，将状态栈的栈顶pop掉后，要根据新的栈顶状态，通过查询Goto表，确定该状态通过<code>F</code>能够到达的状态，并将该状态push进状态栈。</p>
 <p>尽管我已经尽可能用简短地语言来描述，总归还是不是那么容易理解的。因此，来看看下面的例子:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRParsingExample2.png" alt="LRParsingExample2"></p>
+<p><img src="/image/loading.png" data-original="LRParsingExample2.png" alt="LRParsingExample2"></p>
 <p>在第一行中，符号栈栈顶是<code>4</code>，状态栈栈顶是10。在表中没有体现，但下一个输入字符是<code>)</code>。</p>
 <p>根据Action表:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/ActionAndGotoExample2.png" alt="ActionAndGotoExample2"></p>
+<p><img src="/image/loading.png" data-original="ActionAndGotoExample2.png" alt="ActionAndGotoExample2"></p>
 <p><code>('R', 7)</code>表示按照第7个语法进行规约(<strong>R</strong>educe)，也就是<code>F -&gt; int_const</code>。因此，符号栈栈顶从<code>4</code>变成了<code>F</code>。</p>
 <p>状态栈在pop掉状态10之后，要查看从新的栈顶出发，经由<code>F</code>能够到达哪个状态。因此，根据Goto表:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/ActionAndGotoExample3.png" alt="ActionAndGotoExample3"></p>
+<p><img src="/image/loading.png" data-original="ActionAndGotoExample3.png" alt="ActionAndGotoExample3"></p>
 <p>答案是前往状态25。因此，状态栈栈顶变成了25。</p>
 <p>但是，<strong>并不是所有点在末尾的情况都是可以规约的</strong>。</p>
 <p>考虑如下CFG:</p>
@@ -441,11 +443,11 @@ $$</p>
 <h3 id="LR-1-Item-Set-Automata">LR(1) Item Set Automata</h3>
 <p>所谓自动机，就是从状态通过一定条件跳转到其他状态。</p>
 <p>下图非常直观的展示了不同LR(1) Item Set之间的关系，以及它们是如何形成自动机的:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LRAutomata.png" alt="LRAutomata"></p>
+<p><img src="/image/loading.png" data-original="LRAutomata.png" alt="LRAutomata"></p>
 <p>显然，我们可以通过BFS来完成对所有项目集的搜索。使用伪代码说明，大致如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">queue &#x3D; deque([initItemSet])  # double ended queue</span><br><span class="line">visitedItemSet &#x3D; set(initItemSet)</span><br><span class="line">while queue:</span><br><span class="line">    currentItemSet &#x3D; queue.front()</span><br><span class="line">    queue.popFront();</span><br><span class="line">    for nextSymbol currentItemSet.getNextSymbol():</span><br><span class="line">        newItemSet &#x3D; currentItemSet.goto(nextSymbol)</span><br><span class="line">        if newItemSet not in visitedItemSet:</span><br><span class="line">            visitedItemSet.add(newItemSet)</span><br><span class="line">            queue.pushBack(newItemSet)</span><br></pre></td></tr></table></figure>
 <p>这里的<code>currentItemSet.getNextSymbol()</code>是用于获取所有可能的<strong>出边</strong>的，也就是类似于上面的<code>['E', 'F', int_const, (, 'T']</code>这种:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/getFunctionExample.png" alt="gotoFunctionExample"></p>
+<p><img src="/image/loading.png" data-original="getFunctionExample.png" alt="gotoFunctionExample"></p>
 <p>这只需要获取每个Production的出边，取并集即可。代码如下:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LRItemSet</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        return a set containing every character next to the dot</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        result = set()</span><br><span class="line">        <span class="keyword">for</span> production <span class="keyword">in</span> self.productions:</span><br><span class="line">            result |= production.get()</span><br><span class="line">        result.discard(EMPTY)</span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
 <p>其中，<code>production.get()</code>的实现如下:</p>
@@ -453,7 +455,7 @@ $$</p>
 <p><code>grammar.getElementAtPosition()</code>实现如下:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Grammar</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getElementAtPosition</span><span class="params">(self, position = None, offset = <span class="number">0</span>)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        grammar.getElementAtPosition(offset=1) -&gt; look 1 element forward, LR(1)</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> position <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            position = self.dotPosition</span><br><span class="line">        position += offset</span><br><span class="line">        <span class="keyword">if</span> position &gt;= len(self.sequence):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        <span class="keyword">return</span> self.sequence[position]</span><br></pre></td></tr></table></figure>
 <p>另外一个非常重要的方法就是<code>goto()</code>:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/gotoFunctionExample.png" alt="gotoFunctionExample"></p>
+<p><img src="/image/loading.png" data-original="gotoFunctionExample.png" alt="gotoFunctionExample"></p>
 <p>它的实现如下:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LRItemSet</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">goto</span><span class="params">(self, step, assistFirstDict=None)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        return a new LRItem object which is the result of applying `goto` on every production</span></span><br><span class="line"><span class="string">        assistant First Dictionary is used for accelerating the calculation speed</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        result = LRItemSet(self.cfg)</span><br><span class="line">        <span class="keyword">for</span> production <span class="keyword">in</span> self.productions:</span><br><span class="line">            newProduction = production.goto(step)</span><br><span class="line">            <span class="keyword">if</span> newProduction <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                result.add(newProduction)</span><br><span class="line">        result.updateClosure(assistFirstDict)</span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
 <p>其中，<code>production.goto(step)</code>实现如下:</p>
@@ -503,17 +505,17 @@ $$</p>
 <p>最后返回这两个表即可:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> action, goto</span><br></pre></td></tr></table></figure>
 <p>在实现了<code>__str__()</code>之后，就能看到漂亮的输出啦:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/LR1TABLE.png" alt="LR1TABLE"></p>
+<p><img src="/image/loading.png" data-original="LR1TABLE.png" alt="LR1TABLE"></p>
 <h3 id="Building-Parse-Tree">Building Parse Tree</h3>
 <p>总而言之就是:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">把每个token都跑一遍:</span><br><span class="line">    动作 &#x3D; 查表</span><br><span class="line">    if 动作 &#x3D;&#x3D; 移进:</span><br><span class="line">        移进</span><br><span class="line">    elif 动作 &#x3D;&#x3D; 规约:</span><br><span class="line">        规约</span><br><span class="line">        把pop出来的节点作为子节点连到新建的父节点上</span><br><span class="line">    elif 动作 &#x3D;&#x3D; Accepted:</span><br><span class="line">        Accepted</span><br><span class="line">    else:</span><br><span class="line">        assert(False)</span><br></pre></td></tr></table></figure>
 <p>上述代码的实现非常冗长，因此如有需要请参阅<a href="https://github.com/medioqrity/newCompilerTest/blob/master/Parser.py#L372" target="_blank" rel="noopener">源码</a>。</p>
 <p>取消第382行的注释就会看到类似于这种结果:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/parsingProcess.png" alt="parsingProcess"></p>
+<p><img src="/image/loading.png" data-original="parsingProcess.png" alt="parsingProcess"></p>
 <p>可以看到输出了<code>1+2 = 3</code>，这就是接下来Semantic Analysis的内容了。</p>
 <p>总而言之，确实能够建出Parse Tree，可喜可贺。</p>
 <p>为了确定自己代码写得足够健壮，我利用了CCSP 2019的SQL查询的SQL定义，测试了对SQL查询语句进行parsing的能力。 结果还是很不错的:</p>
-<p><img src="/2019/12/15/%E4%BB%8E%E9%9B%B6%E5%86%99%E4%B8%80%E4%B8%AA%E7%BC%96%E8%AF%91%E5%99%A8-Lexer%E4%B8%8EParser/SQL2.png" alt="SQL"></p>
+<p><img src="/image/loading.png" data-original="SQL2.png" alt="SQL"></p>
 <p><em>可以看到截图中<code>ParseTree.py</code>的名字还不是现在这样，而是<code>AbstractSyntaxTree.py</code>。这是早期由于认知上的偏差导致的命名错误，现在已经改正。</em></p>
 <h2 id="References">References</h2>
 <ul>
@@ -563,20 +565,5 @@ $$</p>
 </footer>
 
     </div>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body>
 </html>
