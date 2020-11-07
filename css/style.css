@@ -1403,7 +1403,8 @@ header label {
   color: #252525;
   text-shadow: none;
 }
-::selection {
+.heimu::selection,
+.heimu a::selection {
   color: #fff;
 }
 .heimu:hover,
