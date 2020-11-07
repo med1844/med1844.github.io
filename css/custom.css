@@ -22,3 +22,11 @@ h3 {
 h4 {
   font-size: 1.25em;
 }
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-block-start: 0.8em;
+  margin-block-end: 0.5em;
+}
