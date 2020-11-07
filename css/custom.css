@@ -4,11 +4,21 @@
   color: #252525;
   text-shadow: none;
 }
-::selection {
+.heimu::selection,
+.heimu a::selection {
   color: #fff;
 }
 .heimu:hover,
 .heimu:hover a {
   transition: color 0.05s linear;
   color: #fff;
+}
+h2 {
+  font-size: 2em;
+}
+h3 {
+  font-size: 1.5em;
+}
+h4 {
+  font-size: 1.25em;
 }
