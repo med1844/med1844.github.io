@@ -242,6 +242,7 @@
 <p>和弦最多了解到七和弦，而平常写不论是合成器pad还是弦乐都是无脑堆三和弦。早就知道$\mathrm{V}^7$和弦到$\mathrm{I}$的倾向性还有属功能主功能下属功能各种零碎的知识点，但实际写作中除了$\mathrm{IV} \to \mathrm{V} \to \mathrm{vi}$之外，甚至连<code>4736251</code>都没用过。</p>
 <p>所以我总是逃避，靠混音与合成器的进步来营造<em>不学乐理大概也没什么问题</em>的假象。</p>
 <p>但是问题毕竟还是存在。是时候解决了。</p>
+<span class="heimu" title="别骂了别骂了">话是这么说，估计也坚持不了几天吧（草</span>
 <h3 id="学习资源">学习资源</h3>
 <p>我曾经看过一些扫描的乐理书，看了几页就看不下去了。</p>
 <p>扫描质量差对于看不懂五线谱的人来说，的确可以算是毁灭性的打击。</p>
@@ -469,7 +470,32 @@
 <p>$\mathrm{B}$和$\mathrm{F}$，应该解决到只差一个半音的$\mathrm{C}$和$\mathrm{E}$。</p>
 </blockquote>
 <h3 id="5-3-Voice-Leading-from-IV-V">5.3 Voice Leading from IV-V</h3>
-<p>占坑，考完试回来接着学。</p>
+<p>因为IV-V是大二度的关系，而和弦又是基于三度关系的，显而易见不可能会有相同音。所以不能使用Common Tone Approach。</p>
+<p>首先来看反例:</p>
+<p><img src="/image/loading.png" data-original="IV_V_BAD_1.png" alt="IV_V_BAD_1"></p>
+<p>事实上这听起来还不错，尤其是对于有pop背景的人来说。（我也一样，我最喜欢456了）</p>
+<p>在古典音乐中，有一条额外的限制，就是要avoid parallel fifth &amp; octave。</p>
+<p>上图中的parallel fifth和octave分别是:</p>
+<p><img src="/image/loading.png" data-original="IV_V_BAD_1_EXPLAIN.png" alt="IV_V_BAD_1_EXPLAIN"></p>
+<p>parallel f/o是指，特定的两个<strong>声部</strong>，在前后两个和弦中都构成了f/o。</p>
+<p>注意，不一定必须是相邻的两个声部。</p>
+<hr>
+<p>显而易见的是，我们应该使用Non-common Tone Approach。</p>
+<p>我们分别观察$\mathrm{IV}$和弦中的<code>SAT</code>。对于<code>T</code>来说，它是C，最近的$\mathrm{V}$中的音是B。对于<code>A</code>来说，它是F，所以最近的音是G。</p>
+<p>此时三音和两个根音已经完成，只剩下一个D没有放置。若放在D6，那么距最近的A5有五个半音那么远。若放在D5，则是一个不错的选择，并且也不会违背第四部分的原则中所写的<em>选择所有跨度中最小</em>的原则。</p>
+<p>因此，最终结果如下:</p>
+<p><img src="/image/loading.png" data-original="IV_V_OK_1.png" alt="IV_V_OK_1"></p>
+<hr>
+<p>虽然上面还是出现了纯五度和纯八度:</p>
+<p><img src="/image/loading.png" data-original="IV_V_OK_1_FIF_AND_OCT.png" alt="IV_V_OK_1_FIF_AND_OCT"></p>
+<p>但是毕竟是不一样的。只要是三和弦就一定会有纯五度（可能还有纯八度）。</p>
+<p>上面的错误的例子中，纯五度都是由<code>TB</code>构成的。而这里，分别是<code>TB</code>和<code>AB</code>构成的。同理，上面错误的例子中，纯八度都是由<code>AB</code>构成的，而这里分别是<code>AB</code>和<code>SB</code>构成的。</p>
+<p>因为并不是特定的某两个声部在前后两个和弦中都构成了纯五度和纯八度，所以没有形成parallel f/o。</p>
+<p>为什么会这样呢? 课程并没有提到原因，但是我在另一本名为《调性和声与20世纪音乐概述》的第80页找到:</p>
+<blockquote>
+<p>避免平行五度和平行八度的原因和对位法的要求有关。</p>
+</blockquote>
+<p>鉴于我还没学到对位法，也许要等到许久以后才能明了了吧。</p>
 
         </div>
 
