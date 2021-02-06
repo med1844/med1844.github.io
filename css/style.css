@@ -188,6 +188,12 @@ template {
   font-weight: 700;
   src: local('Montserrat Bold'), local('Montserrat-Bold'), url("../fonts/montserrat-v15-latin-700.woff2") format('woff2'), url("../fonts/montserrat-v15-latin-700.woff") format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
+@font-face {
+  font-family: 'TenMincho Kana Only';
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/TenMincho-KanaOnly-Regular.woff2") format('woff2'), url("../fonts/TenMincho-KanaOnly-Regular.woff") format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
 html {
   font-family: 'Iosevka Etoile Web Medium', 'Roboto Slab', 'Source Han Sans', 'Microsoft Jhenghei', PingFang SC, Seguo UI, Microsoft Yahei, Arial;
 }
@@ -644,7 +650,7 @@ header label {
 .nickname {
   font-size: 2em;
   font-weight: normal;
-  font-family: 'Montserrat Bold';
+  font-family: 'Montserrat Bold', 'Source Han Sans';
 }
 .links a {
   padding: 0 5px;
@@ -798,7 +804,7 @@ header label {
 .post-content h6 {
   padding-top: 0.8em;
   padding-bottom: 0.3em;
-  font-family: 'Montserrat Bold';
+  font-family: 'Montserrat Bold', 'Source Han Sans';
 }
 .post-content h1::before {
   content: "#";

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>设计模式学习-笔记 | Medioqrity&#39;s Blog</title><meta name="robots" content="noindex">
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">设计模式学习-笔记</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2020/12/31&nbsp;&nbsp;20:33:25</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>采用Head First设计模式中文版。</p>
+<p>参考费曼技巧，以及该书的序章所写的内容，我想笔记也是可以成为具有学习价值的材料的。前提是需要遵守一些规矩，如：</p>
+<ul>
+<li>使用正常人聊天的语气来叙说内容，而不是干巴巴的正式文档的口气</li>
+<li>多使用图片来解释内容</li>
+<li>影响读者的情绪（生草等）</li>
+</ul>
+<p>与教科书不同的是：</p>
+<ul>
+<li>对于书中提出的难点，应当写下自己的思考（不然还叫笔记吗），而不是<em>让学习的人想得更深</em></li>
+</ul>
+<p>毕竟笔记是为自己而写，因此应当隐藏。</p>
+<h1>CHAPTER 1 - 设计模式入门</h1>
+<h2 id="模拟鸭子：策略模式">模拟鸭子：策略模式</h2>
+<p>为了给模拟鸭子程序中的鸭子加入飞行功能，在所有鸭子的超类中加入一个fly方法即可。</p>
+<p>但是这样就会产生橡皮鸭会飞的feature（mojang感）。一个可行的解决方案是用空代码override掉超类的fly方法。</p>
+<p>这样会导致：</p>
+<ul>
+<li>代码在多个子类中重复
+<ul>
+<li>橡皮鸭和烤鸭都不会叫，都得写个一模一样的空函数override掉超类方法</li>
+</ul>
+</li>
+<li>运行时的行为不容易改变
+<ul>
+<li>比方说橡皮鸭被装备上了KS-25x4“猛犸”液体燃料引擎，不就能飞了？</li>
+<li>如果此时的飞行控制方法又与原先的正常鸭子的飞行控制方法不同，该怎么办？</li>
+</ul>
+</li>
+<li>我们很难让鸭子跳舞
+<ul>
+<li>无生命的东西除非加入可控制骨架机器人，否则就算是天王老子来了它也不能跳舞</li>
+<li>难道每增加一个有生命的鸭子才能做的功能，都得重新往每个无生命鸭子的子类里复制一次空函数吗？</li>
+</ul>
+</li>
+<li>改变会牵一发而动全身，造成其他鸭子不想要的改变
+<ul>
+<li>正如上面所说，加入跳舞的功能（仅供可活动的鸭子使用），或者加入喝机油补充能量的功能（仅供机器鸭使用），放在超类的抽象等级太高，所有鸭子都会受影响，放在子类则太麻烦，而且也不方便改</li>
+</ul>
+</li>
+</ul>
+<p>一种可行的解决方案是将fly()和quack()的feature分离成interface，每个需要fly和quack的鸭子子类都可以继承它们。但是缺点也非常明显：</p>
+<ul>
+<li>如果哪一天我们认为飞行实在太容易导致穿模bug或者需要计算的碰撞太多，由于经费原因不得不砍掉这个功能（就像2077的爬墙功能），那么每个继承了fly的鸭子子类都要逐一修改实现的接口列表。
+<ul>
+<li>虽然也可以通过将fly()改成空函数实现…但是留着一个完全没用的类，我想是应当避免的行为？</li>
+</ul>
+</li>
+<li>如果我们希望火箭鸭有一套完全不同的操控方式，就像钩爪鸭和浮空鸭那样？难道我们要修改成<code>implements RocketFly</code>这样吗？</li>
+</ul>
+<h3 id="软件开发定理与第零设计原则">软件开发定理与第零设计原则</h3>
+<p>定理：无论是什么项目，我们所做的事情无非是<strong>改动</strong>。</p>
+<p>比方说：</p>
+<ul>
+<li>写编译器的时候，发现先前的类划分完全是错误的：不仅在逻辑上行不通，由此导致的算法改变也极大地降低了效率。结果，不仅得把所有类重新写一遍，还得把所有的算法都重写。</li>
+<li>写shader loader的时候，发现之前的渲染过程满是错误，想要切换到deferred shading，结果得把渲染器的核心部分全部重写一遍</li>
+<li>写时间系统的时候，直接把天色、雾的浓度、太阳位置与角度、平行光的角度全部放在一个函数里控制，但其实应该分开的，所以得为此将这部分内容分离到各个对应类中，但是要怎么分离呢？</li>
+</ul>
+<p>因此，我们可以得出第零设计原则：</p>
+<p><strong>将应用中可能需要变化的地方全部独立出来，不要和不需要变化的代码混在一起。</strong></p>
+<p>这样，我们就能有效地应对<strong>变化</strong>，并且有信心面对更多地同类型变化。</p>
+<p>这里，鸭子的行为会变化，因此将<strong>鸭子的行为</strong>抽取出来，作为额外的类使用（非常反直觉，但这确实是重点。<em>另外我认为这里选择如此反直觉的类来提取的逻辑非常值得反复体会</em>）。</p>
+<p>这样，不同的行为可以使用不同的行为类来实现，比方说飞行行为类及其子类（火箭操控？扇翅膀？还是QWOP风格？或者卫星姿态机动？），呱呱叫行为（机械嗓音？丧尸嗓音？还是像龙那样喷火？）</p>
+<h3 id="第一设计原则">第一设计原则</h3>
+<p>我们希望鸭子的行为可以在运行时改变（这样就可以通过吃道具来改变行为了！比方说参考马里奥吃火焰花，我们也可以通过吃冰冻花来打造最强冰冻鸭子之类的），这样就引出了一个非常重要的的原则：</p>
+<p><strong>针对接口编程，而不是针对实现编程。</strong></p>
+<p>我们可以通过<code>IFlyBehavior</code>和<code>IQuackBehavior</code>来作为接口，再赋以不同子类的实例，这样鸭子类就成功地实现了<em>无需了解行为类的细节</em>这一点。</p>
+<p>我们甚至可以再抽象出<code>IBehavior</code>类，来更抽象地表达所有可能的动作（如跳舞，奔跑，驾车，开枪，写代码等）。当然，仅当动作本身也成为了可变对象时，我们才应该这么做（此时符合第零设计原则）。</p>
+<p>这利用了接口本身的特性：接口不变，而实现可变。</p>
+<p>与以前的做法不同的是，以前的fly方法都是在父类中彻底写死的。想要修改，则只能在子类中修改。而即便在子类中修改，它也是写死的。</p>
+<h3 id="鸭子暖暖">鸭子暖暖</h3>
+<p>这部分是我自己的思考记录。</p>
+<p>既然鸭子的行为本身可变，那么为什么鸭子的颜色不抽象成一个类呢？</p>
+<p>事实上这是因为——不同子类的鸭子，已经有着不同的颜色和外观。由于不同类的鸭子与颜色直接对应，因此这里不需要再抽象鸭子的外观。</p>
+<p>除非我们希望外观也能变化：比方说，将红头鸭子染成蓝色，或者加入隐身功能变身忍者鸭这种情况，或者是出现了外观相同却需要使用不同行为的子类（如普通鸭子和声带坏死被加装了发声义体的赛博朋克鸭子，外观一致但是需要不同的<code>IQuackBehavior</code>实现，甚至不同的<code>IAIBehavior</code>，就像2077的奥特那样）。由于产生了重复，或者希望运行时改变，或者有着额外的运算逻辑（如隐身），此时才需要将颜色抽象成一个类。</p>
+<p>也许还有别的需要将其进行抽象的情况，但总的来说无外乎还是第零原则那样：提取变化。在现在的设计中，Duck本身各个类型的不同已经足够代表其颜色，因而没有额外的变化需要考虑。</p>
+<h3 id="代码实现">代码实现</h3>
+<p><img src="/image/loading.png" data-original="Ducks.png" alt></p>
+<p>这样做，确实可以更换Fly的行为模式，加装了火箭。大大提高了灵活性，同时将行为逻辑的代码彻底从鸭子类中分离。</p>
+<p>我应该使用<code>AbstractDuck duck = new ModelDuck()</code>的，但是毕竟已经是最终Application了，大概不这么面向接口也没啥大问题。</p>
+<p>这里，<code>ModelDuck</code> <strong>is a</strong> <code>Duck</code>, <code>Duck</code> <strong>has a</strong> <code>IFlyBehavior</code> and <strong>has a</strong> <code>IQuackBehavior</code>, <code>FlyNoway</code> <strong>implements</strong> <code>IFlyBehavior</code>, so does <code>Quack</code> <strong>implements</strong> <code>IQuackBehavior</code>。加粗的黑字体现了它们之间的关系：抽象类的子类依旧 <strong>is</strong> 该类，接口的实现 <strong>implements</strong> 该接口，客户（即<code>Duck</code>）<strong>has a</strong> 算法簇（即<code>IBehavior</code>）。</p>
+<p>这里的<strong>has a</strong>就是组合（composition）。</p>
+<h3 id="第二设计原则">第二设计原则</h3>
+<p><strong>多用组合，少用继承。</strong></p>
+<p>组合的意义在于可以使用setter方法，搭配接口，实现<strong>运行时动态地改变行为</strong>。</p>
+<h3 id="设计谜题-0">设计谜题_0</h3>
+<p>总之就是游戏里面角色与武器的设计。有多种角色，并且都能够使用武器进行战斗；每种武器有不同的战斗方式。给定类，请画出UML。</p>
+<p>我的成果如下：</p>
+<p><img src="/image/loading.png" data-original="Puzzle_0.png" alt="Puzzle_0"></p>
+<h2 id="气象站：观察者模式">气象站：观察者模式</h2>
+<p>我们有一个<code>WeatherData</code>对象，它将从气象站获取湿度、温度和气压数据，并将数据发送给各显示装置。</p>
+<p>每当气象站数据更新时，该类的<code>measurementsChanged()</code>方法就会被调用。此外，它还有三个getter方法：<code>getTemperature(), getHumidity(), getPressure()</code>。</p>
+<p>我们需要在气象站数据更新时更新所有的布告板。目前我们有<em>当前状况</em>、<em>气象统计</em>和<em>天气预报</em>三个布告板。</p>
+<p>首先我们来看错误的实现方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeatherData</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">measurementsChanged</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">float</span> temp = getTemperature();</span><br><span class="line">        <span class="keyword">float</span> humidity = getHumidity();</span><br><span class="line">        <span class="keyword">float</span> pressure = getPressure();</span><br><span class="line">        </span><br><span class="line">        currentConditionDisplay.update(temp, humidity, pressure);</span><br><span class="line">        statisticsDisplay.update(temp, humidity, pressure);</span><br><span class="line">        forecastDisplay.update(temp, humidity, pressure);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们注意到其中出现了一些重复，比方说<code>.update(temp, humidity, pressure)</code>。这样，各个布告板都被写死了，每当添加新的布告板，都需要手动添加并重新编译。</p>
+<p>这还意味着我们不能动态地加入或删除布告板。当一个布告板因为个中原因离线时（比方说被赛博精神病砍坏了），weather data类还将不断地调用该布告板的<code>update</code>方法。</p>
+<p>根据第零原则来看，这个程序没有将可变的部分和不会变的部分分离开。假定温度、湿度和气压等数据不会在将来添加或者修改，我们应该认为这部分是不变的。而需要改动的Display部分却写死了，并且没有分离开。</p>
+<p>我不清楚<code>*Display</code>是不是单独的类。如果是的话，应该建立一个<code>IDisplay</code>的接口，并声明<code>public void update(float, float, float)</code>方法，再让子类进行实现。这样就可以符合第一设计原则。另外，通过使用<code>LinkedList&lt;IDisplay&gt;</code>，可以动态地加入或删除布告板。</p>
+<p>这是实现动态的一种方式，重点是我们应该把这个<code>LinkedList</code>放进另一个类里。</p>
+<!-- flag of hidden posts -->
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/java/"># java</a>
+                    
+                        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"># 设计模式</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>Regex Derivatives笔记 | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Regex Derivatives笔记</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2021/01/13&nbsp;&nbsp;19:48:06</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>为了翻译论文，所以补习一下正则表达式的导数。</p>
+<p>在字符表$\Sigma$上的正则表达式可以表示为：<br>
+$$<br>
+\begin{align*}<br>
+r, s ::=&amp; \varnothing &amp;\<br>
+|~~~~ &amp;\epsilon &amp;\<br>
+|~~~~ &amp;a &amp;(a \in \Sigma) \<br>
+|~~~~ &amp;r \cdot s &amp;\mathrm{concatenation}\<br>
+|~~~~ &amp;r^* &amp;\mathrm{Kleene-closure}\<br>
+|~~~~ &amp;r + s &amp;\mathrm{logical ~ or}\<br>
+|~~~~ &amp;r ~&amp;~ s &amp;\mathrm{logical ~ and}\<br>
+|~~~~ &amp;\neg r &amp;\mathrm{logical ~ negation}<br>
+\end{align*}<br>
+$$</p>
+<p>~~不过我不太清楚logical and和取非该怎么理解…因为这里的logical and和concatenation感觉是一样的鸭…~~请看下面<em>正则表达式产生的语言</em>部分的运算规则来理解其逻辑。</p>
+<h3 id="Language-of-regex-r">Language of regex $r$</h3>
+<p>正则表达式$r$产生的语言可以用集合$\mathcal{L}[r] \in \Sigma^*$来表示。这个语言的集合可能是无限的。</p>
+<p>它产生的语言可以表示为：</p>
+<p>$$<br>
+\begin{align*}<br>
+\mathcal{L}[\varnothing] &amp;= \varnothing \<br>
+\mathcal{L}[\varepsilon] &amp;= {\varepsilon} \<br>
+\mathcal{L}[a] &amp;= {a} \<br>
+\mathcal{L}[r \cdot s] &amp;= {u \cdot v | u \in \mathcal{L}[r], v \in \mathcal{L}[s]} \<br>
+\mathcal{L}[r^<em>] &amp;= {\varepsilon} \cup \mathcal{L}[r \cdot r^</em>] \<br>
+\mathcal{L}[r + s] &amp;= \mathcal{L}[r] \cup \mathcal{L}[s] \<br>
+\mathcal{L}[r ~&amp;~ s] &amp;= \mathcal{L}[r] \cap \mathcal{L}[s] \<br>
+\mathcal{L}[\neg r] &amp;= \Sigma^* \setminus \mathcal{L}[r]<br>
+\end{align*}<br>
+$$</p>
+<p>通过产生的语言的集合之间的关系，我们可以基于逻辑地分析出正则表达式的与或非运算该怎么理解。</p>
+<h3 id="确定有限自动机的定义">确定有限自动机的定义</h3>
+<p>Deterministic Finite Automata可以被定义为字符集$\Sigma$上的四元组$\langle\mathcal{Q}, q_0, \mathcal{F}, \delta\rangle$。其中：</p>
+<p>$\mathcal{Q}$是所有状态形成的集合。由于DFA本质上是有向图，因此可以理解为$\mathcal{Q}$代表该有向图中的所有顶点/节点。</p>
+<p>$q_0$代表起始状态，从这个节点开始跳转。</p>
+<p>$\mathcal{F}$代表所有结束状态的集合。拿Trie树举例，所有的叶子节点都是结束状态（还有一些结束状态在树上）</p>
+<p>$\delta: \mathcal{Q} \times \Sigma \to \mathcal{Q}$是状态转移函数。这个转移函数会读取两个变量$q \in \mathcal{Q}$和$u \in \Sigma$，这样$\delta(q, u)$就应该返回从状态$q$出发经过$u$达到的状态。</p>
+<p>你可以把$\delta$理解为图论中的邻接矩阵或者邻接表，当然前向星也可以。或者是Trie树节点中的<code>TrieNode* next[]</code>，那也同样可以。</p>
+<p>我们把$\delta$从单个字符（毕竟定义中$u \in \Sigma$，因而只能支持单个字符）扩展到字符串上，形成$\hat\delta$:</p>
+<p>$$<br>
+\begin{align*}<br>
+\hat\delta(q, \varepsilon) &amp;= q \<br>
+\hat\delta(q, ab) &amp;= \hat\delta(\hat\delta(q, a), b)<br>
+\end{align*}<br>
+$$</p>
+<p>这样，可被自动机$\langle\mathcal{Q}, q_0, \mathcal{F}, \delta\rangle$接受的所有字符串就是：</p>
+<p>$$<br>
+{s | \hat\delta(q_0, s) \in \mathcal{F}}<br>
+$$</p>
+<h2 id="正则表达式的导数">正则表达式的导数</h2>
+<p>语言$\mathcal{L}[u] \subseteq \Sigma^*$对字符串$s$的偏导是：</p>
+<p>$$<br>
+\partial_s\mathcal{L}[u] = {v | u \cdot v \in \mathcal{L}[u]}<br>
+$$</p>
+<p>举个例子，$\partial_\mathbf{abc}\mathbf{abczbd}^* = \mathbf{zbd}^*$</p>
+<p>而$\partial_\mathbf{bc}\mathbf{abczbd}^* = \varnothing$，因为bc后面没有长的类似$\mathrm{abczbd}^*$的东西。</p>
+<h3 id="定理0">定理0</h3>
+<p>如果$\mathcal{L}[r] \subseteq \Sigma^<em>$是正规的，那么对于所有$u \in \Sigma^</em>$，$\partial_u\mathcal{L}[r]$都是正规的。</p>
+<p>As a reminder, 如果一个语言可以用regex表示，那么这个语言就是正规的。</p>
+<p>我们首先证明单字符的情况。对于$a \in \Sigma$，如果$\delta(q_0, a)$存在，我们可以通过构建$\langle\mathcal{Q}, \delta(q_0, a), \mathcal{F}, \delta\rangle$来构建$\partial_a\mathcal{L}[r]$的自动机。这样，既然存在这样的自动机可以匹配$\partial_a\mathcal{L}[r]$，那么我们就可以证明$\partial_a\mathcal{L}[r]$是正规的。如果$\delta(q_0, a)$不存在，那么$\partial_a\mathcal{L}[r] = \varnothing$，这同样也是正规的。</p>
+<p>这样我们就证明了单字符情况下，定理的正确性。对于多字符的情况，只需不断重复单字符的步骤即可完成推广。</p>
+<p>另外这也表明，导数运算是封闭的。</p>
+<h3 id="正则表达式导数之运算">正则表达式导数之运算</h3>
+<p>首先我们明白了导数运算是封闭的。在那基础上，我们需要了解如何计算其导数。</p>
+<p>由Brzozowski提出。</p>
+<p>对于单符号$a \in \Sigma$:</p>
+<p>$$<br>
+\begin{align*}<br>
+\partial_a\varepsilon &amp;= \varnothing\<br>
+\partial_a a &amp;= \varepsilon\<br>
+\partial_a b &amp;= \varnothing, ~\text{for}~ b \ne a\<br>
+\partial_a \varnothing &amp;= \varnothing\<br>
+\partial_a(r \cdot s) &amp;= \partial_a r \cdot s + \nu® \cdot \partial_a s\<br>
+\partial_a(r + s) &amp;= \partial_a r + \partial_a s\<br>
+\partial_a(r ~&amp;~ s) &amp;= \partial_a r ~&amp;~ \partial_a s\<br>
+\partial_a(\neg r) &amp;= \neg\partial_a r\<br>
+\end{align*}<br>
+$$</p>
+<p>出现了没有定义过的$\nu$，但是先不要急，马上就讲解。</p>
+<p>扩展到字符串后，有：</p>
+<p>$$<br>
+\begin{align*}<br>
+\partial_\varepsilon r &amp;= r\<br>
+\partial_{ab} r &amp;= \partial_b(\partial_a r)\<br>
+\end{align*}<br>
+$$</p>
+<p>这其中出现的$\nu®$，表示的是$\varepsilon \in \mathcal{L}[r]$。用人话说就是$r$有没有可能产生空串。</p>
+<p>比方说$r = \mathrm{a^<em>}$就有可能产生空串，而$r = \mathrm{a} | \mathrm{ab}$就必不可能。所以$\nu(\mathrm{a}^</em>) = \varepsilon$，而$\nu(\mathrm{a} | \mathrm{ab}) = \varnothing$。</p>
+<p>该函数的运算规则如下：</p>
+<p>$$<br>
+\begin{align*}<br>
+\nu(\epsilon) &amp;= \varepsilon \<br>
+\nu(a) &amp;= \varnothing \<br>
+\nu(\varnothing) &amp;= \varnothing \<br>
+\nu(r \cdot s) &amp;= \nu® &amp; \nu(s) \<br>
+\nu(r + s) &amp;= \nu® + \nu(s) \<br>
+\nu(r^<em>) &amp;= \varepsilon\<br>
+\nu(r &amp; s) &amp;= \nu® &amp; \nu(s) \<br>
+\nu(\neg r) &amp;= \begin{cases}\varepsilon&amp;\mbox{if } \nu® = \varnothing \\varnothing &amp;\mbox{if } \nu® = \varepsilon\end{cases}<br>
+\end{align</em>}<br>
+$$</p>
+<p>这样我们就能计算导数了。</p>
+<h2 id="将regex导数用于匹配DFA之构建">将regex导数用于匹配DFA之构建</h2>
+<h4 id="一些必要的记号">一些必要的记号</h4>
+<p>显而易见，如果我们想要确定字符串$s$是否能被正则表达式$r$匹配，我们只需要检查$s \in \mathcal{L}[r]$是否成立。</p>
+<p>当然，由于$s = s \cdot \varepsilon$，因此显然有$\varepsilon \in \mathcal{L}[\partial_s r]$。当且仅当该式成立，字符串$s$才可被正则表达式$r$匹配。换句话说，当$\nu(\partial_s r) = \varepsilon$时，上式成立。</p>
+<p>因此，为了更方便地表达<em>可匹配</em>这一概念，我们将引入新记号$\sim$，其运算规则为：</p>
+<p>$$<br>
+\begin{align*}<br>
+r \sim \varepsilon &amp;\Leftrightarrow \nu® = \varepsilon \<br>
+r \sim a \cdot b &amp;\Leftrightarrow \partial_a r \sim b \<br>
+\end{align*}<br>
+$$<br>
+其中，$a, b$都可以被看作是字符串。</p>
+<p>这样，字符串$s$可被正则表达式$r$匹配就可以表示为$r \sim s$。</p>
+<p>这是显而易见的：$s$可被表示为$s\cdot \varepsilon$，所以有$r \sim s \cdot \varepsilon$。根据第一条运算规则，有$\partial_s r \sim \varepsilon$，即$\nu(\partial_sr) = \varepsilon$，等价于$\varepsilon \in \mathcal{L}[\partial_s r]$。</p>
+<p>为了更方便地表示表示正则表达式的等价关系，我们用$r \equiv s$来表示正则表达式$r$和$s$所产生的所有语言形成的集合$\mathcal{L}[r] = \mathcal{L}[s]$。</p>
+<p>这样，所有与$r$等价的正则表达式所形成的集合就可以由${s ~|~ r \equiv s}$来表示。为了简洁起见，我们用$[r]_\equiv$表示该集合。</p>
+<h4 id="使用regex导数建立regex-DFA">使用regex导数建立regex DFA</h4>
+<p>上述<em>匹配</em>关系提供了一种测试字符串是否被regex匹配的算法。该算法通过对字符串的后续求导，来获得后续导数。每一步，我们都会有一个残差regex，用来匹配残差字符串。当然，如果我们不是在线求导，而是预先对每个在$\Sigma$中的字符求导，我们就能算出该RE的对应DFA。换句话说，我们通过对一个regex求导，得到了导数regex。</p>
+<p>这里原文写了$\delta(q, [a]<em>\equiv) = [\partial_a(q)]</em>\equiv$，也就是RE自动机的转移函数。但说实话我没看懂，因为$\delta$的定义应该是类似于<code>node* delta(node *q, const char &amp;a)</code>这样的，而不是<code>set&lt;regex&gt;&amp; delta(node *q, set&lt;regex&gt; &amp;a_equiv)</code>。而且这里的$a$既然有$[a]_\equiv$，那就说明这个$a$是regex。regex自动机中每个$q$也是一个regex，而且是初始regex的残差。</p>
+<h3 id="暴力求导">暴力求导</h3>
+<p>毫无美学的写法。</p>
+<p>对于每个状态$q$，遍历字符集$\Sigma$：</p>
+<ul>
+<li>对于当前字符算出来新的状态$q’$，判断是否已经算出来过，没有的话就从$q$连一条边到$q’$，在边上写上当前字符。</li>
+</ul>
+<p>拿python便宜模拟一下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">que = deque([q_0])</span><br><span class="line">dfa = set()</span><br><span class="line"><span class="keyword">while</span> que:</span><br><span class="line">    q = que.popleft()</span><br><span class="line">    <span class="keyword">for</span> c <span class="keyword">in</span> sigma:</span><br><span class="line">        new_q = q.goto(c)  <span class="comment"># q' = \partial_c q</span></span><br><span class="line">        <span class="keyword">if</span> new_q <span class="keyword">not</span> <span class="keyword">in</span> dfa:</span><br><span class="line">            dfa.add(new_q)</span><br><span class="line">        q.add_edge(new_q, c)</span><br></pre></td></tr></table></figure>
+<p>问题有三：</p>
+<ul>
+<li>判断dfa是否等价的算法很麻烦很昂贵</li>
+<li>对于大字符集的语言（比方说unicode）简直是地狱</li>
+<li>这只能用来建立单个regex，而正常的scanner一般要同时匹配一大堆的token。</li>
+</ul>
+<p>接下来逐一解决这些问题。</p>
+<h3 id="更宽松的相等条件">更宽松的相等条件</h3>
+<p>我们引入相似，来替代昂贵的相等：<br>
+$$<br>
+\begin{align*}<br>
+r ~&amp;~ r &amp;\approx r \<br>
+r ~&amp;~ s &amp;\approx s ~&amp;~ r \<br>
+(r ~&amp;~ s) ~&amp;~ t &amp;\approx r ~&amp;~ (s ~&amp;~ t) \<br>
+\varnothing ~&amp;~ r &amp;\approx \varnothing \<br>
+\neg \varnothing ~&amp;~ r &amp;\approx r \<br>
+\<br>
+r + r &amp;\approx r \<br>
+r + s &amp;\approx s + r \<br>
+(r + s) + t &amp;\approx r + (s + t) \<br>
+\neg \varnothing + r &amp;\approx \neg \varnothing \<br>
+\varnothing + r &amp;\approx r\<br>
+\<br>
+(r \cdot s) \cdot t &amp;\approx r \cdot (s \cdot t) \<br>
+\varnothing \cdot r &amp;\approx \varnothing \<br>
+r \cdot \varnothing &amp;\approx \varnothing \<br>
+\varepsilon \cdot r &amp;\approx r \<br>
+r \cdot \varepsilon &amp;\approx r \<br>
+\<br>
+(r^<em>)^</em> &amp;\approx r^<em>\<br>
+\varepsilon^</em> &amp;\approx \varepsilon \<br>
+\varnothing^* &amp;\approx \varepsilon \<br>
+\neg(\neg r) &amp;\approx r<br>
+\end{align*}<br>
+$$<br>
+很复杂的递归判断逻辑，但是总比暴力求能够生成的所有语言要强太多了。</p>
+<p>可以通过交换律和结合律来简单地对regex进行排序，这样所有与正则表达式$r$相似的正则表达式所组成的集合$[r]<em>\approx$（这个是我引入的记号，和$[r]</em>\equiv$逻辑类似）都可以被等价地表达为单一的一个regex。这样，我们就只需要一个简单的字典查找就可以判断当前regex是否在已经访问过的状态中。</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/"># 编译原理</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/02/06/%E3%80%8A%E8%B0%81%E9%83%BD%E8%83%BD%E6%98%8E%E7%99%BD%E7%9A%84%E5%92%8C%E5%BC%A6%E7%90%86%E8%AE%BA%E8%AE%B2%E5%BA%A7%E3%80%8B%E7%AC%94%E8%AE%B0/">《谁都能明白的和弦理论讲座》笔记</a>
+            
+            
+            <a class="next" rel="next" href="/2021/01/04/%E7%AE%97%E6%B3%95%E8%A1%A5%E5%85%A8%E4%B8%8ELeetCode/">算法补全与LeetCode</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>《谁都能明白的和弦理论讲座》笔记 | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">《谁都能明白的和弦理论讲座》笔记</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2021/02/06&nbsp;&nbsp;22:52:48</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E4%B9%90%E7%90%86/">乐理</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>——虽然标题是这么说，但恐怕我的笔记并不是谁都能看懂：我是直接从应用篇（11p）看起了，毕竟有基础乐理和古典编曲的加成，上手应该没有太大问题。但是对于阅读该笔记的观众来说，可能不太友好，做不到让谁都能明白。</p>
+<h2 id="Dominant-Motion（属进行）">Dominant Motion（属进行）</h2>
+<p><strong>属进行</strong>，在C大调中就是普通的$\mathrm{G}^7 \to \mathrm{C}$的进行，也就是<strong>属七和弦进行到主和弦</strong>。</p>
+<p>属七和弦听起来急切地想要解决到主和弦是因为：</p>
+<ul>
+<li>G到C的进行是全四度或者全五度的进行。这样的进行是<strong>强进行</strong>。</li>
+<li>$\mathrm{G}^7$内包含的三全音（叠两个小三度）非常不和谐（因为本质上是纯五度减一个半音，约等于在纯五度里面加了个小二度）</li>
+<li>$\mathrm{G}^7$内的B和F有分别解决到稳定的C和E的倾向。其中E稳定的原因是因为它是稳定的$\mathrm{C}$大三和弦的一部分。</li>
+</ul>
+<h2 id="小调中的属和弦">小调中的属和弦</h2>
+<p>为了方便起见，这里就使用C大调的关系小调A小调来进行说明，这样就可以只使用白键。</p>
+<h3 id="小调的和弦功能">小调的和弦功能</h3>
+<p>我们很清楚大调的和弦功能，也就是T，D和SD。首先能确定的是$\mathrm{I}$是T。类似的，$\mathrm{V}$是D。最终，介于T和D之间的SD是$\mathrm{IV}$。由于$\mathrm{iii, vi}$与$\mathrm{I}$共同音有两个（猜想主要是因为有主音C），所以它们是T。</p>
+<p>当然，由于$\mathrm{iii}$和$\mathrm{V}$有两个共同音，就像$\mathrm{vi}$和$\mathrm{IV}$有两个共同音，所以在有T的功能的情况下似乎也可以分别带有一些D和SD的功能。</p>
+<p>因为$\mathrm{ii}$和$\mathrm{IV}$有两个共同音，所以是SD。$\mathrm{vii}$和$\mathrm{V}$有两个共同音，所以是D。</p>
+<p>神奇的是，小调中各级和弦的功能与大调是一样的。直接从视频中截取如下：</p>
+<p><img src="/image/loading.png" data-original="minor_harmonic_functions.png" alt="minor_harmonic_functions"></p>
+<p>但是，如果不按级数来看（和弦级数，不是泰勒级数之类的），而只是按照纯粹的和弦来看（类似$\mathrm{F}^{\Delta}$而不是$\mathrm{VI}$），则会发现在C大调中是SD的$\mathrm{F}^{\Delta}$居然是T。</p>
+<p>关系大小调中同一个和弦居然有着不同的功能，这是我之前从来没有想到过的事情。</p>
+<p>虽然目前还不清楚要怎么加以利用（比方说关系大小调怎么转调？这样的问题还完全不明白），但是猜想可以通过有意地强调和弦功能来强调欢乐或忧伤的情绪。（也可能是强调主音？完全不明白…）</p>
+<p>视频中说在写和弦的时候，可以将和弦在关系大小调中的不同功能考虑进去（像是$\mathrm{Em}$分别是T和D，$\mathrm{F}$分别是SD和T，$\mathrm{Bm}$分别是D和SD）。因此，先前是大调的T，同时可以被当作小调的D，从这里开始当作平行小调写，想办法强调小调的T，这样也许就能无缝衔接地在大小调之间游走了。</p>
+<h3 id="小调中的属七和弦">小调中的属七和弦</h3>
+<p>在A小调中，为了实现类似于C大调中$\mathrm{G}^7 \to \mathrm{C}$这样的属进行，我们首先需要强进行，也就是E -&gt; A。</p>
+<p>然而，E对应的七和弦$\mathrm{Em}^7$毕竟不是属七和弦，听起来效果其实满差的：</p>
+<p><img src="/image/loading.png" data-original="Circle_Of_The_Fifth_In_Minor.png" alt="Circle_Of_The_Fifth_In_Minor"></p>
+<p>因为$\mathrm{Em}^7$实在是太和谐了。即便是强进行，也救不了。</p>
+<p>而A小调中的属和弦，却在7级上。</p>
+<p>为了构造属七和弦，也就是强行构造出三全音来，我们可以把$\mathrm{Em}^7$改成$\mathrm{E}^7$：</p>
+<p><img src="/image/loading.png" data-original="Circle_Of_The_Fifth_In_Minor_DOM7.png" alt="Circle_Of_The_Fifth_In_Minor_DOM7"></p>
+<p>请注意蓝色高亮的音符。</p>
+<p>通过将G变成G#，我们构造了G#, B, D这样一组三全音，同时E, G#, B形成了E大三和弦，加上D就成为了$\mathrm{E}^7$。另外值得注意的一点是G#有着到主音A的倾向性。这样，几大满足属进行的要求都已满足，我们就能够快乐地在小调中实现属进行了。</p>
+<h3 id="和声小调">和声小调</h3>
+<p>由于引入了调外音符G#，我们希望能够让它依然保持在调式内，所以发明了和声小调这个东西。本质上就是把小调的七音提升一个半音。</p>
+<p>在需要用到$\mathrm{E}^7$时强行转调即可。其他时间依然只需要正常地使用自然小调就好。</p>
+<h2 id="副属和弦">副属和弦</h2>
+<p>先来看A小调和C大调中，$\mathrm{V}^7$到$\mathrm{I}$的解决。</p>
+<p><img src="/image/loading.png" data-original="Dominant_7_to_Tonic.png" alt="Dominant_7_to_Tonic"></p>
+<p>注意到属七和弦的一个特性：不论是解决到大和弦还是小和弦都是可以的。</p>
+<p>这说明了它的通用性。</p>
+<p>事实上，我们可以将其他的Diatonic Chord强行改为属七和弦，来链接和弦进行：</p>
+<p><img src="/image/loading.png" data-original="SecondaryDominant.png" alt="SecondaryDominant"></p>
+<p>图中被强行构造出来的的$\mathrm{C}^7$就是副属和弦。</p>
+<p>强进行是向下跳跃五度或者向上跳跃四度（就像G跳到C那样，本质上只是因为取模之后音程跨度一样罢了），因此C向上跳跃四度就是F。</p>
+<p>在这里加入强行构造的副属和弦之后，想要跳跃到$\mathrm{F}$的倾向更为强烈。相比之下，从$\mathrm{C}$直接跳跃到$\mathrm{F}$尽管并无不妥，但是没有那种急迫感与倾向性。</p>
+<h3 id="副属和弦大全">副属和弦大全</h3>
+<p>下图展示了所有的副属和弦：</p>
+<p><img src="/image/loading.png" data-original="SecondaryDominants.png" alt="SecondaryDominants"></p>
+<p>上一节中小调中的属和弦中就出现了$\mathrm{E}^7$，其实是副属和弦哦！</p>
+<p>当然，不存在$\mathrm{F}^7$，因为它向上跳跃纯四度将会落在A#上：</p>
+<p><img src="/image/loading.png" data-original="F7.png" alt="F7"></p>
+<p>利用这一点也许可以转调哦！首当其冲的应该是A#大调，或者C#小调。当然我也没学过转调所以另说啦——</p>
+<p>另外，对于连续出现的两个属七和弦，称之为<strong>重属和弦</strong>。$\mathrm{D}^7 \to \mathrm{G}^7$就是一个非常好的例子。小调中则是$\mathrm{ii}^7(\mathrm{B}^7) \to \mathrm{v}^7(\mathrm{E}^7)$。不论怎样都是2级到5级呢。</p>
+<h2 id="2-5-1进行">2-5-1进行</h2>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E9%9F%B3%E4%B9%90/"># 音乐</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/01/13/Regex-Derivatives%E7%AC%94%E8%AE%B0/">Regex Derivatives笔记</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+</html>

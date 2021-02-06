@@ -48,3 +48,9 @@
   font-weight: 700;
   src: local('Montserrat Bold'), local('Montserrat-Bold'), url("../fonts/montserrat-v15-latin-700.woff2") format('woff2'), url("../fonts/montserrat-v15-latin-700.woff") format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
+@font-face {
+  font-family: 'TenMincho Kana Only';
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/TenMincho-KanaOnly-Regular.woff2") format('woff2'), url("../fonts/TenMincho-KanaOnly-Regular.woff") format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
