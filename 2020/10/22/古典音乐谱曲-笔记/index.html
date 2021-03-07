@@ -84,7 +84,37 @@
     
 
 <meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
-<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 <body>
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
         <header>
@@ -265,7 +295,7 @@
 <p>不知道什么时候了解到了<a href="http://lilypond.org/" target="_blank" rel="noopener">lilypond</a>。对于程序员来说，能够用近乎编程的方式来制作乐谱，十分合我的心意。这和$\LaTeX$一样有趣。</p>
 <p>这是我使用的编译命令:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ lilypond -dbackend=ps --png -dcrop -dresolution=600 -ddelete-intermediate-files $(filename)</span><br></pre></td></tr></table></figure>
-<p>除此之外，我还会使用现代DAW的钢琴窗来展示音符。</p>
+<p>尽管如此，我还是会尽量使用现代DAW的钢琴窗来展示音符。</p>
 <p>准备工作到此为止。这样就可以正式开始了。</p>
 <h2 id="0-0-Chords">0.0 Chords</h2>
 <p>首先是刻在DNA里的C大调三和弦:</p>
@@ -298,6 +328,11 @@
 <li>小大七和弦
 <ul>
 <li>总的来说没人会用这个东西</li>
+</ul>
+</li>
+<li>半减七和弦
+<ul>
+<li>也就是$\mathrm{Bm7\flat5}$，请注意和$\mathrm{B}^{\circ}7$区分。</li>
 </ul>
 </li>
 </ul>
@@ -496,7 +531,7 @@
 <p>但是毕竟是不一样的。只要是三和弦就一定会有纯五度（可能还有纯八度）。</p>
 <p>上面的错误的例子中，纯五度都是由<code>TB</code>构成的。而这里，分别是<code>TB</code>和<code>AB</code>构成的。同理，上面错误的例子中，纯八度都是由<code>AB</code>构成的，而这里分别是<code>AB</code>和<code>SB</code>构成的。</p>
 <p>因为并不是特定的某两个声部在前后两个和弦中都构成了纯五度和纯八度，所以没有形成parallel f/o。</p>
-<p>为什么会这样呢? 课程并没有提到原因，但是我在另一本名为《调性和声与20世纪音乐概述》的第80页找到:</p>
+<p>为什么会这样呢? 课程并没有提到原因，但是我在另一本名为《调性和声与20世纪音乐概述》的书的第80页找到:</p>
 <blockquote>
 <p>避免平行五度和平行八度的原因和对位法的要求有关。</p>
 </blockquote>
@@ -616,7 +651,7 @@ $$<br>
 <p>第零个问题是八度平行。另外一个问题是，$\mathrm{v^6}$有两个三音。</p>
 <p>两个三音只是比较少见，谁都没规定过不能用。真正的问题在于：</p>
 <p><img src="/image/loading.png" data-original="inversion_prohibition_1.png" alt="inversion_prohibition_1"></p>
-<p>如图所示，这是两个调式中的七音，也就是double leading tone。</p>
+<p>如图所示，这是两个调式中的七音，也就是<strong>double leading tone</strong>。</p>
 <p>当我们有leading tone的时候我们通常想要解决到对应的解决音上（七音到根音，四音到三音）。尽管我们只要求解决outer voice，但是根据voice leading的规则也就是将音符转移到最近的下一个和弦的音上，每个leading tone都会被解决，而这就势必会产生parallel octave。因此我们要避免double leading tone。</p>
 <p>还有一个额外的要求：</p>
 <p><img src="/image/loading.png" data-original="inversion_prohibition_2.png" alt="inversion_prohibition_2"></p>
@@ -630,7 +665,7 @@ $$<br>
 <p>这种被称为direct octave。也被叫做hidden octave。类似的我们也想规避direct fifth。</p>
 <p>Inner voices的direct oct/fifth情况我们不考虑。我们只试图规避outer voice出现这种情况。</p>
 <p>当且仅当outer voice都<strong>跳跃到</strong>八度才算是direct octave。也就是说，对于leading tone的outer voice进行voice leading，最终导致direct octave &amp; fifth是没有问题的。</p>
-<h4 id="总结">总结</h4>
+<h3 id="总结">总结</h3>
 <ul>
 <li>规避contrary motion导致的平行五度和八度。</li>
 <li>避免outer voice形成direct fifth &amp; octave。</li>
@@ -639,6 +674,201 @@ $$<br>
 </ul>
 <h2 id="1-3-Using-Inversions">1.3 Using Inversions</h2>
 <p>本部分讲述如何使用转位，作为学习了那么多限制与理论之后的实践。</p>
+<p><img src="/image/loading.png" data-original="inversion_practice_0.png" alt="inversion_practice_0"></p>
+<p>首先有原走向。它的根音非常没有旋律性：参考右边三个的低音走向便知什么是好的低音线条。</p>
+<p>然后是老师提及的一点：<strong>六四和弦永远会重复五音。</strong></p>
+<p>这其实减少了不少麻烦。总之记住这一点肯定能让voice leading变得更简单一些。</p>
+<p>确定了低音之后，再要voice leading就会变得简单起来。</p>
+<p>上面的我的答案的问题在于，第三个和弦处，明明是六和弦，也就是说不管是两个根音还是两个五音都是可以的。这种情况下我却没有首先选择两个根音而是先使用了五音，导致之后的所有voice leading都受了影响。无论怎么说，这里其实都是没有必要形成这么大的一个跳跃的。</p>
+<p>然后是$\mathrm{i}^6_4\to \mathrm{V}$的套路练习：</p>
+<p><img src="/image/loading.png" data-original="inversion_practice_1.png" alt="inversion_practice_1"></p>
+<p>将最后的$\mathrm{V}$换成了$\mathrm{i^6_4}$，效果听起来确实还不错，比之前更顺滑了。</p>
+<h2 id="1-4-Keyboard-Voicing">1.4 Keyboard Voicing</h2>
+<p>之前所有的voice leading策略都是为声部而制定的。也就是说之前那些规则都是为了让各个人声合唱声部听起来更顺滑才出现的。</p>
+<p>现在我们则是将目光放在键盘的voice leading上。</p>
+<p>为了能够和为voice而作的voicing和为keyboard而作的voicing能有更直观的区别，我们使用和前一部分一样的$\mathrm{i\to V^6_4\to i^6\to iv\to i^6_4 \to V}$。</p>
+<p>keyboard voicing显然和voice voicing有不同，我们来一条一条列举：</p>
+<ul>
+<li>**左手要弹一个音，右手要弹三个音。**这是keyboard voicing的核心。</li>
+<li>几乎只使用close structure。这是因为右手的三个音要用一只手弹奏，如果使用open structure则人类可能无法弹奏。</li>
+<li>bass和tenor（虽然这里已经不是tenor了但是我们还是这么叫，方便指代）之间有两个八度之远是可以的。</li>
+</ul>
+<p>于是我们有：</p>
+<p><img src="/image/loading.png" data-original="keyboard_voicing_0.png" alt="keyboard_voicing_0"></p>
+<p>注意$\mathrm{V^6_4}\to \mathrm{i}^6$，我们最终使用了两个五音，尽管这样就势必导致跨一整个八度。</p>
+<p>上面虽然是我的答案，不过老师的视频最后也做出了完全一样的答案，真是太好了。</p>
+<p>另外，从上图最后两个和弦也可以看出，为什么说$\mathrm{i}_4^6$的功能其实是五级的功能。我们可以把一音和三音看作是装饰，它们要被解决到五级的三音和五音上（图上可以看出只差一个半音）。</p>
+<p>当然也不是说钢琴就不能写成voice voicing那样，事实上是可以的。不过似乎写成那样通常都是为了模仿voice voicing的texture。</p>
+<h2 id="1-5-Keyboard-Accompaniment">1.5 Keyboard Accompaniment</h2>
+<p>给左右手一些rhythm pattern并且在每个和弦都重复它们，就能够得到accompaniment。</p>
+<p>还是这几节课的祖传和弦。以下是两种accompaniment:</p>
+<p><img src="/image/loading.png" data-original="keyboard_companiment_practice.png" alt="keyboard_companiment_practice"></p>
+<p>节奏型的pattern其实非常容易理解，在有了扎实的voice leading基础后，应该并非难事。</p>
+<p>右侧上方的蓝色音符是我根据该accompaniment随便写的一小段旋律。</p>
+<p>在写作时，可能要从普通的harmonic-phonic形式（也就是全是柱式和弦）转换为keyboard accompaniment，而分析时则可能需要正好反过来：将伴奏转变为harmony phonic形式。（这个词是我听老师说harmophonic然后猜想出来的形式，因为实在是搜不到老师说的词…）</p>
+<h2 id="1-6-Texture-Reduction">1.6 Texture Reduction</h2>
+<p>我们首先来看Franz Schubert的Impromptu, Op. 90, No.4的某四个小节：</p>
+<p><img src="/image/loading.png" data-original="texture_reduction_0.png" alt="texture_reduction_0"></p>
+<p>原曲是$\mathrm{A\flat}$大调，为了方便理解我还是换成了C大调。</p>
+<p>其实换成C大调之后一眼就能看出来和弦走向，右手弹的那些花里胡哨的音也不过只是琶音罢了。</p>
+<p>答案是$\mathrm{I\to IV\to V\to I}$。</p>
+<p>注意分析的时候不要把左手里面每个小节最后那个non chord tone放进去分析。虽然它看起来是七音但是显然听起来只是个普通的passing tone而已。</p>
+<p>最后的结果是这样：</p>
+<p><img src="/image/loading.png" data-original="texture_reduction_1.png" alt="texture_reduction_1"></p>
+<p>虽然说和平常练习的只有四个声音的voicing差得很多，另外也有很多禁止出现的问题（比方说平行五度八度），但是总之这只是个工具，可以更方便地分析和声。</p>
+<h2 id="1-7-Practice">1.7 Practice</h2>
+<p><img src="/image/loading.png" data-original="reversing_schubert.png" alt="reversing_schubert"></p>
+<p>把之前的和弦走向套进了上一节中出现的schubert的impromptu，得到的结果大概就是这样。和课程有些出入，不过我觉得无所谓，只要结果可以理解就好了。</p>
+<h2 id="2-0-Circle-Of-Fifth-Progressions">2.0 Circle Of Fifth Progressions</h2>
+<p>通常来说到目前为止所一直讲述的$\mathrm{I}\to\mathrm{IV}\to\mathrm{V}\to\mathrm{I}$，可能都是用在乐曲的起始，用来表明主题。而为了过渡到其他段落，可能需要用到各种走向之序列。</p>
+<p>五度圈循环就是这样的一个例子。另外的两个例子将在后两个小节进行讲解。</p>
+<p>Sequential Progressions，也就是上文所提到的走向序列，允许创作者使用patterns。上一大部分中的Schubert的Impromptu中的ARP就是一个pattern的例子。</p>
+<p>我们首先重新祭出五度圈循环：</p>
+<p><img src="/image/loading.png" data-original="Circle_Of_The_Fifth.png" alt="Circle_Of_The_Fifth"></p>
+<p>这里的图还有少许问题，比方说$\mathrm{vii}^\circ$其实是可跳过的。</p>
+<p>总而言之，做voice leading之后的结果如下：</p>
+<p><img src="/image/loading.png" data-original="Blog%5Cmedioqrity.github.io%5Cblog%5Csource_posts%5C%E5%8F%A4%E5%85%B8%E9%9F%B3%E4%B9%90%E8%B0%B1%E6%9B%B2-%E7%AC%94%E8%AE%B0%5C14763251.png" alt="14763251"></p>
+<p>它们只是在sequencing的过程中就形成了pattern，上面分别指出了这些pattern。</p>
+<h2 id="2-1-Descending-5-6-Progression">2.1 Descending 5-6 Progression</h2>
+<p>我们称它为5-6的原因是因为，首先来观察它的前两个和弦：<br>
+$$<br>
+\mathrm{I\to V^6}<br>
+$$<br>
+首先第一个和弦$\mathrm{I}$是一个原位三和弦，因此它的最低音到最高音的音程为五度。而$\mathrm{V}^6$是六和弦，正如其名字所说的那样，最低音到最高音的音程为六度。因此得名5-6。</p>
+<p>但仅仅只是这样还配不上Descending的名号。因此其实接下来就是重复下降的过程：<br>
+$$<br>
+\mathrm{I\to V^6\to vi \to iii^6}<br>
+$$<br>
+头两个和弦的根音之间的音程直接决定了之后的和弦也同样呈五度跳进，因此有$\mathrm{vi\to iii^6}$。</p>
+<p>类似的，由于$\mathrm{I}\to\mathrm{vi}$是三度下行，因此$\mathrm{vi}$之后应该是$\mathrm{IV}$。类似的逻辑不断后推，之后就会得到：<br>
+$$<br>
+\mathrm{I\to V^6\to vi \to iii^6\to IV\to I^6\to ii\to vi^6\to \cdots}<br>
+$$<br>
+在钢琴窗上长这样：</p>
+<p><img src="/image/loading.png" data-original="descending65.png" alt="descending65"></p>
+<p>其实也能看出来其特点了，也就是流畅的低音下行，用到一大堆之前讲的给转位voicing的知识，也算作是练习了。</p>
+<p>听起来则是人民群众喜闻乐见的卡农进行。当然最后部分的和弦可能需要稍作更改，比方说改成$\mathrm{I\to V^6\to vi \to iii^6\to IV\to I^6\to ii\to V^7\to I}$，也就是流行最爱的251；或者是从$\mathrm{IV}$那里一转1451终止。这两种改造进行如下：</p>
+<p><img src="/image/loading.png" data-original="descending65_derivative.png" alt="descending65_derivative"></p>
+<p>它看起来像否认了五度圈循环，毕竟可没有五级转六级这种走向，或者六级转三级这种走向。但是如果只看原位和弦，则$\mathrm{I\to vi\to IV}$还算是符合五度循环的，把剩下的六和弦都当作只是衔接用的和弦就好：它们的唯一存在意义就是让低音下行得流畅一些。</p>
+<p>不过，$\mathrm{IV\to ii}$还是无法解释。恐怕只能看作是因为前一个和弦是$\mathrm{I^6}$，而一级和弦可以出发到任何和弦，因此就算$\mathrm{I^6\to ii}$也完全合理。</p>
+<h2 id="2-2-Parallel-Sixth-Progression">2.2 Parallel Sixth Progression</h2>
+<p>说是更像是glue，而不是progression。</p>
+<p>毕竟就是无脑下降，然后完全没有考虑和声的功能，像这样：</p>
+<p><img src="/image/loading.png" data-original="descending6th.png" alt="descending6th"></p>
+<p>不过最后倒是很方便接成$\mathrm{ii^6\to V\to I}$，美中不足就是容易出parallel fifth。</p>
+<p>这样看来的话恐怕确实是更像glue，毕竟完全无视和声进行之规律。（但是怎么说呢，听着确实还挺不错的）</p>
+<h2 id="3-0-NCTs">3.0 NCTs</h2>
+<p>NCT就是Non-chord tones。如果只是使用和弦内音的话，多少显得过于稳定，可预测，听着毫无生气。</p>
+<p>总得来说，我们有很多种NCT，枚举如下：</p>
+<p><img src="/image/loading.png" data-original="NCTs.png" alt="NCTs"></p>
+<p>其中的编排要点已经全部标注在图片中，包括应该使用step还是leap来进入和弦音等细节，以及tone保持不变的情况所需要注意的细节。</p>
+<p>更结构化的比较请参见课程内的总结：</p>
+<p><img src="/image/loading.png" data-original="NCTs_sum.png" alt="NCTs_sum"></p>
+<p>课程的要求是，作业中所使用的所有NCT都必须可以被归类到上述某种之一。即只能使用这些NCT，这样才能实现古典作曲的风格。</p>
+<h2 id="3-1-NCTs-with-sequential-progressions">3.1 NCTs with sequential progressions</h2>
+<p>首先从经典4736251开始。观察如下和弦：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1.png" alt="NCTs_1"></p>
+<p>注意到蓝色的和弦，即表示它们是呈三度关系的。这样，我们可以给它改造为passing tone：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_passing.png" alt="NCTs_1_passing"></p>
+<p>其中passing tone已经用另外一种颜色标出。</p>
+<p>听起来的效果总的来说是相当不错的。这也是一种用于产生灵感的好方法。</p>
+<p>接下来使用suspension，pattern如下：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_2_sus.png" alt="NCTs_1_2_sus"></p>
+<p>这里使用了9-8 suspension，也就是其中的粉色/紫色音符。而蓝色音符则为passing tone。前一节课，也就是本文的上一小节（参见3.0 NCTs）中的suspension样例为4-3 suspension：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_2_43sus.png" alt="NCTs_1_2_43sus"></p>
+<p>其中名字又来已经在图中非常直观的展现出来，即纯四度到大三度的解决，因此得名4-3 suspension。</p>
+<p>而这里的pattern则形成了9-8 suspension，为了方便理解可以看作是上方二度音解决到纯一度。</p>
+<p>但是，纯一度就是两个音在同一位置。因此为了区分，将它们提高一个八度，成为大九度到纯八度的解决。于是有：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_2_98sus.png" alt="NCTs_1_2_98sus"></p>
+<p>当然这里已经超过了两个八度，严格来说自然不能算是大九度。不过功能还是一致的。重点在于与根音的音程关系。
+  <span class="spoiler" onclick="this.classList.toggle('spoiler')">
+    <span class="spoiler-blur ">（是这样吗？这是我归纳的结论，可能并不准确）</span>
+  </span></p>
+<p>另外，除了4-3和9-8 suspension之外，老师唯一推荐的就是7-6 suspension。</p>
+
+  <span class="spoiler" onclick="this.classList.toggle('spoiler')">
+    <span class="spoiler-blur ">我对此并不太能够理解，因为如果按照4-3和9-8都落在和弦音上的话（即3和8），那么7-6并没有落在和弦音上呀？不知道能不能看到相关的例子来看看我的理解究竟错在哪里了。</span>
+  </span>
+<p>接下来我们将这段pattern应用到剩下的走向中，将得到这样的结果：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_2.png" alt="NCTs_1_2"></p>
+<p>莫名其妙地把$\mathrm{V}$重复了两个小节。并且引出现了连续的NCT，像是F5-&gt;E5，这应该是不被允许的。<strong>这样的错误是值得记录的，否则便没有复习的必要。</strong></p>
+<p>我们来看看老师写的官方解：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_2_standard.png" alt="NCTs_1_2_standard"></p>
+<p>后面加入了和声，呈六度关系。<em>似乎曾经在王乐游老师的学个毛和声中也看到过和声应当使用三度与六度，而不是其他度数。希望将来能够学习到相关知识。</em></p>
+<p>注意到下方的pedal tone。它应当是$\mathrm V$，却依然保持不动。因此符合条件。</p>
+<h2 id="3-2-Yet-still-NCTs-with-sequential-progressions">3.2 Yet still NCTs with sequential progressions</h2>
+<p>在听课的过程中我意识到了一点，就是说老师增加与删除音符的操作是有逻辑的。因此我记录下了对音乐做出改动的每一步，以及为什么会引入这一步，以此来观察并思考progression到底是如何进化的。</p>
+<p>首先写出基本的Descending 5-6 Progression:</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_3_base.png" alt="NCTs_1_3_base"></p>
+<p>然后，改造<code>S</code>（这里取<code>SAB</code>作为从上到下的三个音），引入NCT，如下：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_3_1.png" alt="NCTs_1_3_1"></p>
+<p>接下来改造bass，这只是简单地引入一些rhythm，因此略过。</p>
+<p>之后是改造<code>A</code>：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_3_2.png" alt="NCTs_1_3_2"></p>
+<p>这里的pattern的来源是，观察到如下音程：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_3_2_a.png" alt="NCTs_1_3_2_a"></p>
+<p>希望能够更平稳地衔接的同时，多多使用NCT（毕竟就是NCT练习课）。因此，有了上面那样的结果。</p>
+<p>但是，仔细观察就会发现上面的写法的问题：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_3_2_issue.png" alt="NCTs_1_3_2_issue"></p>
+<p>这是我先前从没见过的情况，因为似乎养成了只有在和弦进行中需要关注平行五度和平行八度的错觉，以及只有类似$\mathrm{IV\to V}$这样的相邻级数上行时才需要规避的错觉。<strong>所以这是非常有价值的错误。</strong></p>
+<p>这样，就势必需要做出修改。老师直接修改了pattern，变成了这样：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_3_3.png" alt="NCTs_1_3_3"></p>
+<p>我试图使用之前学到的使用六度做和声的办法，将最后一段旋律接到$\mathrm I$上，形成了图中的my attempt部分。</p>
+<p>这是老师的解：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_3_standard.png" alt="NCTs_1_3_standard"></p>
+<p>展示了appoggiatura的用法，非常有学习价值。类似地也可以反推出escape的用法。</p>
+<h2 id="3-2-4-练习">3.2.4 练习</h2>
+<p>给自己布置的练习题。</p>
+<ol start="0">
+<li>
+<p>要求使用appoggiatura和escape对4736251进行练习。其他NCT任选。</p>
+<p><img src="/image/loading.png" data-original="NCTs_practice_0.png" alt="NCTs_practice_0"></p>
+<p>其中使用了passing tone, neighboring tone, anticipation, appoggiatura, 以及escape。</p>
+</li>
+<li>
+<p>要求使用anticipation和suspension对descending 6-5进行练习。其他NCT任选。</p>
+<p><img src="/image/loading.png" data-original="NCTs_practice_1.png" alt="NCTs_practice_1"></p>
+<p>使用了passing tone, neighboring tone, anticipation, suspension。</p>
+</li>
+</ol>
+<h2 id="3-3-Yet-another-NCTs-with-sequential-progressions">3.3 Yet another NCTs with sequential progressions</h2>
+<p>这次是讲怎么把NCT用在Parallel Sixth Progression上。</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_4.png" alt="NCTs_1_4"></p>
+<p>值得注意的是最后一步。如果说这么写的话就不行：</p>
+<p><img src="/image/loading.png" data-original="NCTs_1_4_issue.png" alt="NCTs_1_4_issue"></p>
+<p>产生了平行八度。为此，修改了粉红色的音符。</p>
+<h2 id="4-0-Diatonic-Substitution">4.0 Diatonic Substitution</h2>
+<p>卧槽，这名字听着好屌啊…</p>
+<p>首先回顾0.2中的Basic Progression：</p>
+<p><img src="/image/loading.png" data-original="Chord_Progression.png" alt="Chord_Progression"></p>
+<p>我们注意到，$\mathrm{V}$和$\mathrm{vii}^\circ$是可以互换的。这是因为它们有两个共同音，不论是三和弦还是七和弦的情况：</p>
+<p><img src="/image/loading.png" data-original="Diatonic_Substitution.png" alt="Diatonic_Substitution"></p>
+<p>总得来说没有什么值得注意的地方。我们来看看在$\mathrm{I\to V\to I}$中的情况：</p>
+<p><img src="/image/loading.png" data-original="Diatonic_Substitution_5_7.png" alt="Diatonic_Substitution_5_7"></p>
+<p>类似地，$\mathrm{IV}$和$\mathrm{ii}$也是可以互换的。这里是用$\mathrm{ii}^\circ$替换$\mathrm{i\to iv\to V\to i}$中的$\mathrm{iv}$：</p>
+<p><img src="/image/loading.png" data-original="Diatonic_Substitution_2_4.png" alt="Diatonic_Substitution_2_4"></p>
+<p>其中展示了接到$\mathrm{V}^7$的情况，以及使用二级半减七和弦第一转位的情况（$\text{ii m7}\flat5~^6_5$）。最终使用了$1\to6\to2\to5$的和弦作为展示，表示可能性。</p>
+<p>这节课主要讲的就是一些示例。个人感觉有点太浅了，有些问题没有很好地解答，比方说什么时候可以使用替换，有使用条件吗？之类的，希望以后的学习中能够更多地了解到这方面的内容。</p>
+<h2 id="4-1-Yet-still-Diatonic-Substitution-vi-V-progression">4.1 Yet still Diatonic Substitution: vi-V progression</h2>
+<p>我们注意到$\text{ii}$和$\text{IV}$以及$\text{V}$和$\text{vii}^\circ$都是隔了三度的。那么这是否意味着所有和弦都可以和三度之隔的和弦替换呢？</p>
+<p>很可惜，不能。事实上也只有三种Diatonic Substitution。除了上述两种之外，还有一种$\text{I}$和$\text{VI}$的替换。我个人猜想这也许直接说明了$4\to5\to6$这种和弦的来源。</p>
+<p>正如前两种替换一样，$\text{I}$和$\text{VI}$也有两个共同音，在C大调中为C和E。这两个音其实是$\text V^7$中的B和F最有倾向性的音，因此就算到六度，也算是解决了减五度带来的紧张感。</p>
+<p>$\text{iii}$可能是因为缺少$\text{I}$根音C的缘故，因而没有办法和C做替换。</p>
+<p>如果对$\mathrm{V\to vi}$做voice leading的话结果是这样的：</p>
+<p><img src="/image/loading.png" data-original="Diatonic_Substitution_6_1.png" alt="Diatonic_Substitution_6_1"></p>
+<p>很可惜这样会出现增二度。前面讲转位的voice leading时提到过要规避这种情况。</p>
+<p>我们使用大调$\mathrm{V}$是因为B的倾向性。如果不这么做的话也就不会产生增二度了。</p>
+<p>这种情况下，<strong>可以重复三音解决</strong>。尽管通常我们很少重复三音，但是在古典中，在5-6的情况下使用两个三音是比较常见的。</p>
+<p><img src="/image/loading.png" data-original="Diatonic_Substitution_6_1_solution.png" alt="Diatonic_Substitution_6_1_solution"></p>
+<p>但是还请注意，$\text{ii}$和$\text{IV}$的替换并不会改变和弦功能，即都是sub dominant。类似地$\text{V}$和$\text{vii}^\circ$也都是dominant。然而$\text{I}$和$\text{VI}$是不同的：$\mathrm{VI}$在各种情况下都没有tonic的功能。</p>
+<p>听一组对比就知道了：</p>
+<p><img src="/image/loading.png" data-original="Diatonic_Substitution_6_1_diff.png" alt="Diatonic_Substitution_6_1_diff"></p>
+<p>后一段的$\mathrm{V^7\to VI}$是非常具有戏剧色彩的走向。属七和弦由于其过于强烈的导向tonic的倾向，最终被解决到$\mathrm{VI}$时，落差感反而非常大。因此得名deceptive progression。</p>
+<p>到了六级和弦后，我们可以理解为我们走了岔路：</p>
+<p><img src="/image/loading.png" data-original="meme.png" alt="meme"></p>
+<p>这样我们就<em>迷路</em>了。我们作为composer需要让和弦重新往$\mathrm{I}$走。具体的走法则没有约束，只需要满足sub dominant -&gt; dominant -&gt; tonic即可。</p>
+<p>但是无论如何请注意，这和前两种替换是不同的。$\text{VI}$的色彩和$\mathrm{I}$是完全不同的。合理的运用上面所讲的deceptive progression，可以达到有趣的效果。</p>
+<h2 id="4-2-Cadences">4.2 Cadences</h2>
 
         </div>
 
@@ -662,7 +892,7 @@ $$<br>
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2021/01/04/%E7%AE%97%E6%B3%95%E8%A1%A5%E5%85%A8%E4%B8%8ELeetCode/">算法补全与LeetCode</a>
+                <a class="prev" rel="prev" href="/2021/01/13/Regex-Derivatives%E7%AC%94%E8%AE%B0/">Regex Derivatives笔记</a>
             
             
             <a class="next" rel="next" href="/2020/03/02/The-Blockheads%E5%AD%98%E6%A1%A3%E4%BF%AE%E6%94%B9%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">The Blockheads存档修改工具开发记录（一）</a>
@@ -695,6 +925,6 @@ $$<br>
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body>
 </html>
