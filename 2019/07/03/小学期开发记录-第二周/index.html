@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>小学期开发记录 - 第二周 | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">小学期开发记录 - 第二周</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2019/07/03&nbsp;&nbsp;12:16:12</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B4%E6%B4%BB/">整活</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="2019-07-01">2019/07/01</h2>
+<p>感觉一步登天直接写类似于<code>Chunk.generateMesh()</code>这种东西果然还是太不靠谱了。原因如下:</p>
+<ul>
+<li>
+<p>很难debug</p>
+</li>
+<li>
+<p>做出成果之前要花不少时间</p>
+</li>
+</ul>
+<p>所以还是决定先用最简单的优化策略来渲染方块: 只渲染那些周围6个方块中，有至少一个与它方块类型不同的方块。在引入玻璃和水前，我想这可以简单地被概括为，只渲染那些与空气直接接触的方块。</p>
+<p>花了两个小时，经过无数次简化实现之后，终于跑出了这么个玩意:</p>
+<p><img src="/image/loading.png" data-original="First_Chunk.png" alt="First_Chunk"></p>
+<p>实现了最基本的优化，也就是只有与空气接触才会渲染这个方块。所以从内部看是这样的:</p>
+<p><img src="/image/loading.png" data-original="First_Chunk_Inside.png" alt="First_Chunk_Inside"></p>
+<p>结果写到最后还是变成怎样写比较方便怎么来了…可能之前还是太理想主义了?</p>
+<p>虽然看起来挺不错的，但是实际上还是有非常多没有必要的面被渲染了…生成mesh这件事可能要尽早解决。现在想想也许可以通过类似于<code>chunk.addFace(x, y, z, UP, textureID)</code>之类的方法来实现?</p>
+<p>同时还有材质包的问题，本来打算在这一次更新里就把石头放进去，但是对着<code>float[] indices = new float[6 * 6];</code>还是退缩了。对于每个方块都手写这么多坐标我可能真的会疯…</p>
+<p>现在的想法是这样的:</p>
+<p>读取材质包的时候，对于每种方块都生成一个对应的mesh，在Chunk内开一个Block类的数组存储所有方块。对于每个Block实例，里面存储一下方块ID和对应的mesh引用，这样在Renderer渲染的时候能够方便一些。</p>
+<hr>
+<p>过了无聊的白天之后，又到了有大块的开发时间的夜晚了。自从上大学以来就越发觉得整块的时间真的非常重要。在这段时间里不受打扰地专注工作真的可以让效率提升很多。</p>
+<p>在晚上把<code>TextureManager</code>类写好了。其实最后发现，它所做的事情很简单，就是输入每个面的贴图位置，然后生成对应方块的<code>textureCoord</code>数组。这个东西用Python写还是很简单的:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">SIZE = <span class="number">16</span></span><br><span class="line">FULL_SIZE = <span class="number">256</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Face</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, texture_index, coord)</span>:</span></span><br><span class="line">        print(<span class="string">', '</span>.join([<span class="string">"new Vector3d%s"</span> % str(_) <span class="keyword">for</span> _ <span class="keyword">in</span> coord]))</span><br><span class="line">        self.coord = coord</span><br><span class="line">        x1 = ((texture_index // (FULL_SIZE // SIZE)) * SIZE) / FULL_SIZE</span><br><span class="line">        y1 = ((texture_index % (FULL_SIZE // SIZE)) * SIZE) / FULL_SIZE</span><br><span class="line">        x2 = x1 + SIZE / FULL_SIZE</span><br><span class="line">        y2 = y1 + SIZE / FULL_SIZE</span><br><span class="line">        self.textureCoord = [(y, x) <span class="keyword">for</span> x <span class="keyword">in</span> [x1, x2] <span class="keyword">for</span> y <span class="keyword">in</span> [y1, y2]]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self)</span>:</span></span><br><span class="line">        a, b, c, d = self.coord</span><br><span class="line">        e, f, g, h = self.textureCoord</span><br><span class="line">        <span class="keyword">return</span> a + c + d + a + b + d, e + g + h + e + f + h</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Texture</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.faces = []</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, up, down, left, right, front, back)</span>:</span></span><br><span class="line">        self.faces.append(Face(up, [</span><br><span class="line">            (x, <span class="number">.5</span>, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(down, [</span><br><span class="line">            (x, <span class="number">-.5</span>, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">-.5</span>, <span class="number">.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(left, [</span><br><span class="line">            (x, y, <span class="number">-.5</span>) <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(right, [</span><br><span class="line">            (x, y, <span class="number">.5</span>) <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(front, [</span><br><span class="line">            (<span class="number">.5</span>, x, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        self.faces.append(Face(back, [</span><br><span class="line">            (<span class="number">-.5</span>, x, y) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>] <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">.5</span>, <span class="number">-.5</span>]</span><br><span class="line">        ]))</span><br><span class="line">        position, texture_coord = [], []</span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> self.faces:</span><br><span class="line">            <span class="keyword">assert</span> isinstance(f, Face)</span><br><span class="line">            pos, tex = f.get()</span><br><span class="line">            position.extend(pos)</span><br><span class="line">            texture_coord.extend(tex)</span><br><span class="line">        <span class="keyword">return</span> position, texture_coord</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pprint</span><span class="params">(position, texture_coord)</span>:</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">    pos_render, tex_render = [], []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(position) // <span class="number">3</span>):</span><br><span class="line">        pos_render.append(<span class="string">', '</span>.join([str(position[i * <span class="number">3</span> + d]) + <span class="string">'f'</span> <span class="keyword">for</span> d <span class="keyword">in</span> range(<span class="number">3</span>) <span class="keyword">if</span> i + d &lt; len(position)]))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(texture_coord) // <span class="number">2</span>):</span><br><span class="line">        tex_render.append(<span class="string">', '</span>.join([str(texture_coord[i * <span class="number">2</span> + d]) + <span class="string">'f'</span> <span class="keyword">for</span> d <span class="keyword">in</span> range(<span class="number">2</span>) <span class="keyword">if</span> i + d &lt; len(texture_coord)]))</span><br><span class="line">    print(<span class="string">', \n'</span>.join(pos_render))</span><br><span class="line">    print(<span class="string">', \n'</span>.join(tex_render))</span><br><span class="line">    <span class="comment"># assert len(pos_render) == len(tex_render)</span></span><br><span class="line">    <span class="comment"># for i in range(len(pos_render)):</span></span><br><span class="line">    <span class="comment">#     print("%s: %s" % (pos_render[i], tex_render[i]))</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">l = [Texture() <span class="keyword">for</span> _ <span class="keyword">in</span> range(<span class="number">10</span>)]</span><br><span class="line">pprint(*l[<span class="number">1</span>].get(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>))  <span class="comment"># stone</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">pprint(*l[2].get(1, 3, 2, 2, 2, 2))  # grass</span></span><br><span class="line"><span class="string">pprint(*l[4].get(4, 4, 4, 4, 4, 4))  # cobblestone</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
+<p>不过对于java来说，因为经验还是太少了，于是用最蠢的办法实现了同样的逻辑:</p>
+<p><img src="/image/loading.png" data-original="stupid_implementation.png" alt="stupid_implementation"></p>
+<p>个人还是不太喜欢这种需要复制粘贴很多次才能实现的东西，本能地有畏难心理，可能也只是我的实现方法太蠢了。</p>
+<p>然后稍微对Chunk类之类的改一改就可以看到结果啦！</p>
+<p><img src="/image/loading.png" data-original="multiTextureSupplement.png" alt="multiTextureSupplement"></p>
+<p>来一张近照:</p>
+<p><img src="/image/loading.png" data-original="multiTextureSupplement_other.png" alt="multiTextureSupplement_other"></p>
+<p>下一步本来应该是研究地形生成，但是可能应该先往光照，阴影，skybox方面走一走。至少卖相还是要好看点的嘛233</p>
+<h2 id="2019-07-02">2019/07/02</h2>
+<p>看到这个日期突然想起来在中小学的时候已经是放假的第二天了。</p>
+<p>其实只要我愿意的话，我也可以把小学期过得像真正的暑假一样。网课和华为云的题目，两个小时内就能全部解决。java也只需要稍微学一学就能很快上手，毕竟c++和python的底子虽说浅薄，但还是有的。</p>
+<p>如果我没有选择做minecrash，而是选择从老师给定的20个题目里选择的话，我想以我和队友的能力，两天写完都是绰绰有余。</p>
+<p>于是剩下的大把时间可以拿来尽情的放纵。星露谷联机、Minecraft服务器、补那些值得补的电影、去百货商城现充、躺在四下黑暗无光的草地上凝视星空，看群星慢慢划出一道道星轨、或者是真正单纯的赖床，也不看手机，不想任何事情，只是看着透过玻璃的阳光一点点移动，直到夏夜的虫鸣响起，整个宿舍陷入黑沉与寂静、或是将自己完全投入音乐的世界里，感受每个和弦进行里蕴含的所有细微的情感，每个乐器产生的独特的声音，它们合奏时产生的魄力，直面纯粹且震撼人心的，来自音乐的美丽、或是其他一切把大把大把的时间浪费在使人感到安心、安逸、幸福的任何看起来很平淡的事情上。</p>
+<p>最贵的就是闲啊。可能从此以后再也没有这种纯粹的时光了。</p>
+<p>而我最后做的选择是放弃这些，踏出舒适区，在每一次编译时祈祷，在每一次做出成果后欢喜，在每一次编译失败后失落。每一天除了吃饭，睡觉与上课，便是学习新知识和敲代码。</p>
+<p>可能未来回望时，是不是会觉得连现在这种别无旁顾全身心投入一个项目的时光，也是一种奢侈呢?</p>
+<p>扯远了。多么可悲啊，最后竟然要用&quot;扯远了&quot;来结束这段遐想。</p>
+<hr>
+<p>我们可以实现很多种光源，比方说点光源，或者平行光源。稍微思考一下就会发现在原版MC里只有平行光源。</p>
+<p>不过为了能够实现光影，这两种光源我们应该都会实现。但是现在的话，我想可能还是平行光源优先。</p>
+<p>这是因为在加入物品系统之前，我想我们暂时还用不到动态光源。而这些动态光源，比方说拿在手上的火把，萤石，一桶岩浆，南瓜灯，或者是被放置并且被活塞推动的红石灯，都是点光源。</p>
+<p>显然昼夜交替会先于物品系统被制作出来，所以我想，平行光的实现应当是比点光源更加优先的。</p>
+<hr>
+<p>结果debug了一整天都没有找出怎么解决问题来。</p>
+<p>现在虽然平行光实现了，但是通篇全是bug:</p>
+<p><img src="/image/loading.png" data-original="directionalLightBug.png" alt="directionalLightBug"></p>
+<p>对<code>fragment.fsh</code>稍微做了点手脚，来测试到底是哪出了问题:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setupColours(material, outTextureCoord);</span><br><span class="line"></span><br><span class="line">    vec4 diffuseSpecular = calcDirectionalLight(directionalLight, vertexPos, vertexNormal);</span><br><span class="line"></span><br><span class="line">    fragColor = ambientC * vec4(ambientLight, <span class="number">1</span>) + diffuseSpecular;</span><br><span class="line">    fragColor = vec4(ambientLight, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中<code>ambientLight</code>是一个<code>uniform vec3</code>变量。按照<code>fragColor = vec4(ambientLight, 1)</code>，应该所有方块都会被渲染成<code>ambientLight</code>的颜色，但是结果却是一片黑色:</p>
+<p><img src="/image/loading.png" data-original="ambientLightBug.png" alt="ambientLightBug"></p>
+<p>它照理说应该在renderer初始化的时候就被赋值了:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Renderer</span> </span>&#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Vector3f ambientLight = <span class="keyword">new</span> Vector3f(.<span class="number">3f</span>, .<span class="number">3f</span>, .<span class="number">3f</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Camera camera)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        shader = <span class="keyword">new</span> Shader();</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        shader.createUniform(<span class="string">"ambientLight"</span>);</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        shader.setUniform(<span class="string">"ambientLight"</span>, ambientLight);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果把<code>fragment.fsh</code>改成这样:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setupColours(material, outTextureCoord);</span><br><span class="line"></span><br><span class="line">    vec4 diffuseSpecular = calcDirectionalLight(directionalLight, vertexPos, vertexNormal);</span><br><span class="line"></span><br><span class="line">    fragColor = ambientC * vec4(ambientLight, <span class="number">1</span>) + diffuseSpecular;</span><br><span class="line">    fragColor = vec4(<span class="number">.3</span>f, <span class="number">.3</span>f, <span class="number">.3</span>f, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>就会得到正确的结果:</p>
+<p><img src="/image/loading.png" data-original="ambientLightBug2.png" alt="ambientLightBug2"></p>
+<p>这到底是为什么呢…可能mc就是因为这个才放弃的光影?</p>
+<h2 id="2019-07-03">2019/07/03</h2>
+<p>看起来好像是因为<code>setUniform</code>距离<code>setDirectionalLight</code>太远了导致的，因为我跟着lwjglbook的代码，把光照部分放进<code>renderLight()</code>函数里就好了…</p>
+<p>太玄学了…不过好在最后还是把光照跑出来了。顺手就写了个日夜交替:</p>
+<p><img src="/image/loading.png" data-original="dayNightCycle.gif" alt="dayNightCycle"></p>
+<p>夜晚的时候方块的各个面还是不太好分辨，回头稍微改改。</p>
+<hr>
+<p>然后一整天都花在完成课内，摸鱼，以及优化日夜交替上了。说好的阴影也没来得及做。</p>
+<p>首先是通过<code>glEnable(GL_CULL_FACE)</code>减少了一半左右的需要渲染的面数。</p>
+<p>一开始因为当初<code>TextureManager</code>是乱写的，于是经常会出现定义顺序是顺时针从而导致有些面在应该渲染的时候却没有被渲染的惨状。图我就不贴了，实在是有点精神污染。</p>
+<p>之后是对日夜交替的优化，不多说，直接贴一张最新的成品:</p>
+<p><img src="/image/loading.png" data-original="dayNightCycle_updated.gif" alt="dayNightCycle_updated"></p>
+<p>首先是增加了背景颜色的变化。这主要还是通过根据当前时间来混合颜色而做到的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Vector3f <span class="title">mixColor</span><span class="params">(Vector3f colorA, Vector3f colorB, </span></span></span><br><span class="line"><span class="function"><span class="params">                                <span class="keyword">double</span> mixRatio)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">assert</span> <span class="number">0</span> &lt;= mixRatio &amp;&amp; mixRatio &lt;= <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">float</span> r = (<span class="keyword">float</span>) (colorA.x + (colorB.x - colorA.x) * mixRatio);</span><br><span class="line">    <span class="keyword">float</span> g = (<span class="keyword">float</span>) (colorA.y + (colorB.y - colorA.y) * mixRatio);</span><br><span class="line">    <span class="keyword">float</span> b = (<span class="keyword">float</span>) (colorA.z + (colorB.z - colorA.z) * mixRatio);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Vector3f(r, g, b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后，仔细观察夜晚时的方块，相比之前的版本，不同的面会有不同的亮度。</p>
+<p>这是通过对<code>fragment.fsh</code>进行简单修改得到的:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setupColours(material, outTextureCoord);</span><br><span class="line"></span><br><span class="line">    vec4 diffuseSpecular = calcDirectionalLight(directionalLight, vertexPos, vertexNormal) * <span class="number">0.8</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> mixRatio = <span class="number">0.0f</span>;</span><br><span class="line">    <span class="keyword">if</span> (originVertexNormal == vec3(<span class="number">-1</span>, <span class="number">0</span>, <span class="number">0</span>) || originVertexNormal == vec3(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>))</span><br><span class="line">        mixRatio = <span class="number">0.15f</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (originVertexNormal == vec3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">-1</span>) || originVertexNormal == vec3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">        mixRatio = <span class="number">0.3f</span>;</span><br><span class="line"></span><br><span class="line">    fragColor = mix(ambientC * vec4(ambientLight, <span class="number">1</span>) + diffuseSpecular, vec4(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>), mixRatio);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中的两个<code>if</code>是判断当前正在渲染的面的法向量，简单翻译一下就是:</p>
+<ul>
+<li>如果是<code>left || right</code>，那么相对于顶面会降低0.3的亮度。</li>
+<li>如果是<code>front || back</code>，那么相对于顶面会降低0.15的亮度。</li>
+</ul>
+<p>其实仔细一看的话，今天并没有做什么事情…</p>
+<p>顺便，队友开始学习怎么使用perlin噪声来产生地形了。目前的效果是这样的:</p>
+<p><img src="/image/loading.png" data-original="perlin_first.png" alt="perlin_first"></p>
+<p>因为这是一个分支，所以暂时还没有最新的日夜交替效果。</p>
+<p>我接下来会继续研究实现动态阴影，并且抽空研究怎么使用perlin噪声生成地形。</p>
+<p>要做的还有很多，像是:</p>
+<ul>
+<li>动态阴影</li>
+<li>破坏方块时的粒子效果</li>
+<li>水，岩浆，以及对它们的渲染</li>
+<li>物品系统</li>
+<li>背包系统</li>
+<li>合成系统</li>
+<li>声效</li>
+<li>生物模型及其动画</li>
+<li>优化Chunk渲染</li>
+<li>存储与读取Chunk</li>
+<li>动态光源</li>
+</ul>
+<h2 id="2019-07-04">2019/07/04</h2>
+<p>稍微熬了会夜把Shadow Mapping看懂了。不过距离实现还有不少距离。</p>
+<p>来简单讲一下原理:</p>
+<ol>
+<li>首先以光源作为原点，计算每个fragment到光源原点的距离。这样，得到的距离一定是这个方向上最小的。因为在同一方向上，任何大于这个距离的点都不会被光照到。</li>
+<li>以camera视角进行计算。对于每个fragment，除了计算camera视角的坐标外，还要计算在光照坐标系下的坐标。如果这个坐标对应的光照方向的距离大于最小值的话就说明该fragment处在阴影内。</li>
+</ol>
+<p>于是这要求我们新建一堆东西，包括对texture类进行修改以支持空材质供shadow map使用，或者是全新的shadow.vsh和shadow.fsh。考虑到工作量，我决定还是留到白天再做。</p>
+<hr>
+<p>然后接下来一整天都浪费在这个东西上面了，并且做出来的成果，虽然有，但全是bug:</p>
+<p><img src="/image/loading.png" data-original="shadowBug.png" alt="shadowBug"></p>
+<p>这玩意可以说就是照抄教程吧。毕竟原理懂了之后就只剩下实现了。</p>
+<p>但是因为教程的结构和我们的项目的结构不一样，所以即便是抄也得搞明白教程的每个语句在做什么才行。</p>
+<p>然后就出现了这种莫名奇妙并且怎么都找不到原因的bug。</p>
+<p>根据vertex shader的源码，也许可以通过排除法来确定可能导致问题的变量:</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">0</span>) <span class="keyword">in</span> <span class="type">vec3</span> position;</span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">1</span>) <span class="keyword">in</span> <span class="type">vec2</span> textureCoord;</span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">2</span>) <span class="keyword">in</span> <span class="type">vec3</span> vertexNormalVector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">out</span> <span class="type">vec2</span> outTextureCoord;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec3</span> vertexNormal;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec3</span> vertexPos;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec3</span> originVertexNormal;</span><br><span class="line"><span class="keyword">out</span> <span class="type">vec4</span> lightViewVertexPos;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> projectionMatrix;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> modelViewMatrix;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> modelLightViewMatrix;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> orthoProjectionMatrix;</span><br></pre></td></tr></table></figure>
+<p>首先，材质能够正常渲染，说明<code>modelViewMatrix</code>和<code>projectionMatrix</code>是没有错误的。</p>
+<p>其次，跟教程的<code>orthoProjectionMatrix</code>对比输出后发现是一样的，所以<code>orthoProjectionMatrix</code>也是正确的。那么最大的嫌疑就落在<code>modelLightViewMatrix</code>上了。但是，没有办法确定它是否是错的。教程中放置了一个平面和一个旋转的方块来作为演示，而我不可能在同样的位置放一个方块来确定我是否正确。即便可以，需要的时间也太多了。</p>
+<h2 id="2019-07-05">2019/07/05</h2>
+<p>莫名其妙又到了一周的结尾。越发感觉做大作业的时间要不够了…</p>
+<p>花了太多时间在课内的垃圾小项目上了。这种项目讲道理做了什么也学不到。不是很懂学校老师都在想什么。</p>
+<p>以后就用ACM风格写，反正也不用维护。</p>
+<hr>
+<p>关于阴影，虽然后来发现距离正确的阴影已经很近了（只是阴影本身在随着光照转动），但是却总是不知道到底错在了哪。换句话说就是不知道为什么阴影会跟着转。</p>
+<p>最神奇的是把scene.fsh的输出换成<code>fragColor = vec4(vec3(texture(shadowMap, (lightViewVertexPos * 0.5 + 0.5).xy).r), 1)</code>后，可以清楚的发现其实<code>shadowMap</code>的输出结果是正确的。</p>
+<p>不过最终还是暂时放弃了做阴影，先花了些时间把队友的初版地图生成器Merge了。</p>
+<p>当区块数增加后，FPS也下降到了30多。要知道当时只有$4 \times 4 = 16$个区块啊。</p>
+<p>于是我就花了点时间把<code>Chunk.generateMesh()</code>给写好了:</p>
+<p><img src="/image/loading.png" data-original="ChunkMeshCode.png" alt="ChunkMeshCode"></p>
+<p>由于现在每个区块暂时还是$16 \times 16 \times 16$的大小，所以现在100个区块只需要渲染100个Mesh就可以啦！而之前的话，只要是与空气接触的方块，每个都会被调用一次render函数。100个区块，就是至少16000个<code>render()</code>，肯定是吃不消的。更不用说那些地形崎岖的区块了。</p>
+<p>配合<code>glEnable(GL_CULL_FACE)</code>，FPS已经回到60了，可喜可贺:</p>
+<p><img src="/image/loading.png" data-original="ChunkMesh.png" alt="ChunkMesh"></p>
+<p>可以注意到几乎每个区块的侧面都没有被渲染。这是通过<code>ChunkManager.getBlock(x, y, z)</code>做到的，它可以跨区块获取方块数据。有了这样的优化后，渲染的面数相比之前又少了非常多。</p>
+<p>但是我不能理解的是为什么区块之间隔了这么远。</p>
+<p>既然我记录了每个Chunk的Chunk坐标，那么它的世界坐标显然是<code>new Vector3f(x &lt;&lt; 4, 0, z &lt;&lt; 4)</code>吧?</p>
+<p>找了半天bug之后发现原来是因为block本身存的是世界坐标…所以chunk的世界坐标只要设成<code>0, 0, 0</code>就行了…</p>
+<p>贴一张400个区块的截图！</p>
+<p><img src="/image/loading.png" data-original="400.png" alt="400"></p>
+<p>接下来该回到阴影啦！虽然阴影真的很烦人，但是它能够做到的效果是真的非常迷人的。</p>
+<p>我已经迫不及待想要看到夕阳投下的阴影笼罩这片丘陵的样子了。</p>
+<h2 id="2019-07-06">2019/07/06</h2>
+<p>最后发现问题出在了calcShadow上，于是在凌晨搞出了第一个可以正常跑的shadow:</p>
+<p><img src="/image/loading.png" data-original="First_Shadow.png" alt="First_Shadow"></p>
+<p>完全重写了原本教程里的<code>calcShadow(vec4)</code>，并且做了最最简单的shadow acne去除工作:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">calcShadow</span><span class="params">(vec4 position)</span> </span>&#123;</span><br><span class="line">    vec3 projCoords = position.xyz / position.w;</span><br><span class="line">    projCoords = projCoords * <span class="number">0.5</span> + <span class="number">0.5</span>;</span><br><span class="line">    <span class="keyword">float</span> closestDepth = texture(shadowMap, projCoords.xy).r;</span><br><span class="line">    <span class="keyword">float</span> currentDepth = projCoords.z;</span><br><span class="line">    <span class="keyword">return</span> currentDepth - closestDepth &gt; <span class="number">1e-3</span> ? <span class="number">0.0</span> : <span class="number">1.0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这代码的可读性简直高到爆炸了好吗！！</p>
+<p>可能会有人想问<code>currentDepth - closestDepth &gt; 1e-3</code>为什么不直接写成<code>currentDepth &gt; closestDepth</code>，对此我就贴一张图:</p>
+<p><img src="/image/loading.png" data-original="ShadowAcne.png" alt="ShadowAcne"></p>
+<p><em><s>感受Shadow Acne的力量吧！</s></em></p>
+<p>其实细微处还是有不少问题存在的，不过这些就留到稍微靠后一点再优化。先考虑怎么正确的设置<code>directionalLight</code>的<code>viewMatrix</code>，毕竟让阴影动起来可能更重要，也更震撼。</p>
+<p>肝了一小段时间之后做出了动态的阴影，顺带做成了GIF。为了限制文件大小只能把画面和质量都砍了…</p>
+<p><img src="/image/loading.png" data-original="dayNightCycleWithShadow.gif" alt="dayNightCycleWithShadow"></p>
+<p>不过意境在那就足够了，对吧。; )</p>
+<hr>
+<p>能够睡到自然醒，然后躺在床上玩手机直到饭点再下床，真是难得的奢侈啊。</p>
+<p>根据<a href="https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank" rel="noopener">这个教程</a>的优化方法，把阴影的边缘改得至少能够让人接受了:</p>
+<p><img src="/image/loading.png" data-original="niceShadow.png" alt="niceShadow"></p>
+<p>阴影的效果加上之后，总归还是让人感觉非常不满意，因为相比原版MC少了平滑光照。</p>
+<p>这使得方块之间的关系还是不够明确。所以我去查了一下，最后得知只需要实现Ambient Occlusion就可以啦。</p>
+<blockquote>
+<p>下一步本来应该是研究地形生成，但是可能应该先往光照，阴影，skybox方面走一走。至少卖相还是要好看点的嘛233</p>
+</blockquote>
+<p>至于Skybox就先放一放吧23333</p>
+<h2 id="2019-07-07">2019/07/07</h2>
+<p>网上的教程一般都是通用的环境光吸收，也就是SSAO。</p>
+<p>不过要实现SSAO的话，需要先把着色器部分改成Deferred Shading，目前来说有点没必要。</p>
+<p>于是就采用了相对来说更加投机取巧的办法，也就是根据voxel的特性，直接根据方块所处位置周围的情况来确定AO就可以了。这甚至可以在生成chunk的时候就顺带完成。</p>
+<p>贴一张结果:</p>
+<p><img src="/image/loading.png" data-original="VoxelAO.png" alt="VoxelAO"></p>
+<p>看起来有质感多了！相比之下，用于实现它的代码是真的写的毫无质感:</p>
+<p><img src="/image/loading.png" data-original="StupidCode.png" alt="StupidCode"></p>
+<p>下一步就该把太阳和月亮放进天空啦！</p>
+<hr>
+<p>然后就把自己的脸给打了，跑去研究了一下Simplex Noise然后整出了这个:</p>
+<p><img src="/image/loading.png" data-original="playSimplex.gif" alt="playSimplex"></p>
+<p>FPS瞬间爆炸啊！！</p>
+<p>太可怕了，这种程度的地形对MC来说不是塞牙缝的吗！！</p>
+<p>自闭了，看来优化之路还远得很啊…</p>
+<p>贴一下全景图:</p>
+<p><img src="/image/loading.png" data-original="FullSizeChunk.png" alt="FullSizeChunk"></p>
+<hr>
+<p>跑完步回来近距离欣赏了一会，发现为了能够让Shadow Map正常渲染远处的影子，所以正投影矩阵必须开得特别大。这样，就会导致阴影的质量非常低:</p>
+<p><img src="/image/loading.png" data-original="shadowMapIssue.png" alt="shadowMapIssue"></p>
+<p>有三个解决方法:</p>
+<ul>
+<li>实现Cascaded Shadowing</li>
+<li>把Shadow Map的材质开得更大一点</li>
+<li>把正交投影矩阵范围改小点</li>
+</ul>
+<p>考虑到实现Cascaded Shadowing实在是过于繁琐~~（其实就是懒+心累）~~，直接把后两个优化做了。</p>
+<p>在一周的最后，来好好欣赏一下这一周的努力的成果吧。</p>
+<p><img src="/image/loading.png" data-original="ShadowOnCliff.png" alt="ShadowOnCliff"></p>
+<h1>References</h1>
+<ul>
+<li>关于光照:
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Lambert%27s_cosine_law" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Lambert's_cosine_law</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Phong_shading" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Phong_shading</a></li>
+</ul>
+</li>
+<li>关于阴影:
+<ul>
+<li><a href="https://ahbejarano.gitbook.io/lwjglgamedev/chapter18" target="_blank" rel="noopener">https://ahbejarano.gitbook.io/lwjglgamedev/chapter18</a></li>
+<li><a href="https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank" rel="noopener">https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/</a></li>
+<li><a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping" target="_blank" rel="noopener">https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping</a></li>
+</ul>
+</li>
+<li>关于perlin noise和simplex noise:
+<ul>
+<li><a href="https://flafla2.github.io/2014/08/09/perlinnoise.html" target="_blank" rel="noopener">https://flafla2.github.io/2014/08/09/perlinnoise.html</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Perlin_noise" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Perlin_noise</a></li>
+<li><a href="http://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf" target="_blank" rel="noopener">http://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf</a></li>
+</ul>
+</li>
+<li>Ambient Occlusion:
+<ul>
+<li><a href="https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/" target="_blank" rel="noopener">https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/</a></li>
+<li><a href="https://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html" target="_blank" rel="noopener">https://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html</a></li>
+<li><a href="https://learnopengl.com/Advanced-Lighting/SSAO" target="_blank" rel="noopener">https://learnopengl.com/Advanced-Lighting/SSAO</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Screen_space_ambient_occlusion" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Screen_space_ambient_occlusion</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/java/"># java</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/07/07/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E4%B8%89%E5%91%A8/">小学期开发记录 - 第三周</a>
+            
+            
+            <a class="next" rel="next" href="/2019/06/24/%E5%B0%8F%E5%AD%A6%E6%9C%9F%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E7%AC%AC%E4%B8%80%E5%91%A8/">小学期开发记录 - 第一周</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+</html>

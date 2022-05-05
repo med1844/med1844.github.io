@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>Using colemak with vscode vim | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Using colemak with vscode vim</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2021/11/30&nbsp;&nbsp;20:10:37</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>This article will be written in English to help international visitors.</p>
+<h2 id="Overriding-vscode-vim-key-bindings">Overriding vscode vim key bindings</h2>
+<p>The following snippet would generate key binding that can be pasted to <code>settings.json</code>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">QWERTY = <span class="string">"qwertyuiopasdfghjkl;zxcvbnm,."</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_langmap_vimrc</span><span class="params">(current_layout)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"set langmap=%s"</span> % <span class="string">","</span>.join(b + a <span class="keyword">for</span> a, b <span class="keyword">in</span> zip(QWERTY, current_layout) <span class="keyword">if</span> a != b)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_langmap_vscode</span><span class="params">(current_layout)</span>:</span></span><br><span class="line">    mapping = []</span><br><span class="line">    <span class="keyword">for</span> a, b <span class="keyword">in</span> zip(QWERTY, current_layout):</span><br><span class="line">        <span class="keyword">if</span> a != b:</span><br><span class="line">            mapping.append(&#123;<span class="string">"before"</span>: [b], <span class="string">"after"</span>: [a]&#125;)</span><br><span class="line">            mapping.append(&#123;<span class="string">"before"</span>: [b.upper()], <span class="string">"after"</span>: [a.upper()]&#125;)</span><br><span class="line">            <span class="comment"># mapping.append(&#123;"before": ["&lt;C-%s&gt;" % b], "after": ["&lt;C-%s&gt;" % a]&#125;)</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">"vim.normalModeKeyBindingsNonRecursive"</span>: mapping, <span class="string">"vim.visualModeKeyBindingsNonRecursive"</span>: mapping&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">colemak = <span class="string">"qwfpbjluy;arstgmneiozxcdvkh,."</span></span><br><span class="line">print(gen_langmap_vscode(colemak))</span><br></pre></td></tr></table></figure>
+<p>I used <strong>colemak dhm</strong> to generate the key bindings. You might want to change the snippet to generate mappings of the layout you are using. Simply changing the input of <code>gen_langmap_vscode</code> should work.</p>
+<p>Here’s it’s output:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"vim.normalModeKeyBindingsNonRecursive": [&#123;"before": ["f"], "after": ["e"]&#125;, &#123;"before": ["F"], "after": ["E"]&#125;, &#123;"before": ["p"], "after": ["r"]&#125;, &#123;"before": ["P"], "after": ["R"]&#125;, &#123;"before": ["b"], "after": ["t"]&#125;, &#123;"before": ["B"], "after": ["T"]&#125;, &#123;"before": ["j"], "after": ["y"]&#125;, &#123;"before": ["J"], "after": ["Y"]&#125;, &#123;"before": ["l"], "after": ["u"]&#125;, &#123;"before": ["L"], "after": ["U"]&#125;, &#123;"before": ["u"], "after": ["i"]&#125;, &#123;"before": ["U"], "after": ["I"]&#125;, &#123;"before": ["y"], "after": ["o"]&#125;, &#123;"before": ["Y"], "after": ["O"]&#125;, &#123;"before": [";"], "after": ["p"]&#125;, &#123;"before": [";"], "after": ["P"]&#125;, &#123;"before": ["r"], "after": ["s"]&#125;, &#123;"before": ["R"], "after": ["S"]&#125;, &#123;"before": ["s"], "after": ["d"]&#125;, &#123;"before": ["S"], "after": ["D"]&#125;, &#123;"before": ["t"], "after": ["f"]&#125;, &#123;"before": ["T"], "after": ["F"]&#125;, &#123;"before": ["m"], "after": ["h"]&#125;, &#123;"before": ["M"], "after": ["H"]&#125;, &#123;"before": ["n"], "after": ["j"]&#125;, &#123;"before": ["N"], "after": ["J"]&#125;, &#123;"before": ["e"], "after": ["k"]&#125;, &#123;"before": ["E"], "after": ["K"]&#125;, &#123;"before": ["i"], "after": ["l"]&#125;, &#123;"before": ["I"], "after": ["L"]&#125;, &#123;"before": ["o"], "after": [";"]&#125;, &#123;"before": ["O"], "after": [";"]&#125;, &#123;"before": ["d"], "after": ["v"]&#125;, &#123;"before": ["D"], "after": ["V"]&#125;, &#123;"before": ["v"], "after": ["b"]&#125;, &#123;"before": ["V"], "after": ["B"]&#125;, &#123;"before": ["k"], "after": ["n"]&#125;, &#123;"before": ["K"], "after": ["N"]&#125;, &#123;"before": ["h"], "after": ["m"]&#125;, &#123;"before": ["H"], "after": ["M"]&#125;], "vim.visualModeKeyBindingsNonRecursive": [&#123;"before": ["f"], "after": ["e"]&#125;, &#123;"before": ["F"], "after": ["E"]&#125;, &#123;"before": ["p"], "after": ["r"]&#125;, &#123;"before": ["P"], "after": ["R"]&#125;, &#123;"before": ["b"], "after": ["t"]&#125;, &#123;"before": ["B"], "after": ["T"]&#125;, &#123;"before": ["j"], "after": ["y"]&#125;, &#123;"before": ["J"], "after": ["Y"]&#125;, &#123;"before": ["l"], "after": ["u"]&#125;, &#123;"before": ["L"], "after": ["U"]&#125;, &#123;"before": ["u"], "after": ["i"]&#125;, &#123;"before": ["U"], "after": ["I"]&#125;, &#123;"before": ["y"], "after": ["o"]&#125;, &#123;"before": ["Y"], "after": ["O"]&#125;, &#123;"before": [";"], "after": ["p"]&#125;, &#123;"before": [";"], "after": ["P"]&#125;, &#123;"before": ["r"], "after": ["s"]&#125;, &#123;"before": ["R"], "after": ["S"]&#125;, &#123;"before": ["s"], "after": ["d"]&#125;, &#123;"before": ["S"], "after": ["D"]&#125;, &#123;"before": ["t"], "after": ["f"]&#125;, &#123;"before": ["T"], "after": ["F"]&#125;, &#123;"before": ["m"], "after": ["h"]&#125;, &#123;"before": ["M"], "after": ["H"]&#125;, &#123;"before": ["n"], "after": ["j"]&#125;, &#123;"before": ["N"], "after": ["J"]&#125;, &#123;"before": ["e"], "after": ["k"]&#125;, &#123;"before": ["E"], "after": ["K"]&#125;, &#123;"before": ["i"], "after": ["l"]&#125;, &#123;"before": ["I"], "after": ["L"]&#125;, &#123;"before": ["o"], "after": [";"]&#125;, &#123;"before": ["O"], "after": [";"]&#125;, &#123;"before": ["d"], "after": ["v"]&#125;, &#123;"before": ["D"], "after": ["V"]&#125;, &#123;"before": ["v"], "after": ["b"]&#125;, &#123;"before": ["V"], "after": ["B"]&#125;, &#123;"before": ["k"], "after": ["n"]&#125;, &#123;"before": ["K"], "after": ["N"]&#125;, &#123;"before": ["h"], "after": ["m"]&#125;, &#123;"before": ["H"], "after": ["M"]&#125;]</span><br></pre></td></tr></table></figure>
+<h2 id="Handling-controls">Handling controls</h2>
+<p>We need to override vscode key bindings to make sure keys with controls in it (like visual block <code>&lt;C-v&gt;</code> and redo <code>&lt;C-r&gt;</code>) are mapped to corresponding vscode vim functions. Add this into <code>keybindings.json</code>:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+s"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"-workbench.action.files.save"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+l"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"-extension.vim_navigateCtrlL"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"editorTextFocus &amp;&amp; vim.active &amp;&amp; vim.use&lt;C-l&gt; &amp;&amp; !inDebugRepl"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+l"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"-expandLineSelection"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"textInputFocus"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+s"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"extension.vim_ctrl+d"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"editorTextFocus &amp;&amp; vim.active &amp;&amp; !inDebugRepl"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+s"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"list.focusPageDown"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"listFocus &amp;&amp; !inputFocus"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+l"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"extension.vim_ctrl+u"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"editorTextFocus &amp;&amp; vim.active &amp;&amp; !inDebugRepl"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+l"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"list.focusPageUp"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"listFocus &amp;&amp; !inputFocus"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+p"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"-workbench.action.quickOpen"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+p"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"extension.vim_ctrl+r"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"editorTextFocus &amp;&amp; vim.active &amp;&amp; vim.use&lt;C-r&gt; &amp;&amp; !inDebugRepl"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"key"</span>: <span class="string">"ctrl+d"</span>,</span><br><span class="line">  <span class="attr">"command"</span>: <span class="string">"extension.vim_ctrl+v"</span>,</span><br><span class="line">  <span class="attr">"when"</span>: <span class="string">"editorTextFocus &amp;&amp; vim.active &amp;&amp; vim.use&lt;C-v&gt; &amp;&amp; !inDebugRepl"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Again, these keys are totally changed based on <strong>colemak-dhm</strong>. You might need to change keys above to fit your needs.</p>
+<p>This might be, again, done by parsing <code>package.json</code> and be automatically generated.</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E9%94%AE%E7%9B%98/"># 键盘</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/11/24/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E5%9C%B0%E6%89%93%E5%AD%97/">如何优雅地打字</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+</html>
