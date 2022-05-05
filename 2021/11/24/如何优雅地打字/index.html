@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>如何优雅地打字 | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">如何优雅地打字</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2021/11/24&nbsp;&nbsp;1:37:20</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/meta/">meta</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>早在大二小学期时，我就萌生了想要更省力的打字的念头。</p>
+<p>那时的我已经换上了HHKB，并已经能够熟练地使用vim最基础的操作方式。即便如此，每天十多个小时的敲击依然还是会让手感到疲惫酸痛。后来我才知道这应该就是repetitive strain injury的症状。</p>
+<p>那时我已经将打字方式转变为最标准的盲打姿势，所以几乎不可能是因为姿势不正确才导致RSI。所以到底是为什么呢？</p>
+<p>于是我便开始更多地去了解这方面的内容，以求得更舒适的打字体验。</p>
+<h2 id="40-配列与Dvorak">40%配列与Dvorak</h2>
+<p>我好像对小巧的东西有一种特别的喜好。</p>
+<p>我一直不喜欢104键与87键的键盘。它们太大，而用不到的键又太多。作为程序员，自然用不到只有需要大量键入数字才需要用到的小键盘，也用不到home/page up/page down之类的按键。至于F1-F12，则又距离mid row太远，甚至会需要挪动手部才能按到，作为按键而言非常的不合理。</p>
+<p>若是一只手就能掌控，那便是最好。</p>
+<p>HHKB是一次大胆的尝试：比poker 60这样的标准60%配列更紧凑，左下与右下角也留出了放手掌侧面的空间，体验非常舒适。最棒的一点是它将caps lock这种世界上最没用的按键替换成了最有用的按键之一的control。</p>
+<p>然而，它依然太宽了，还是需要让右手小拇指努力地往右上拉伸来够到一些按键，比如作为一个latex与python用户经常会用到的中括号、下划线、与反斜杠。又或者是有些太远的数字行：距离mid row居然有两行。这意味着每次我输入数字都需要让手指努力地向上伸展，来输入括号或者选字。</p>
+<p>直到我第一次知道40%配列前，我一直都认为上面这些问题是键盘无论如何都避免不了的硬伤。</p>
+<p>40%的经典分裂空格向我展示了一个全新的世界。</p>
+<p>与shift和control如此相似的概念，只是把名字改成fn1，便又能产生新的一层映射空间，让并不阔绰的键盘空间翻倍。</p>
+<p>尽管当时我已经完全适应了在60%中都属于有些异类的HHKB，我还是比较担心自己无法完全适应40%的配列。尽管我所嫌弃的60%的一切问题在这里都可能被解决，但毕竟没有试过，我不能保证我一定会觉得很好用。</p>
+<p>于是我就用尽可能少的预算，购买了我找得到的最便宜的套件，整把键盘最终合在一起也不过400左右的花销。</p>
+<p>这把键盘仅有42个按键（和我现在最终使用的键盘一样多！），并且使用了经典的交错式配列。</p>
+<p><img src="/image/loading.png" data-original="40.png" alt="40"></p>
+<p>我在这键盘上第一次亲手体验了切层键。它的代价非常明显：想要输入数字或者特殊符号，就必须切换到对应的层上，增加一次额外的按键，并导致理解难度上升。比如，<code>control-1</code>就需要变成<code>control-LM2-q</code>才能正常工作。若是更复杂的快捷键，则可能会导致整个手在如此小的键盘上扭得像团麻花。</p>
+<p>此外，这键盘实在太小，以至于它只符合QWERTY对每行长度的需求，而当我试图使用dvorak时，就能看到上图那样enter键不得不被挪到其他位置以便为dvorak那超长的mid row让位。</p>
+<p>只有四行也导致它没有办法同时像hhkb那样在同一列上放下<code>esc, tab, ctrl, shift</code>而继续为手掌侧面留下空间。</p>
+<p>这把键盘的作者虽然推出了如此小众的键盘配列，但可供用户选择的用于更改佩列的选项却依然少得可怜，有些特殊符号甚至无法从shift中剥离出来，想要打这些字符就必须和shift一起按。比如说左括号就必须使用和9同样位置的按键加上shift才能按出来。</p>
+<h3 id="Dvorak">Dvorak</h3>
+<p>Dvorak与Colemak都是在qwerty后推出的配列。它们都更好地优化了键位的分布，使得大部分单词的打字体验都更加顺滑。对于初学者而言也一定比qwerty这种毫无逻辑的配列更容易上手。</p>
+<p>Colemak作为新兴的配列，使用了计算机辅助搜索，在优化程度上应当更优于80年前人工设计的dvorak配列。最终我也转向了colemak，但是在第一次折腾上面讲述的40%键盘时，我还不怎么了解它们的区别，只是随便地选了dvorak来开始练习。</p>
+<p>这是非常、非常、非常困难的一步，远比HHKB给人带来的不适感要强烈得多。我必须强调，从头再学一遍打字并不是什么有意思的事情。但是为了更舒适的打字体验，并考虑到以后可以永久受益，我最终还是走上了换配列的道路。</p>
+<h3 id="失败的第一次尝试">失败的第一次尝试</h3>
+<p>最终，我试图将上图的键盘与dvorak结合到一起。不光配列是个悲剧（就如你在图上看到的那样，连enter键都没了…），在机械轴的选取上也犯了极为严重的错误。</p>
+<p>为了更好的手感，我选择购买了一个巨大试轴器，并最后选择了别名为圆珠笔轴的BOX Jade焊到了PCB板上…这个轴只能说不仅压力大，而且非常、非常、非常地吵。最后，最重要的一点是，由于钢制定位板的缘故，轴的回弹手感总是如此坚硬，以至于到后来我的小拇指总是被震得骨头疼。</p>
+<p>既然我的目的是能够更舒适地打字，那么震得骨头疼显然就和RSI没差了。</p>
+<p>尽管如此，40%配列的小巧依然吸引着我。当我切换回HHKB时，我能明显感觉到HHKB作为键盘来说还是太大太宽。</p>
+<h2 id="分体直列40">分体直列40%</h2>
+<p>在购买上述键盘的过程中，我又注意到了名为普朗克配列（也就是直列）的分布方式。由于无需再为传统大键保留空间，在单位空间内能够放下更多的按键。此外也更符合人类手指直上直下的移动方式。相比之下，交错式配列只会让手指的移动变得困难。</p>
+<p>在zfrontier的冲浪过程中，我又发现了atreus keyboard这样的半分体直列键盘。这是如此靠近我对舒适键入的幻想：再也不用把小拇指伸得那么长去够那些根本没必要那么远的按键。然而，我还是不喜欢那整整四行的配列。我逐渐意识到，既然我甚至觉得数字行的距离已经有些难以接受，那么键盘就只能有三行。</p>
+<p>于是我设计出了这样的配列：</p>
+<p><img src="/image/loading.png" data-original="40_3.png" alt="40_3"></p>
+<p>是的，这是设计图。我本来甚至计划自己实现键盘的每一部分。多出来的那一列将会给大拇指使用。</p>
+<p>然而在某天再次搜索atreus的过程中，我发现了另一个方案。</p>
+<p><strong>CORNE KEYBOARD</strong>.</p>
+<p>这便是我之后手工制作的键盘所采用的方案。它完美地实现了我所有的幻想。同样是42键，它远比第一把键盘更优秀。比方说，可以把按键从shift中剥离出来：</p>
+<p><img src="/image/loading.png" data-original="40_2.png" alt="40_2"></p>
+<p>这样让配列非常有逻辑，上一行与下一行分别是无shift与有shift时的结果，只需一次切层即可解决所有问题。而数字键对应的特殊符号也可以不需要shift就按出来。</p>
+<p>键盘本身左右两边是分离的，因而我可以随心所欲地调整两手的间距，而不是被键盘牢牢地锁死。此外，每侧每行最多六个按键，保证小拇指无论如何最多也只需要挪一格的距离，有效地避免了在87和104键键盘上常见的，需要努力伸小拇指或者移动手才能够到下划线，大括号乃至退格键的情况。</p>
+<h2 id="Corne-Keyboard与Colemak-DHm">Corne Keyboard与Colemak-DHm</h2>
+<p>等待施工。</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%9D%82%E9%A1%B9/"># 杂项</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/11/30/colemak-vscode-vim/">Using colemak with vscode vim</a>
+            
+            
+            <a class="next" rel="next" href="/2021/07/13/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EDFS-BFS%E3%80%81DP%E3%80%81%E6%A0%91%E4%B8%8E%E5%9B%BE%E7%9A%84%E6%80%9D%E8%80%83/">一些关于DFS/BFS、DP、树与图的思考</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+</html>

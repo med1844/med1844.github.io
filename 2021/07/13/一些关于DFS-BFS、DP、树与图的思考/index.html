@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="medioqrity">
+
+
+
+    <meta name="description" content="A mediocre student.">
+
+
+
+<title>一些关于DFS/BFS、DP、树与图的思考 | Medioqrity&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+        
+    
+
+<meta name="theme-color" content="#ffffff" id="meta-theme-color-tag">
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Medioqrity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Medioqrity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">一些关于DFS/BFS、DP、树与图的思考</h1>
+            
+                <div class="post-meta">
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2021/07/13&nbsp;&nbsp;1:13:01</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>时光匆匆，大学就这么结束了。</p>
+<p>为了还能在几十年后有一些念想，所以试图抢救了一些记忆。这篇文章就是其中之一。</p>
+<hr>
+<p>还记得刚上数据结构这门课的时候----那时我已经熟练地掌握了深度优先搜索（<strong>D</strong>epth <strong>F</strong>irst <strong>S</strong>earch）与宽度优先搜索（<strong>B</strong>readth <strong>F</strong>irst <strong>S</strong>earch）----惊奇地发现书中介绍树的章节也介绍了树的深度优先遍历与宽度优先遍历。</p>
+<p>那时我还想，不过只是DFS和BFS的特例罢了。</p>
+<p>直到两年后的大四，在我思考二维平面迷宫作为四叉树的性质时才突然意识到，DFS与BFS才是被强行剥离出来的知识点。而将DP与DFS分开讲，甚至是在树型结构都没有让新生了解的情况下就接触这些，是十足的灾难。</p>
+<p>遗憾的是，我见到过的几乎所有的教程，在介绍这方面内容时都只是人云亦云，将如此重要的内容随便拆散而全然不提背后的关联，让新生听得不明所以，实在不是负责任的态度。</p>
+<p>虽然写了这些牢骚，但这篇文章依然不是为新生而写，只需看看各小节标题便知。</p>
+<h2 id="二维平面迷宫、四叉树、MST与平面图">二维平面迷宫、四叉树、MST与平面图</h2>
+<p>回想二维平面迷宫的生成算法之一，即基于Kruskal、并查集与随机边权的平面图的算法。该算法通过对随机边权的平面图求最小生成树，最终生成了四叉树。丢弃的边即是呈现为障碍墙的部分。</p>
+<p>当然，若是严格MST，则结果必定是树。否则，没有丢弃的边便一定会导致结果退化为图。</p>
+<p>我好奇是否存在一种算法，该算法能够根据输入的树状结构反推出其是否能够被表示为一个二维迷宫，或者更正式地说，该树是否是某个二维平面图的MST。</p>
+<p>当然以我的脑子自然是没什么机会想出这样的算法的。也许所有节点个数为平方数的四叉树都可以表示为迷宫？这就需要证明这两个集合相等，或存在一种映射方式（也就是程序），使得这两个集合之间能够一一对应；或者更简单，证伪。</p>
+<p>无论如何，在思考这个问题时，我突然意识到刚入门DFS与BFS时那道经典例题：</p>
+<blockquote>
+<p>给定一个$n \times m$的迷宫，入口处在$(0, 0)$，出口处在$(n - 1, m - 1)$，求通过迷宫的最短路径的长度。</p>
+</blockquote>
+<p>根据前面的将迷宫看作四叉树的思想来看，将入口的$(0, 0)$对应的树上节点作为根节点，那么要求的就是$(n - 1, m - 1)$对应节点的深度，其本质上就是树上两点之间的唯一路径的长度。若迷宫并非四叉树，而是上面所说的退化的图的话，那么它就可能会有多条路径，最终就需要选择长度最短的路径。</p>
+<p>对于有多条路径的图，只需简单记录访问过的点并在搜索时加以规避即可将该图转化为四叉树。这是因为这种规避本质上等于删去从当前节点出发到该已访问节点的边。删去多余的边后，平面图就可以转化为四叉树。</p>
+<p>上述观察表明了二维平面迷宫的本质，也就是四叉树上的最短路。所谓深度/宽度优先搜索，本质上就是在四叉树上的深度/宽度优先遍历。为了加强理解，再次重复其核心原理：</p>
+<ol start="0">
+<li>
+<p>将平面图转化为以入口对应节点为根节点的四叉树。</p>
+<p>此处我们实现的方式是记录已访问的节点并移除指向已访问节点的边。然而其他任意一种能实现同样效果的方式也是可以接受的。</p>
+<p>对于本身就是四叉树的输入来说，则上述操作不会对输入有任何改变。</p>
+</li>
+<li>
+<p>在该四叉树上搜索代表出口对应的节点。</p>
+</li>
+</ol>
+<p>深搜与宽搜都能找到最短路。其差别在于：</p>
+<ul>
+<li>深搜使用更少的内存，因为栈中存储的节点输不超过树的最大深度。代价是需要遍历所有节点才能确定最短路。</li>
+<li>宽搜可以搜索更少节点，因为任何超过出口对应节点深度的节点都无需访问。代价是队列中存储的节点数最多时可能有树的宽度那么多。</li>
+</ul>
+<p>迷宫为我们提供了一个有趣而直观的切入点。接下来我们将拓展节点的概念。</p>
+<h2 id="斐波那契数列、推箱子、状态图与自动机">斐波那契数列、推箱子、状态图与自动机</h2>
+<p>树的节点本身究竟该拥有什么含义呢？</p>
+<p>在前一小节的例子中，树的节点代表着实际迷宫的格子。在编译器的前端中，解析树的节点代表着上下文无关文法的终结符或非终结符。在composite设计模式中，每个基本类和每个复合类的实例都对应着树上的某个节点。</p>
+<p>似乎树的节点上就该用来存储实际的数据，对吗？</p>
+<p>不是的。树的节点还可以代表<strong>状态</strong>。</p>
+<p>让我们用最经典的，每个DP教程都会谈到却根本说不明白为什么要DP的斐波那契数列作为例子。斐波那契数列的定义如下：<br>
+$$<br>
+\begin{cases}<br>
+f_{0, 1} = 1\\<br>
+f_{n} = f_{n - 1} + f_{n - 2}<br>
+\end{cases}<br>
+$$<br>
+将斐波那契数列的第$i$项作为状态理解（这会有些难理解，但是）。为了达到这一状态，必须有前置的两个状态$f_{i-1}$和$f_{i-2}$。因此，根据依赖关系画出边，就有从$f_i$指向$f_{i-1}$和$f_{i-2}$。容易发现，这三个节点形成了以$f_i$为根节点的树。递归地将$f_{i-1}$和$f_{i-2}$​​展开绘制子树，就能获得一棵计算顺序树。只需后续遍历即可完成计算。</p>
+<p><img src="/image/loading.png" data-original="0.png" alt="0"></p>
+<p>容易发现，这棵计算顺序树的总节点数是指数级增加的（$f_n=2f_{n-2}+f_{n-3}$​）。</p>
+<p>在这棵树中，状态之间的边反映了<strong>状态之间如何转移</strong>。这也是DP所谓状态转移方程的由来。</p>
+<p>接下来考虑变量数目更多的状态。（待续）</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/python/"># python</a>
+                    
+                        <a href="/tags/c/"># c++</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/11/24/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E5%9C%B0%E6%89%93%E5%AD%97/">如何优雅地打字</a>
+            
+            
+            <a class="next" rel="next" href="/2021/02/06/%E3%80%8A%E8%B0%81%E9%83%BD%E8%83%BD%E6%98%8E%E7%99%BD%E7%9A%84%E5%92%8C%E5%BC%A6%E7%90%86%E8%AE%BA%E8%AE%B2%E5%BA%A7%E3%80%8B%E7%AC%94%E8%AE%B0/">《谁都能明白的和弦理论讲座》笔记</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© medioqrity | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script>!function(e){var c=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){for(var r=0;r<c.length;r++)t=c[r],0<=(n=t.getBoundingClientRect()).bottom&&0<=n.left&&n.top<=(e.innerHeight||document.documentElement.clientHeight)&&function(){var t,n,e,i,o=c[r];t=o,n=function(){c=c.filter(function(t){return o!==t})},e=new Image,i=t.getAttribute("data-original"),e.onload=function(){t.src=i,n&&n()},e.src=i}();var t,n}i(),e.addEventListener("scroll",function(){var t,n;t=i,n=e,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(n)},500)})}(this);</script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script></body>
+</html>
