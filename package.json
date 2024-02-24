@@ -34,6 +34,6 @@
     "hexo-spoiler": "^1.7.3",
     "jquery": "^3.6.0",
     "nodejieba": "^2.6.0",
-    "npm-check": "^5.9.2"
+    "npm-check": "^6.0.1"
   }
 }
