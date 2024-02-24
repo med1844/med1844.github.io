@@ -8,3 +8,4 @@ public/
 *.pptx
 *.xlsx
 *.docx
+package-lock.json
