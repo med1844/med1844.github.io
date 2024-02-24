@@ -6,7 +6,7 @@
     "version": "4.2.0"
   },
   "dependencies": {
-    "echarts": "^4.6.0",
+    "echarts": "^5.5.0",
     "eslint": "^6.8.0",
     "hexo": "^4.2.0",
     "hexo-asset-image": "^1.0.0",
