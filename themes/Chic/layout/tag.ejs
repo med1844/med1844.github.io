@@ -1,0 +1,21 @@
+<% if(is_tag()){ %>
+    <%- partial('_page/tag', {pagination: config.tag, index: true}) %>
+    <% console.log("TAG LINE 2") %>
+    <% console.log("TAG LINE 4") %>
+<% }else{ %>
+    <% console.log("TAG LINE 6") %>
+    <div class="container">
+        <div class="post-wrap tags">
+            <h2 class="post-title">-★&nbsp;Tag Cloud&nbsp;★-</h2>
+
+            <div class="tag-cloud-tags">
+                <%site.tags.forEach(item=>{%>
+                    <a href="<%-url_for(item.path)%>"><%- item.name%><small>(<%-item.length%>)</small></a>
+                <%})%>
+            </div>
+        </div>
+    </div>
+    <% console.log("TAG LINE 18") %>
+
+<% } %>
+<% console.log("TAG Success!") %>
