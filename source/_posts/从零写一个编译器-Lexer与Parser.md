@@ -4,6 +4,7 @@ date: 2019-12-15 18:18:38
 tags: [编译原理, python]
 category: 造轮子
 mathjax: true
+hidden: true
 ---
 
 我一直认为，学了编译原理，最后却没亲手写一个编译器出来，和没有学没什么区别。

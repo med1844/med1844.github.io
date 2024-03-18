@@ -3,35 +3,15 @@ title: about
 date: 2019-05-30 20:10:33
 ---
 
-## 目前可以公开的情报
+## About the blog
 
-对音乐、计算机科学感兴趣的普通学生。
+I started this blog due to some blog-fashion years back. I actually have no idea what to put here: most of my works are neither impressive, or interesting, or unique enough to be considered worth reading.
 
-安装[思源黑体](https://mirrors.tuna.tsinghua.edu.cn/adobe-fonts/source-han-sans/)以获得最佳阅览体验。
+If you take a look at those old blog posts you should be able to see that they are more like recording how I approach problems instead of organizing them into something more friendly to readers.
 
-## Avatar来源
+In the future I plan to write more like reports that clearly explains what's the problem, why the problem, how to analyze, and evaluate result.
 
-> https://www.pixiv.net/artworks/82144182
->
-> 画师: [SH](https://www.pixiv.net/users/2865617)
+## About me
 
-## 使用的字体
+I'm a programmer. I write most of my projects using python, and currently learning Rust.
 
-### 标题与副标题
-
-- Montserrat Bold
-- 思源黑体
-
-### 正文
-
-- Iosevka Etoile Medium
-- 思源黑体
-
-### 代码
-
-- Iosevka Mayukai Medium
-
-## 代码高亮主题
-
-- (highlight.js) Hybrid
-- (vscode) Remedy Dark (Tilted)

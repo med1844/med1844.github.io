@@ -1,22 +1,20 @@
 # Header
-navname: Medioqrity's Blog
+navname: Med's Blog
 
 # navigatior items
 nav:
   Posts: /archives
-  Categories: /category
-  Tags: /tag
   About: /about
 
 # favicon
 favicon: /favicon.ico
 
 # Profile
-nickname: Medioqrity
+nickname: Med
 
 ### this variable is MarkDown form.
-description: A mediocre student.
-avatar: /image/avatar.png
+description: Average PL & Speech enjoyer.
+avatar: /image/avatar.jpg
 
 # main menu navigation
 ## links key words should not be changed.
@@ -49,7 +47,7 @@ links:
 #  QQ:
 #  Weibo:
 #  WeChat:
-  Github: https://github.com/medioqrity
+  Github: https://github.com/med1844
 
 # how links show: you have 2 choice--text or icon.
 links_text_enable: false
