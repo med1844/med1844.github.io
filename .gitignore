@@ -9,3 +9,6 @@ public/
 *.xlsx
 *.docx
 package-lock.json
+yarn.lock
+bun.lockb
+

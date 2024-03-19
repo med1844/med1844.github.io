@@ -8,7 +8,7 @@ subtitle:
 description: 
 keywords:
 author: med
-language: en-US
+language: zh-CN
 timezone: 
 
 # URL
@@ -38,10 +38,11 @@ render_drafts: false
 post_asset_folder: true
 relative_link: false
 future: true
-syntax_highlighter: prismjs
 highlight:
-  preprocess: true
+  enable: true
   line_number: false
+  auto_detect: false
+  tab_replace:
   
 # Home page setting
 # path: Root path for your blogs index page. (default = '')

@@ -13,17 +13,17 @@ category: 整活
 
 先贴几张截图，直观的感受一下到底是个怎样的游戏:
 
-![nick_redbrick](The-Blockheads存档修改工具开发记录\nick_redbrick.jpg)
+![nick_redbrick](./The-Blockheads存档修改工具开发记录/nick_redbrick.jpg)
 
 > Nick的[红砖建筑](https://tieba.baidu.com/p/2280732422)
 
-![su_you_shao_chinese_architecture_detail](The-Blockheads存档修改工具开发记录\su_you_shao_chinese_architecture_detail.jpg)
+![su_you_shao_chinese_architecture_detail](./The-Blockheads存档修改工具开发记录/su_you_shao_chinese_architecture_detail.jpg)
 
 > 苏_悠少的[中式木建筑](https://tieba.baidu.com/p/4243244196)
 
-![kaga_painting_full](The-Blockheads存档修改工具开发记录\kaga_painting_full.jpg)
+![kaga_painting_full](./The-Blockheads存档修改工具开发记录/kaga_painting_full.jpg)
 
-![kaga_painting](The-Blockheads存档修改工具开发记录\kaga_painting.jpg)
+![kaga_painting](./The-Blockheads存档修改工具开发记录/kaga_painting.jpg)
 
 > kaga的[涂鸦](https://tieba.baidu.com/p/2844121646)
 
@@ -49,7 +49,7 @@ category: 整活
 
 心态有点小崩，返回存档又看了几眼，发现不仅是world_db，lightBlocks和server_db同样也都只有`data.mdb`和`lock.mdb`。由于db的全称是database，不免让人想到这一数据库的特点就是同时存储`data.mdb`和`lock.mdb`来作为整个数据库。因此把这两个名字一起搜一下，果然...
 
-![caffe](The-Blockheads存档修改工具开发记录\caffe.png)
+![caffe](./The-Blockheads存档修改工具开发记录/caffe.png)
 
 ??? 为什么会跳出来caffe的结果啊?
 
@@ -63,7 +63,7 @@ category: 整活
 
 只是单纯的读出来而不做任何处理的话，会得到这种申必数据:
 
-![raw_data](The-Blockheads存档修改工具开发记录\raw_data.png)
+![raw_data](./The-Blockheads存档修改工具开发记录/raw_data.png)
 
 就是二进制和xml plist组成的地狱绘图。
 
@@ -121,11 +121,11 @@ env.close()
 
 就能得到一大堆乱七八糟的文件:
 
-![output](The-Blockheads存档修改工具开发记录\output.png)
+![output](./The-Blockheads存档修改工具开发记录/output.png)
 
 随便打开一个看看:
 
-![parsed_output_dw](The-Blockheads存档修改工具开发记录\parsed_output_dw.png)
+![parsed_output_dw](./The-Blockheads存档修改工具开发记录/parsed_output_dw.png)
 
 能读了！！
 
@@ -173,7 +173,7 @@ if __name__ == "__main__":
 
 成果如下:
 
-![modify_test](The-Blockheads存档修改工具开发记录\modify_test.png)
+![modify_test](./The-Blockheads存档修改工具开发记录/modify_test.png)
 
 *本来觉得用这样的例子不太好，毕竟dave大还是要靠看广告送水晶的方法来恰饭的。但是转念一想，要想改存档，起码得root或者越狱。既然都root/越狱了，改个水晶还不简单?*
 
@@ -197,11 +197,11 @@ gs.save("./test_data/saves/out/")
 
 大致上就是获取出生点上方的区块，把它从(0, 0)到(15, 15)的部分按照从左到右，从上到下的方法枚举出来。结果如下:
 
-![ALLBLOCKS](The-Blockheads存档修改工具开发记录\ALLBLOCKS.png)
+![ALLBLOCKS](./The-Blockheads存档修改工具开发记录/ALLBLOCKS.png)
 
 可以看到有不少不能确定的方块。神奇的是，对于0号和78~127号方块来说，尽管它们是透明的，但它们却都是实打实的实体方块:
 
-![solid_unknown_block](The-Blockheads存档修改工具开发记录\solid_unknown_block.png)
+![solid_unknown_block](./The-Blockheads存档修改工具开发记录/solid_unknown_block.png)
 
 矿物并没有出现。我猜可能是存在类似mc染色玻璃和木板那样的方块附加值。毕竟一个方块花了64个字节描述，而现在只知道其中两个字节的意思。
 
@@ -268,7 +268,7 @@ gs.save("./test_data/saves/out/")
 
 事实证明可行:
 
-![modify_inventory_1](The-Blockheads存档修改工具开发记录\modify_inventory_1.png)
+![modify_inventory_1](./The-Blockheads存档修改工具开发记录/modify_inventory_1.png)
 
 手里拿着个手走来走去实属渗人，赶紧撇了。结果丢地上之后发现还真就捡不起来了。。
 
@@ -288,7 +288,7 @@ gs.save("./test_data/saves/out/")
 
 就可以得到id 1 ~ 8的物品:
 
-![item_enum_test](The-Blockheads存档修改工具开发记录\item_enum_test.png)
+![item_enum_test](./The-Blockheads存档修改工具开发记录/item_enum_test.png)
 
 如果有读过kaga翻译的dave大的[一周年开发回顾](https://tieba.baidu.com/p/2838156463)的话，会发现这个泥土和原木...实在是太有年代感了。
 
@@ -358,7 +358,7 @@ gzip解压之后如下:
 
 依然是省略又臭又长又煞风景的代码段，直接来看结果:
 
-![recursive_items](The-Blockheads存档修改工具开发记录\recursive_items.png)
+![recursive_items](./The-Blockheads存档修改工具开发记录/recursive_items.png)
 
 上图中，由于实现了repr，所以物品栏中每个物品的内容都可以被详尽的打印出来，包括在chest里的basket里的物品也都能显示。上面的箭头对应着解析结果与实际物品的对应关系。
 
@@ -375,7 +375,7 @@ gs.save("./test_data/saves/out/")
 
 跑完之后，结果如下:
 
-![item_count_test](The-Blockheads存档修改工具开发记录\item_count_test.png)
+![item_count_test](./The-Blockheads存档修改工具开发记录/item_count_test.png)
 
 ## 损耗
 
@@ -385,11 +385,11 @@ gs.save("./test_data/saves/out/")
 
 于是写一点简单代码跑一下:
 
-![durability_code_output](The-Blockheads存档修改工具开发记录\durability_code_output.png)
+![durability_code_output](./The-Blockheads存档修改工具开发记录/durability_code_output.png)
 
 总的来说就是获取inventory，然后读取指定位置的内容并打印出来。为了方便观察，我把输出的值和图标对应了起来。规律自然也是很明显了:
 
-![durability](The-Blockheads存档修改工具开发记录\durability.png)
+![durability](./The-Blockheads存档修改工具开发记录/durability.png)
 
 考虑到这个数值随着损耗程度越大而越大，还是不要叫它耐久，而是叫它损耗比较好。
 
@@ -399,7 +399,7 @@ gs.save("./test_data/saves/out/")
 
 在那之前，为了满足自己的恶趣味，来试试把flint spade的损耗改到7f:
 
-![durability_negative_test](The-Blockheads存档修改工具开发记录\durability_negative_test.png)
+![durability_negative_test](./The-Blockheads存档修改工具开发记录/durability_negative_test.png)
 
 看起来就跟p的一样，不过游戏画面的确就是这样😂😂有被笑到hhhh
 
@@ -409,7 +409,7 @@ gs.save("./test_data/saves/out/")
 
 简单地在之前的代码中加上`item.set_id(285)`，就能把flint spade变成titanium pickaxe。测试结果如下:
 
-![durability_titanium](The-Blockheads存档修改工具开发记录\durability_titanium.png)
+![durability_titanium](./The-Blockheads存档修改工具开发记录/durability_titanium.png)
 
 *黑人问号.jpg* 如果损耗只有一位的话，那要怎么确定钛镐能够挖多少次啊? 毕竟上限只有`3e`... 还是说，其实`00 3e`才是真正的损耗值?
 
@@ -427,11 +427,11 @@ C:\Game\BH\BHCore (master -> origin)
 
 结果如下:
 
-![base_damage](The-Blockheads存档修改工具开发记录\base_damage.png)
+![base_damage](./The-Blockheads存档修改工具开发记录/base_damage.png)
 
 再根据之前的结论，只要用16384除以对应工具的基本损耗就可以得到它的敲击次数限制了。结果如下:
 
-![durability_res](The-Blockheads存档修改工具开发记录\durability_res.png)
+![durability_res](./The-Blockheads存档修改工具开发记录/durability_res.png)
 
 但不要忘了，方块也是有*生命值*的（听起来很怪但是没想到更好的词儿）。有的镐子给方块的伤害比较高，有的比较低。这就会导致基本损耗相同的镐子，挖同种方块，最后却是其中一把先爆。
 
@@ -439,7 +439,7 @@ C:\Game\BH\BHCore (master -> origin)
 
 呃，不论我怎么调整方块的硬度，永远都只有一个字节有改动...所以试了一下把这个改动的字节从0 ~ 255枚举一遍:
 
-![damage_gradient](The-Blockheads存档修改工具开发记录\damage_gradient.png)
+![damage_gradient](./The-Blockheads存档修改工具开发记录/damage_gradient.png)
 
 看来损伤值确实是只有一个字节来存储...可是工业方块的硬度显然已经超过了256的范围啊? 那到底是把真实的方块硬度放在哪里了呢...
 
@@ -466,7 +466,7 @@ C:\Game\BH\BHCore (master -> origin)
 
 无奈之下重新审视测得的损耗数据，和基本损耗相除后就可以得到每种镐子敲每种方块的敲击次数。绘制成图像后如下:
 
-![relative_hardness](The-Blockheads存档修改工具开发记录\relative_hardness.png)
+![relative_hardness](./The-Blockheads存档修改工具开发记录/relative_hardness.png)
 
 并找不到什么规律...钢块对铜镐之类的竟然还有抗性...真的摸不透。
 
@@ -504,7 +504,7 @@ for i in range(1, 8):
 
 以下是id 0 ~ 27的所有物品:
 
-![item_id_test](The-Blockheads存档修改工具开发记录\item_id_test.png)
+![item_id_test](./The-Blockheads存档修改工具开发记录/item_id_test.png)
 
 前前后后测了大概十几次，总归也测完了。由于实在太多，就不在这里贴出了。
 
@@ -518,7 +518,7 @@ for i in range(1, 8):
 
 - 可以通过设定id获得一些原始方块:
 
-    ![item_id_test_14](The-Blockheads存档修改工具开发记录\item_id_test_14.png)
+    ![item_id_test_14](./The-Blockheads存档修改工具开发记录/item_id_test_14.png)
     
     上图中就获得了未被挖掘的`limestone`，`marble`，`red marble`以及`rock`。但是，任何试图放置它们的尝试都会被游戏阻止而失败。
 
@@ -528,29 +528,29 @@ for i in range(1, 8):
 
 于是根据上面所设想的测试步骤，升级了一个workbench，然后得到了看着就很麻烦的输出:
 
-![workbench_test](The-Blockheads存档修改工具开发记录\workbench_test.png)
+![workbench_test](./The-Blockheads存档修改工具开发记录/workbench_test.png)
 
 就是说，一个workbench item里，会带有很多很多附加信息，而不是之前设想的那样用某个位表示等级。这信息实在是太多了，我怀疑dave是直接把所有类成员都丢了出来。
 
 试着把`['d']['level']`改成了3，成功获得了一枚最高等级的workbench:
 
-![workbench_test_success](The-Blockheads存档修改工具开发记录\workbench_test_success.png)
+![workbench_test_success](./The-Blockheads存档修改工具开发记录/workbench_test_success.png)
 
 也算是发现了后面的部分应该称为附加数据，于是添加了构造和删除附加数据的方法。~~然而还是不怎么好用就是了。~~
 
 然后试着造了一桶白油漆，并把数据读了出来:
 
-![paint_item_data](The-Blockheads存档修改工具开发记录\paint_item_data.png)
+![paint_item_data](./The-Blockheads存档修改工具开发记录/paint_item_data.png)
 
 这一次确实没有附加数据了，我猜想的位置也出现了改变。不过，具体每一位代表什么还有着许多不确定。
 
 于是我先把最基本的8种颜色做了出来，获得了它们的数据:
 
-![paint_item_data_2](The-Blockheads存档修改工具开发记录\paint_item_data_2.png)
+![paint_item_data_2](./The-Blockheads存档修改工具开发记录/paint_item_data_2.png)
 
 然后把它们一一对应到油漆上:
 
-![paint_item_data_res](The-Blockheads存档修改工具开发记录\paint_item_data_res.png)
+![paint_item_data_res](./The-Blockheads存档修改工具开发记录/paint_item_data_res.png)
 
 简单观察一下就能发现，数字大小和它们在mixing bench中的出现顺序一致。
 
@@ -594,7 +594,7 @@ item.set_color(5, 6, 8)
 
 把修改后的存档丢回去，打开看看:
 
-![paint_item_data_res_2](The-Blockheads存档修改工具开发记录\paint_item_data_res_2.png)
+![paint_item_data_res_2](./The-Blockheads存档修改工具开发记录/paint_item_data_res_2.png)
 
 它们之前的颜色分别是`(1, 1, 2)`和`(0, 0, 0)`，说明修改成功了！
 
@@ -610,13 +610,13 @@ item.set_color(5, 6, 8)
 
 首先是矿物。注意到出生点旁边有这么一块clay:
 
-![test_ore_type](The-Blockheads存档修改工具开发记录\test_ore_type.png)
+![test_ore_type](./The-Blockheads存档修改工具开发记录/test_ore_type.png)
 
 就从这里下手吧！
 
 先把区块打印出来:
 
-![test_ore_type_step1](The-Blockheads存档修改工具开发记录\test_ore_type_step1.png)
+![test_ore_type_step1](./The-Blockheads存档修改工具开发记录/test_ore_type_step1.png)
 
 简单数一下就能确定它的位置是`6, 27`。为了做对比，我们顺便把它下面的普通土块拉出来，然后打印它们俩的数据:
 
@@ -648,23 +648,23 @@ dirt_clay.set("sub_type", 1)
 
 结果如下:
 
-![test_ore_type_step2](The-Blockheads存档修改工具开发记录\test_ore_type_step2.png)
+![test_ore_type_step2](./The-Blockheads存档修改工具开发记录/test_ore_type_step2.png)
 
 既然成功了那肯定得整活啊！所以就有了如下恶趣味的画面:
 
-![hell](The-Blockheads存档修改工具开发记录\hell.png)
+![hell](./The-Blockheads存档修改工具开发记录/hell.png)
 
 那么其他块应该也只需要看一下有多少种可能的子类就行了吧?
 
 于是我试了一下石头:
 
-![sub_type1](The-Blockheads存档修改工具开发记录\sub_type1.png)
+![sub_type1](./The-Blockheads存档修改工具开发记录/sub_type1.png)
 
 ??? 这为啥能隔的这么开??
 
 感觉很奇怪，于是我往下翻了一下...
 
-![sub_type](The-Blockheads存档修改工具开发记录\sub_type.png)
+![sub_type](./The-Blockheads存档修改工具开发记录/sub_type.png)
 
 这第二层不太对吧！！
 
@@ -672,13 +672,13 @@ dirt_clay.set("sub_type", 1)
 
 为了验证猜想，于是我把block_id换成了air之后又试了一次:
 
-![sub_type2](The-Blockheads存档修改工具开发记录\sub_type2.png)
+![sub_type2](./The-Blockheads存档修改工具开发记录/sub_type2.png)
 
 得，看来是实锤了。为了把所有种类都套出来我估计又得花不少时间...
 
 不管怎样，先试试看把所有矿都堆一起吧！
 
-![oresoresores](The-Blockheads存档修改工具开发记录\oresoresores.png)
+![oresoresores](./The-Blockheads存档修改工具开发记录/oresoresores.png)
 
 显然根据目前的结果，已经不能叫它矿物了。但是，如果不叫矿物的话，又该怎么称呼它呢?
 
@@ -686,7 +686,7 @@ dirt_clay.set("sub_type", 1)
 
 首先先在温馨的小家里放点水:
 
-![water_height](The-Blockheads存档修改工具开发记录\water_height.png)
+![water_height](./The-Blockheads存档修改工具开发记录/water_height.png)
 
 然后把这7格水对应的方块数据把拉出来:
 
@@ -697,7 +697,7 @@ for i in range(24, 31):
 
 于是就能看到下面这种申必数据:
 
-![water_height_data](The-Blockheads存档修改工具开发记录\water_height_data.png)
+![water_height_data](./The-Blockheads存档修改工具开发记录/water_height_data.png)
 
 可以看到后4个方块的第4位都是`2e`，所以工具台对应的sub type值是46。
 
@@ -705,11 +705,11 @@ for i in range(24, 31):
 
 再来看看雪的情况:
 
-![snow_height](The-Blockheads存档修改工具开发记录\snow_height.png)
+![snow_height](./The-Blockheads存档修改工具开发记录/snow_height.png)
 
 图中圈出的红色部分的对应数据如下:
 
-![snow_height_data](The-Blockheads存档修改工具开发记录\snow_height_data.png)
+![snow_height_data](./The-Blockheads存档修改工具开发记录/snow_height_data.png)
 
 我想基本可以证实第5位是水和雪的高度了。再看看后面那几位，可以看到最上面那两个方块的值都是`0`，在图中有区别的似乎也只有光照了。而光照本身需要三种颜色，也就能解释为什么会出现`11 0a 03`三个值了。
 
@@ -728,7 +728,7 @@ for y in range(15, -1, -1):
 
 进游戏看一眼:
 
-![snow_water_height_test](The-Blockheads存档修改工具开发记录\snow_water_height_test.png)
+![snow_water_height_test](./The-Blockheads存档修改工具开发记录/snow_water_height_test.png)
 
 虽然看着很混乱，不过确实成功了！
 
@@ -740,7 +740,7 @@ for y in range(15, -1, -1):
 
 将`465, 17`和`465, 16`的第17列所有方块的数据按高度降序打印了出来，结果如下:
 
-![visibility_test](The-Blockheads存档修改工具开发记录\visibility_test.png)
+![visibility_test](./The-Blockheads存档修改工具开发记录/visibility_test.png)
 
 红色的部分大概率就是是否有被探索过。`ff`表示完全探索，`00`表示完全处于黑暗迷雾中。但是为什么要用两个字节来表示，我暂且蒙在鼓里。
 
@@ -758,13 +758,13 @@ for y in range(15, -1, -1):
         b.set("visibility", ((15 ^ y) << 4 | x) & 255, randint(0, 255))
 ```
 
-![visibility_test_res](The-Blockheads存档修改工具开发记录\visibility_test_res.png)
+![visibility_test_res](./The-Blockheads存档修改工具开发记录/visibility_test_res.png)
 
 所以说，第二位这不是一点用都没有吗??
 
 把它们调换一下顺序，会得到这种鬼畜结果:
 
-![visibility_test_res_2](The-Blockheads存档修改工具开发记录\visibility_test_res_2.png)
+![visibility_test_res_2](./The-Blockheads存档修改工具开发记录/visibility_test_res_2.png)
 
 反正我不是很懂为什么要搞两个一模一样的位出来...
 
@@ -772,19 +772,19 @@ for y in range(15, -1, -1):
 
 根据之前的观察，推测亮度是第8位。于是，把所有空气之外的方块变成没有光照后的结果如下:
 
-![brightness_test](The-Blockheads存档修改工具开发记录\brightness_test.png)
+![brightness_test](./The-Blockheads存档修改工具开发记录/brightness_test.png)
 
 也间接证明了~~小人是用脚感知周围亮度的~~:
 
-![brightness_test2](The-Blockheads存档修改工具开发记录\brightness_test2.png)
+![brightness_test2](./The-Blockheads存档修改工具开发记录/brightness_test2.png)
 
 修改所有方块的亮度和之前的可见度，就可以把所有已生成的区块都扒出来:
 
-![world_with_no_darkness](The-Blockheads存档修改工具开发记录\world_with_no_darkness.png)
+![world_with_no_darkness](./The-Blockheads存档修改工具开发记录/world_with_no_darkness.png)
 
 再来一张近照:
 
-![world_with_no_darkness2](The-Blockheads存档修改工具开发记录\world_with_no_darkness2.png)
+![world_with_no_darkness2](./The-Blockheads存档修改工具开发记录/world_with_no_darkness2.png)
 
 ---
 
