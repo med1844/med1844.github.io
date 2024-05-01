@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FF14职业性格调查小问卷</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="styles.css">
@@ -13,7 +14,7 @@
         <div id="questionContainer" class="question-container">
             <h1>FF14职业性格调查小问卷</h1>
             <p>
-                <a href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&activity=170647260&type=1">原始问卷</a>
+                <a href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&activity=170647260&type=1">原问卷</a>
                 <br>
                 感谢<a href="https://space.bilibili.com/700818858">阿莉娅Aliya_</a>提供的初始答卷集合表格！
             </p>
@@ -114,7 +115,7 @@
                 name: 'Prior Distribution',
                 type: 'bar',
                 marker: {
-                    color: 'grey'
+                    color: 'rgba(192, 192, 192, 1.0)'
                 }
             };
             let posteriors = calc_posterior(
@@ -125,7 +126,7 @@
             );
 
             let diff = prior.map((pri, index) => posteriors[index] - pri);
-            let colors = Array.from(diff).map(d => d > 0 ? 'rgba(75, 192, 192, 0.7)' : 'rgba(255, 99, 132, 0.7)');
+            let colors = Array.from(diff).map(d => d > 0 ? 'rgba(0, 221, 166, 0.7)' : 'rgba(255, 255, 255, 0.5)');
 
             var trace2 = {
                 x: jobs,
@@ -144,10 +145,22 @@
             var maxYValue = Math.max(maxPosteriorValue, ...prior) * 1.1; // 10% padding
 
             var layout = {
-                title: 'Comparison of Prior and Posterior Distributions',
+                title: 'Prior vs Posterior Distributions',
                 barmode: 'overlay', // put bars on top of each other
+                showlegend: false,
                 yaxis: {
-                    range: [0, maxYValue]
+                    range: [0, maxYValue],
+                    fixedrange: true
+                },
+                xaxis: {
+                    fixedrange: true
+                },
+                margin: {
+                    l: 50,
+                    r: 50,
+                    b: 50,
+                    t: 50,
+                    pad: 4
                 }
             };
 
