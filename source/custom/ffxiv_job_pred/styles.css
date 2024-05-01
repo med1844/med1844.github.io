@@ -1,0 +1,42 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.content-wrapper {
+    display: flex;
+    height: 100%;
+}
+
+.question-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.plot-container {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 800px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .plot-container {
+        height: 50%;
+        width: 100%;
+        padding: 10px;
+    }
+
+    .question-container {
+        height: 50%;
+        width: 100%;
+    }
+}

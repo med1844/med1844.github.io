@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <title>FF14职业性格调查小问卷</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="content-wrapper">
+        <div id="questionContainer" class="question-container">
+            <h1>FF14职业性格调查小问卷</h1>
+            <p>
+                <a href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&activity=170647260&type=1">原始问卷</a>
+                <br>
+                感谢<a href="https://space.bilibili.com/700818858">阿莉娅Aliya_</a>提供的初始答卷集合表格！
+            </p>
+        </div>
+        <div id="myDiv" class="plot-container"></div>
+    </div>
+
+    <script>
+        async function fetchQuestions() {
+            try {
+                const response = await fetch('questions.json');
+                const questions = await response.json();
+
+                generateQuestions(questions);
+            } catch (error) {
+                console.error('Failed to load questions:', error);
+            }
+        }
+
+        function generateQuestions(questions) {
+            const container = document.getElementById('questionContainer');
+            questions.forEach((question, q_index) => {
+                const section = document.createElement('section');
+                const p = document.createElement('p');
+                p.textContent = question.statement;
+                section.appendChild(p);
+
+                question.choices.forEach((choice, i) => {
+                    const label = document.createElement('label');
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `question${q_index}`;
+                    radio.value = i;
+                    radio.onchange = () => updateSelection(i, q_index);
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(choice));
+                    section.appendChild(label);
+                    section.appendChild(document.createElement('br'));
+                });
+
+                container.appendChild(section);
+            });
+        }
+
+        fetchQuestions();
+    </script>
+
+    <script type="module">
+        import init, { calc_posterior } from "./pkg/client.js";
+        await init();
+        async function loadF64Array(name) {
+            let response = await fetch(name);
+            let buffer = await response.arrayBuffer();
+            return new Float64Array(buffer);
+        }
+        const likelihood = await loadF64Array('likelihood.bin');
+        const prior = await loadF64Array('prior.bin');
+
+        const jobs = [
+            "骑士",
+            "暗黑骑士",
+            "战士",
+            "白魔法师",
+            "占星术士",
+            "学者",
+            "贤者",
+            "钐镰师",
+            "龙骑士",
+            "武僧",
+            "武士",
+            "忍者",
+            "机工士",
+            "吟游诗人",
+            "舞者",
+            "黑魔法师",
+            "召唤师",
+            "赤魔法师",
+            "能工巧匠",
+            "大地使者",
+            "青魔法师",
+            "绝枪战士",
+        ];
+
+        var map = new Map();
+        window.updateSelection = function (value, index) {
+            map.set(index, value);
+            let indices = Uint8Array.from(map.keys());
+            let choices = Uint8Array.from(map.values());
+            genPlotlyData(choices, indices);
+        }
+        // Global reference to the figure
+        let plotInstance;
+
+        function genPlotlyData(choices, indices) {
+            var trace1 = {
+                x: jobs,
+                y: prior,
+                name: 'Prior Distribution',
+                type: 'bar',
+                marker: {
+                    color: 'grey'
+                }
+            };
+            let posteriors = calc_posterior(
+                prior,
+                likelihood,
+                choices,
+                indices,
+            );
+
+            let diff = prior.map((pri, index) => posteriors[index] - pri);
+            let colors = Array.from(diff).map(d => d > 0 ? 'rgba(75, 192, 192, 0.7)' : 'rgba(255, 99, 132, 0.7)');
+
+            var trace2 = {
+                x: jobs,
+                y: diff,
+                name: 'Posterior Distribution',
+                type: 'bar',
+                marker: {
+                    color: colors
+                },
+                base: prior,
+            };
+
+            var data = [trace1, trace2];
+
+            var maxPosteriorValue = Math.max(...posteriors);
+            var maxYValue = Math.max(maxPosteriorValue, ...prior) * 1.1; // 10% padding
+
+            var layout = {
+                title: 'Comparison of Prior and Posterior Distributions',
+                barmode: 'overlay', // put bars on top of each other
+                yaxis: {
+                    range: [0, maxYValue]
+                }
+            };
+
+            let duration = 150;
+
+            if (plotInstance) {
+                const currentYAxisRange = plotInstance.layout.yaxis.range;
+                if (currentYAxisRange[1] !== maxYValue) {
+                    // if maxYValue changed, animate it first before animate bar
+                    Plotly.animate('myDiv', {
+                        layout: {
+                            yaxis: {
+                                range: [0, maxYValue]
+                            }
+                        }
+                    }, {
+                        transition: {
+                            duration: duration,
+                            easing: 'cubic-in-out'
+                        },
+                        frame: {
+                            duration: duration
+                        }
+                    }).then(() => {
+                        Plotly.animate('myDiv', {
+                            data: data,
+                            layout: layout
+                        }, {
+                            transition: {
+                                duration: duration,
+                                easing: 'cubic-in-out'
+                            },
+                            frame: {
+                                duration: duration
+                            }
+                        });
+                    });
+                } else {
+                    Plotly.animate('myDiv', {
+                        data: data,
+                        layout: layout
+                    }, {
+                        transition: {
+                            duration: duration,
+                            easing: 'cubic-in-out'
+                        },
+                        frame: {
+                            duration: duration
+                        }
+                    });
+                }
+            } else {
+                Plotly.newPlot('myDiv', data, layout).then(plot => {
+                    plotInstance = plot;
+                });
+            }
+        }
+
+        window.onresize = function () {
+            if (plotInstance) {
+                var update = {
+                    autosize: true
+                };
+                Plotly.relayout('myDiv', update);
+            }
+        };
+
+        genPlotlyData(new Uint8Array(), new Uint8Array());
+    </script>
+
+
+</body>
+
+
+</html>
