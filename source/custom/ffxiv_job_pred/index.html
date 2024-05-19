@@ -11,14 +11,18 @@
 
 <body>
     <div class="content-wrapper">
-        <div id="questionContainer" class="question-container">
+        <div class="question-container">
             <h1>FF14职业性格调查小问卷</h1>
             <p>
-                <a href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&activity=170647260&type=1">原问卷</a>
+                <a
+                    href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&activity=170647260&type=1">原问卷</a>
                 <br>
                 感谢<a href="https://space.bilibili.com/700818858">阿莉娅Aliya_</a>提供的初始答卷集合表格！
             </p>
+            <div id="questionContainer"></div>
+            <div id="submitContainer"></div>
         </div>
+        <hr>
         <div id="myDiv" class="plot-container"></div>
     </div>
 
@@ -73,31 +77,34 @@
         const likelihood = await loadF64Array('likelihood.bin');
         const prior = await loadF64Array('prior.bin');
 
-        const jobs = [
-            "骑士",
-            "暗黑骑士",
-            "战士",
-            "白魔法师",
-            "占星术士",
-            "学者",
-            "贤者",
-            "钐镰师",
-            "龙骑士",
-            "武僧",
-            "武士",
-            "忍者",
-            "机工士",
-            "吟游诗人",
-            "舞者",
-            "黑魔法师",
-            "召唤师",
-            "赤魔法师",
-            "能工巧匠",
-            "大地使者",
-            "青魔法师",
-            "绝枪战士",
-        ];
+        const jobs_resp = await fetch('jobs.json');
+        const jobs = await jobs_resp.json();
 
+        // build the question of main job, so that we can store it
+        const container = document.getElementById('submitContainer');
+        const section = document.createElement('section');
+        const p = document.createElement('p');
+        p.textContent = "【可选，将用于提升预测精度】您的主职是";
+        section.appendChild(p);
+
+        jobs.forEach((job, i) => {
+            const label = document.createElement('label');
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `job`;
+            radio.value = i;
+            label.appendChild(radio);
+            label.appendChild(document.createTextNode(job));
+            section.appendChild(label);
+            section.appendChild(document.createElement('br'));
+        });
+
+        function getSelectedJob() {
+            const selectedRadio = document.querySelector('section input[name="job"]:checked');
+            return selectedRadio ? selectedRadio.value : null;
+        }
+
+        // we need map instance available before we could build submit button
         var map = new Map();
         window.updateSelection = function (value, index) {
             map.set(index, value);
@@ -105,6 +112,46 @@
             let choices = Uint8Array.from(map.values());
             genPlotlyData(choices, indices);
         }
+
+        const submitButton = document.createElement("button");
+        submitButton.type = 'button';
+        submitButton.textContent = "提交";
+        async function submitToCloudflare(job_id, answers) {
+            let body = JSON.stringify({
+                job_id: job_id,
+                answers: answers
+            });
+            console.log(body);
+            let response = await fetch("https://ffxiv-pred-handler.medioqrity.workers.dev/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain"
+                },
+                body: body
+            });
+            try {
+                let data = await response.json();
+                console.log("Response data:", data);
+            } catch (err) {
+                console.error("Error parsing JSON response:", error);
+            }
+        }
+        submitButton.onclick = () => {
+            let job = getSelectedJob();
+            if (job !== null) {
+                if (map.size === 22) {
+                    let sortedAnswers = Array.from(map.entries())
+                        .sort((a, b) => a[0] - b[0])
+                        .map(tuple => tuple[1]);
+                    submitToCloudflare(job, sortedAnswers);
+                } else {
+                    alert("有没回答的题，请再检查一遍")
+                }
+            }
+        };
+        section.appendChild(submitButton);
+        container.append(section);
+
         // Global reference to the figure
         let plotInstance;
 

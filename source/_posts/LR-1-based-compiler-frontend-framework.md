@@ -280,6 +280,6 @@ We greedily match as long as we can until we have no matching outgoing edge or w
 
 ## Automatically testing FA algorithms
 
-It's hard to verify if constructed finite automata has the expected structure. It's possible to use graph isomorphism algorithms to check if the generated structure matches the expectation, but it's possible to do roughly the same task using hash.
+It's hard to verify if constructed finite automata has the expected structure. It's possible to use graph isomorphism algorithms to check if the generated structure matches the expectation, but it's possible to do roughly the same task using hash. Here's the rough procedure:
 
-
+- 
