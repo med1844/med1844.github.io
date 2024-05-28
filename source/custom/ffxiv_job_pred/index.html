@@ -1,71 +1,667 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FF14职业性格调查小问卷</title>
+    <meta charSet="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" data-precedence="next" />
+    <title>FFXIV Job Pred</title>
+    <meta name="description" content="Predict your job with personality" />
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
-    <div class="content-wrapper">
-        <div class="question-container">
-            <h1>FF14职业性格调查小问卷</h1>
-            <p>
-                <a
-                    href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&activity=170647260&type=1">原问卷</a>
-                <br>
-                感谢<a href="https://space.bilibili.com/700818858">阿莉娅Aliya_</a>提供的初始答卷集合表格！
-            </p>
-            <div id="questionContainer"></div>
-            <div id="submitContainer"></div>
+<body class="bg-gray-50">
+    <div>
+        <div class="bg-gray-50 sticky top-0 left-0 right-0 z-10">
+            <div id="myDiv" class="w-11/12 max-w-lg mx-auto min-h-72 z-10"></div>
+            <hr class="h-px dark:bg-gray-200" />
         </div>
-        <hr>
-        <div id="myDiv" class="plot-container"></div>
+        <div id="questionContainer"
+            class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden py-6">
+            <p class="text-2xl font-bold">FF14职业性格调查小问卷</p>
+            <p><a href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&amp;activity=170647260&amp;type=1"
+                    class="text-theme-blue-500 hover:text-theme-pink transition ease-in-out">原问卷</a><br />感谢<a
+                    href="https://space.bilibili.com/700818858"
+                    class="text-theme-blue-500 hover:text-theme-pink transition ease-in-out">阿莉娅Aliya_</a>提供的初始答卷集合表格！
+            </p>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第2题：作为一名冒险者，你认为自己的冒险心重吗？（对新事物的好奇心和兴趣大吗？）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">超大，什么都想试试，除了游戏新内容还有各种rp等等</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question0" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">大</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question0" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">一般</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question0" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">小</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question0" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">超小，基本上对新玩意都没兴趣</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question0" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第3题：那么你会因为兴趣驱使而真的付诸行动吗？（你的行动力如何呢？）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">一旦有兴趣，立刻马上行动</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question1" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">虽然有兴趣，但要过一阵才行动</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question1" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我得仔细观望一下看看，可能观望到最后不动了</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question1" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">沉稳咏唱，完全不动，我就看看而已</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question1" value="3" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第4题：和熟人打字聊天的时候，感觉自己话多吗？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">超级话痨，键盘敲烂！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question2" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">比常人能说，80%时间是团体中说话最多的一个</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question2" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">有事的时候才会高频发言，属于不少也不多</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question2" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">偶尔评论两句</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question2" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">是潜水员，被点名了才会出现</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question2" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第5题：和熟人语音聊天的时候，感觉自己话多吗？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">单口相声王，一旦开口别人就根本插不上话</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question3" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">上面那个不在的时候你的话是最多的</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question3" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不少也不多</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question3" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不太爱说话，但也不是完全不说</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question3" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">麦克风常年关闭极少才开，或者根本没有麦</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question3" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第6题：和陌生人说话的欲望又如何呢？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不会畏惧和陌生人讲话，情感动作随时都能发出去</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question4" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">有人先开口的话可以跟着讲两句</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question4" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">除非情绪爆炸了，否则不会开口</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question4" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">和陌生人有什么好说的？</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question4" value="3" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第7题：精力充沛的时候，喜欢和大家一起玩还是自己一个人做些什么？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">比较喜欢和大家一起</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question5" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">两种情况各一半</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question5" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">比较喜欢自己嗯玩</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question5" value="2" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第8题：那么很疲惫的时候呢，希望自己一个人休息还是和朋友在一起呢？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">想和大家在一起，自己一个人也没法很放松</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question6" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">两种情况各一半</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question6" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我要一个人呆着好好休息，跟别人在一起会更累</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question6" value="2" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第9题：感觉自己是一个克制的人吗？忍耐力如何呢？（比如在副本中有人犯错，或者搓炸东西、鱼脱钩的时候）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">何止是上忍，我是忍者之王，无论是喜欢还是愤怒，都极少表达出来</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question7" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">忍一时风平浪静，只要不是很过火，我都能克制</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question7" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">没有特别忍过，但好像也没有特别放纵</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question7" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">经常忍不住</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question7" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">忍？忍是不可能忍的！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question7" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第10题：先不算有没有表现出来，你的独占欲强烈吗？（对待朋友、恋人、物品、幻化捏脸等等）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">超强，我的东西/人谁也别想碰，要是被抢了会生气记仇</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question8" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">强，但是没上面那个激进，还是有放下的余地的</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question8" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">还好吧，看情况</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question8" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不太强，大家都是客观独立的存在</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question8" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">基本上没有，我完全博爱或者我直接完全不爱</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question8" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第11题：那么你会表现出来的独占欲如何呢（哪怕是装出来的）？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">哈哈，爷的东西谁也别想碰！（甚至可能过分关注到病态）</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question9" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我感觉自己的占有欲表现得挺明显的，但没上面那个激进</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question9" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">一般般，看情况</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question9" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不太会表现出来，除非被夺取得特别过火</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question9" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">绝对不会表现出来的。</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question9" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第12题：公事公办注重客观、行为温和注重感情——你更倾向哪一个？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我注重客观事实，会公事公办甚至大义灭亲毫不手软</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question10" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">朋友做错了就是做错了，但是我批评朋友的时候语气会尽量放缓和</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question10" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不知道为什么，但我会在这两种选项中反复横跳</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question10" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">虽然客观事实也很重要，但我更在意感情上对方会不会受伤</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question10" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">比起客观事实，我更注重感情，我不愿意因为自己的行为或语句使得他人受伤</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question10" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第13题：那么，你经常赞美他人吗？表达出来的那种。（打本、幻化、为人等等都可以夸）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我超能夸，无论朋友还是陌生人，我都能很快找到优点然后夸夸！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question11" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">做的不错就夸，比较频繁</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question11" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">感觉不太频繁，但是也没到吝啬赞美的地步</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question11" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">极少，想得到我的赞美，必须是做到我心坎里的那种</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question11" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">四舍五入没夸过人，起码嘴上没有，心里还是会有的吧</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question11" value="4" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我玩这游戏就没夸过人，没想到吧！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question11" value="5" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第14题：做计划和随心所欲，打游戏的时候你更倾向于哪一个？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">做详细计划</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question12" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">做简单的计划</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question12" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">看情况吧</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question12" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">基本上随心所欲</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question12" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">完完全全随心所欲</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question12" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第15题：你在游戏中乐于助人吗？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">非常乐于助人，看见可能需要帮助的人我都会主动询问</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question13" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">乐于助人，但是没上面那个那么大胆</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question13" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">还行吧，被求助了会帮忙</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question13" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">被求助了也要看一下自己安排等再决定帮不帮</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question13" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">基本不帮助别人（可能有各种原因）</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question13" value="4" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">好像没遇到过什么乐于助人的机会</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question13" value="5" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第16题：你是慢性子还是急性子？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我是闪电一般的急性子！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question14" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">急了，但没完全急</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question14" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不急不慢说的就是我</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question14" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">慢了，但没完全慢</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question14" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">算是非常慢悠悠的类型了</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question14" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第17题：你有多善解人意呢？同理心和共情能力厉害吗？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">善解人意到被人误以为会通灵的地步</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question15" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">能设身处地为他人着想，但偶尔也有不行的时候</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question15" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我不好说</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question15" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">时不时不太会读取气氛，也不知道对方在想什么</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question15" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">经常不知道对方为什么突然生气</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question15" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第18题：你容易emo（忧郁伤感）吗？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">非常容易变得emo</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question16" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">时不时就会有些丧</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question16" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">还好啦</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question16" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不太容易，我蛮乐的</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question16" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">几乎从来不emo，心如钢铁，乐得不行</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question16" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第19题：感觉自己有没有一点傻傻的？（在游戏中）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">怎么会，我智力无双，聪明绝顶！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question17" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不觉得，我觉得自己很聪明</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question17" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">虽然感觉自己不聪明但也没到傻傻的程度</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question17" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">有……点……吧……</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question17" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">对不起，我是笨比</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question17" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第20题：忘却上面的问题，你觉得自己成熟——还是幼稚？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我是成熟稳重的人。</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question18" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">偏成熟一点</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question18" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">中规中矩</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question18" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">可能比较幼稚吧</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question18" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">我是幼稚鬼</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question18" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第22题：（突然插入）你认为自己唱歌好听吗？</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">宛如天籁啊！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question19" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">当然好听啦！我恁牛！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question19" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">一般吧……</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question19" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">感觉不太好听</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question19" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">啊哈，我五音不全欸！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question19" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第23题：你能吃吗！（这里指的是现实中的本人，不是游戏中能不能吃啦！）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">食量很小，一点点就饱了</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question20" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">比较小，吃自助回不了本</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question20" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">一般水平吧，一餐一碗饭</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question20" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">感觉还算能吃</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question20" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">大 胃 王 ，能吃很多很多！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question20" value="4" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">第24题：你的厨艺如何？（真的做菜的厨艺）</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">可以开饭馆的水准，或者已经开饭馆了！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question21" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">大厨水准，可以操刀家庭餐宴</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question21" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">不至于上面的水平，但是已经很够自己做饭吃了</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question21" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">一般般，厨艺不太稳定，同一道菜做得时好时坏</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question21" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">只有一两道菜能吃</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question21" value="4" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">完全不会做饭 / 没下过厨</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question21" value="5" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">黑暗料理，吃了会有一定性命危险！</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question21" value="6" /></label></div>
+            </div>
+            <div class="overflow-hidden my-2.5 w-11/12 max-w-lg rounded-lg bg-white outline outline-2 outline-gray-600">
+                <p class="m-4 font-semibold text-gray-600">【可选，将用于提升预测精度】您的主职是</p>
+                <hr />
+                <div class="p-2 flex flex-col"><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">骑士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="0" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">暗黑骑士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="1" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">战士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="2" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">白魔法师</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="3" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">占星术士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="4" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">学者</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="5" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">贤者</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="6" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">钐镰师</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="7" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">龙骑士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="8" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">武僧</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="9" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">武士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="10" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">忍者</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="11" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">机工士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="12" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">吟游诗人</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="13" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">舞者</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="14" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">黑魔法师</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="15" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">召唤师</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="16" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">赤魔法师</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="17" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">能工巧匠</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="18" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">大地使者</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="19" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">青魔法师</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="20" /></label><label
+                        class="m-0.5 p-2 flex content-center items-center rounded-lg px-2 text-gray-600 ring-1 ring-transparent transition ease-in-out hover:bg-slate-50 hover:ring-slate-100 has-[:checked]:bg-theme-blue-50 has-[:checked]:text-theme-blue-500 has-[:checked]:ring-theme-blue-100"><span
+                            class="pr-2">绝枪战士</span><input type="radio"
+                            class="ml-auto transition ease-in-out text-theme-blue-500 focus:ring-theme-blue-500 justify-end"
+                            name="question-1" value="21" /></label></div>
+            </div><button
+                class="bg-theme-blue-500 hover:bg-theme-blue-600 active:bg-theme-blue-700 focus:outline-none focus:ring focus:ring-theme-blue-300 ring-offset-2 p-2 rounded-lg text-white disabled:bg-gray-400">Submit</button>
+        </div>
     </div>
-
-    <script>
-        async function fetchQuestions() {
-            try {
-                const response = await fetch('questions.json');
-                const questions = await response.json();
-
-                generateQuestions(questions);
-            } catch (error) {
-                console.error('Failed to load questions:', error);
-            }
-        }
-
-        function generateQuestions(questions) {
-            const container = document.getElementById('questionContainer');
-            questions.forEach((question, q_index) => {
-                const section = document.createElement('section');
-                const p = document.createElement('p');
-                p.textContent = question.statement;
-                section.appendChild(p);
-
-                question.choices.forEach((choice, i) => {
-                    const label = document.createElement('label');
-                    const radio = document.createElement('input');
-                    radio.type = 'radio';
-                    radio.name = `question${q_index}`;
-                    radio.value = i;
-                    radio.onchange = () => updateSelection(i, q_index);
-                    label.appendChild(radio);
-                    label.appendChild(document.createTextNode(choice));
-                    section.appendChild(label);
-                    section.appendChild(document.createElement('br'));
-                });
-
-                container.appendChild(section);
-            });
-        }
-
-        fetchQuestions();
-    </script>
-
     <script type="module">
         import init, { calc_posterior } from "./pkg/client.js";
         await init();
@@ -80,48 +676,37 @@
         const jobs_resp = await fetch('jobs.json');
         const jobs = await jobs_resp.json();
 
-        // build the question of main job, so that we can store it
-        const container = document.getElementById('submitContainer');
-        const section = document.createElement('section');
-        const p = document.createElement('p');
-        p.textContent = "【可选，将用于提升预测精度】您的主职是";
-        section.appendChild(p);
-
-        jobs.forEach((job, i) => {
-            const label = document.createElement('label');
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = `job`;
-            radio.value = i;
-            label.appendChild(radio);
-            label.appendChild(document.createTextNode(job));
-            section.appendChild(label);
-            section.appendChild(document.createElement('br'));
-        });
-
         function getSelectedJob() {
-            const selectedRadio = document.querySelector('section input[name="job"]:checked');
+            const selectedRadio = document.querySelector('div input[name="question-1"]:checked');
             return selectedRadio ? selectedRadio.value : null;
         }
 
         // we need map instance available before we could build submit button
         var map = new Map();
-        window.updateSelection = function (value, index) {
+        function updateSelection(value, index) {
             map.set(index, value);
             let indices = Uint8Array.from(map.keys());
             let choices = Uint8Array.from(map.values());
             genPlotlyData(choices, indices);
         }
 
-        const submitButton = document.createElement("button");
-        submitButton.type = 'button';
-        submitButton.textContent = "提交";
+        for (let q_index = 0; q_index < 22; q_index++) {
+            const questionName = `question${q_index}`;
+            const radios = document.querySelectorAll(`input[name="${questionName}"]`);
+
+            radios.forEach((radio, i) => {
+                radio.addEventListener('change', () => {
+                    updateSelection(i, q_index);
+                });
+            });
+        }
+
+        const submitButton = document.querySelector('button');
         async function submitToCloudflare(job_id, answers) {
             let body = JSON.stringify({
                 job_id: job_id,
                 answers: answers
             });
-            console.log(body);
             let response = await fetch("https://ffxiv-pred-handler.medioqrity.workers.dev/", {
                 method: "POST",
                 headers: {
@@ -131,9 +716,12 @@
             });
             try {
                 let data = await response.json();
-                console.log("Response data:", data);
+                alert("提交成功！");
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-50');
             } catch (err) {
-                console.error("Error parsing JSON response:", error);
+                console.log(err);
+                alert("提交失败，可以再试试；懂开发的可以看看console然后开issue: https://github.com/med1844/med1844.github.io/issues");
             }
         }
         submitButton.onclick = () => {
@@ -147,10 +735,10 @@
                 } else {
                     alert("有没回答的题，请再检查一遍")
                 }
+            } else {
+                alert("没有选择主职。如果您没有主职，则无需提交")
             }
         };
-        section.appendChild(submitButton);
-        container.append(section);
 
         // Global reference to the figure
         let plotInstance;
@@ -192,7 +780,7 @@
             var maxYValue = Math.max(maxPosteriorValue, ...prior) * 1.1; // 10% padding
 
             var layout = {
-                title: 'Prior vs Posterior Distributions',
+                // title: 'Prior vs Posterior Distributions',
                 barmode: 'overlay', // put bars on top of each other
                 showlegend: false,
                 yaxis: {
@@ -203,10 +791,10 @@
                     fixedrange: true
                 },
                 margin: {
-                    l: 50,
-                    r: 50,
-                    b: 50,
-                    t: 50,
+                    l: 0,
+                    r: 0,
+                    b: 75,
+                    t: 0,
                     pad: 4
                 }
             };
@@ -260,7 +848,11 @@
                     });
                 }
             } else {
-                Plotly.newPlot('myDiv', data, layout).then(plot => {
+                var config = {
+                    modeBarButtonsToRemove: ['select2d', 'lasso2d'],
+                    responsive: true
+                };
+                Plotly.newPlot('myDiv', data, layout, config).then(plot => {
                     plotInstance = plot;
                 });
             }
@@ -277,9 +869,6 @@
 
         genPlotlyData(new Uint8Array(), new Uint8Array());
     </script>
-
-
 </body>
-
 
 </html>
