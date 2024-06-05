@@ -235,6 +235,87 @@ Finally determinize:
 
 While we could tell that the simplest form would be only containing one state, due to the existence of start state $2$, we can't simplify it further.
 
+## Automatically testing FA structures
+
+It's hard to verify if constructed finite automata has the expected structure. It's possible to use graph isomorphism algorithms to check if the generated structure matches the expectation, but it's possible to do roughly the same task using hash. Here's some key requirements:
+
+- back edges must contribute to the result
+- the order we visit the out coming edges doesn't change results, i.e. the hash must use operator with communitativity
+
+Here's the algorithm outline:
+
+1. In the first pass, we store the order we visited each node during BFS in order to determine back edges and sink nodes, similar to Tarjan's SCC algorithm. We then use it to determine sink nodes (those have no out edges or all out edges are back edges).
+2. Initialize the hash for each node, according to the number of outcoming edges, and if it's accept state.
+    ```python
+    node_hash: Dict[FiniteAutomataNode, int] = {
+        node: len(node.successors) + (10000 * (node in self.accept_states))
+        for node in edges.keys()
+    }
+    ```
+3. We put these sink nodes to the second pass queue, and start updating hash backward on the graph. We only update the hash of not visited next node, using current node's hash. This means we ignores all backward edges, but since we initialized node hash using the number of outcoming edges, they still contributes to the result.
+    ```python
+    second_pass_que: Deque[FiniteAutomataNode] = deque()
+    for node, edge in edges.items():
+        if node in self.accept_states and all(
+            visit_order[nxt_node] <= visit_order[node] for _, nxt_node in edge
+        ):
+            second_pass_que.append(node)
+    visited: Set[FiniteAutomataNode] = set()
+    while second_pass_que:
+        cur_node = second_pass_que.popleft()
+        if cur_node in visited:
+            continue
+        visited.add(cur_node)
+        x = node_hash[cur_node]
+        x = ((x >> 16) ^ x) * 0x45D9F3B
+        x = ((x >> 16) ^ x) * 0x45D9F3B
+        node_hash[cur_node] = x
+        for prv_cond, prv_node in rev_edges[cur_node]:
+            if prv_node not in visited:
+                node_hash[prv_node] ^= (
+                    hash(prv_cond) * node_hash[cur_node]
+                ) & 0xFFFFFFFFFFFFFFFF
+                second_pass_que.append(prv_node)
+
+    return node_hash[self.start_node]
+    ```
+
+It's designed to handle NFA/DFAs so apparently it would not work for all directed graphs. A good approximation is enough here, as shown by these two tests:
+
+```python
+def test_nfa_hash_0():
+    # test if a back edge causes difference in the hash result
+    s0 = FiniteAutomataNode()
+    e0 = FiniteAutomataNode()
+    s0.add_edge(CharTransition("a"), e0)
+    e0.add_edge(EpsilonTransition(), s0)
+    nfa_0 = FiniteAutomata(s0, {e0})
+
+    s1 = FiniteAutomataNode()
+    e1 = FiniteAutomataNode()
+    s1.add_edge(CharTransition("a"), e1)
+    nfa_1 = FiniteAutomata(s1, {e1})
+
+    assert hash(nfa_0) != hash(nfa_1)
+
+
+def test_nfa_hash_1():
+    # make sure that the order we add edges doesn't effect hash result
+    s0 = FiniteAutomataNode()
+    e0 = FiniteAutomataNode()
+    s0.add_edge(CharTransition("a"), e0)
+    s0.add_edge(CharTransition("b"), e0)
+    nfa_0 = FiniteAutomata(s0, {e0})
+
+    s1 = FiniteAutomataNode()
+    e1 = FiniteAutomataNode()
+    s1.add_edge(CharTransition("b"), e1)
+    s1.add_edge(CharTransition("a"), e1)
+    nfa_1 = FiniteAutomata(s1, {e1})
+
+    assert hash(nfa_0) == hash(nfa_1)
+```
+
 ## Finite Automata Set
 
 It's nice that we have finite automata that could match single regex expression. However for lexers we need to match dozens of different kind of tokens at the same time. A straightforward but slow algorithm would be, try to match the input with all automatas. Pick the one with longest match. This results in $\mathcal{O}(|S| \times |T|)$ complexity where $S$ is the set of finite automata and $T$ is the token sequence.
@@ -274,10 +355,24 @@ The logic is simple: as long as the input is valid, each char must either:
 - there's only one outgoing edge that matches this char
 - there's no outgoing edge matches this char, but current state is accept state.
 
-We greedily match as long as we can until we have no matching outgoing edge or we run out of the input stream. We reset the current state to be the start state and repeat until we run out of input.
+We greedily match as long as we can until we have no matching outgoing edge or we run out of the input stream. We reset the current state to be the start state and repeat until we run out of input. With that, we could finally implement the core scanner method:
 
-## Automatically testing FA algorithms
+```python
+def scan(self, s: str) -> Iterable[Tuple[int, str]]:
+    deque_s = deque(s)
+    while deque_s:
+        (id, word) = self.match_one(self.dfa_set_json, deque_s)
+        if word:
+            yield id, word
+        else:
+            deque_s.popleft()  # if no match, simply move forward
+        while deque_s and deque_s[0] in {" ", "\t", "\n"}:
+            deque_s.popleft()
+    yield -1, "$"
+```
 
-It's hard to verify if constructed finite automata has the expected structure. It's possible to use graph isomorphism algorithms to check if the generated structure matches the expectation, but it's possible to do roughly the same task using hash. Here's the rough procedure:
+Which is essentially a min-dfa-based regex engine!
 
-- 
+## Refactoring LR(1) Item Set Generation
+
+*WIP*
