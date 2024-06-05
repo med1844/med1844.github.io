@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  {{ section.title }}
+</h1>
+<h2>Posts</h2>
+<div class="posts">
+  {% if paginator %}
+    {% for page in paginator.pages %}
+      <article class="post">
+        <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+        <div class="date">{{ page.date }}</div>
+      </article>
+    {% endfor %}
+  {% else %}
+    {% for page in section.pages %}
+      <article class="post">
+        <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+      </article>
+    {% endfor %}
+  {% endif %}
+</div>
+{% if paginator %}
+  {%- if paginator.previous or paginator.next -%}
+    <div class="pagination">
+      {%- set pag_start = 1 -%}
+      {%- set pag_end = paginator.number_pagers -%}
+      {%- for i in range(start=pag_start, end=pag_end+1) -%}
+        {% if paginator.current_index == i %}
+          <div class="page">{{i}}</div>
+        {% else %}
+          <a class="page" href="{{ paginator.base_url | safe }}{{ i ~ '/' }}">{{i}}</a>
+        {% endif %}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+{% endif %}
+{% endblock content %}
