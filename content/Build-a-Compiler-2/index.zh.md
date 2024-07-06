@@ -1,6 +1,6 @@
 ---
 title: 从零写一个编译器（二）- SA, IR与实际应用
-date: 2020-01-31 23:26:14
+date: 2020-01-31
 tags: [编译原理, python]
 category: 造轮子
 hidden: true

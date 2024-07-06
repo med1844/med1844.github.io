@@ -1,6 +1,6 @@
 ---
 title: The Blockheads存档修改工具开发记录（一）
-date: 2020-03-02 23:45:56
+date: 2020-03-02
 tags: python
 category: 整活
 ---

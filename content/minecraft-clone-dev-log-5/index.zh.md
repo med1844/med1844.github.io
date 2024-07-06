@@ -1,6 +1,6 @@
 ---
 title: 小学期开发记录 - 后日谈
-date: 2019-08-19 22:44:20
+date: 2019-08-19
 tags: java
 mathjax: true
 category: 整活

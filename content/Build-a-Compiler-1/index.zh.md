@@ -1,6 +1,6 @@
 ---
 title: 从零写一个编译器（一）- Lexer与Parser
-date: 2019-12-15 18:18:38
+date: 2019-12-15
 tags: [编译原理, python]
 category: 造轮子
 mathjax: true

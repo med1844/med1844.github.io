@@ -1,6 +1,6 @@
 ---
 title: 小学期开发记录 - 第一周
-date: 2019-06-24 19:21:26
+date: 2019-06-24
 tags: java
 mathjax: true
 category: 整活
