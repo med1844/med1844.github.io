@@ -246,7 +246,7 @@ if __name__ == "__main__":
 
 </details>
 
-Then, given likelihood ($\mathbf{P}(Q_i\space|\space c)$) and prior ($\mathbf{P}(c)$), we can easily calulate the posterior ($\mathbf{P}(c\space|\space Q_1, Q_2, \dots)$) by multiplying them together. In python the code looks like this:
+Then, given likelihood ($\mathbf{P}(Q_i\space|\space c)$) and prior ($\mathbf{P}(c)$), we can easily calculate the posterior ($\mathbf{P}(c\space|\space Q_1, Q_2, \dots)$) by multiplying them together. In python the code looks like this:
 
 ```python
 def calculate_posterior(
@@ -473,7 +473,7 @@ However it's worthnoting that when max y value is updated, and bars are also upd
 
 ## Deliverables
 
-The final deliverable is a static website that allows users to answer questions and see the predicted job choices based on their personality. The website is hosted [here](/custom/ffxiv_job_pred/).
+The final deliverable is a static website that allows users to answer questions and see the predicted job choices based on their personality. The website is hosted [here](/ffxiv_job_pred/).
 
 The website is built using vanilla JavaScript, HTML, and CSS, with the prediction engine implemented in Rust and compiled to WebAssembly. The prediction engine uses Bayes' theorem to calculate the posterior distribution of job choices based on the user's responses to the questionnaire.
 
