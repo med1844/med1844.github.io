@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ get_url(path="style.css", trailing_slash=false) | safe }}">
   {% endblock css %}
   <script type="module">
-    import {codeToHtml} from 'https://esm.sh/shiki@1.0.0'
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
 
     document.querySelectorAll('pre').forEach(async (pre) => {
       const lang = pre.getAttribute('data-lang')
@@ -21,7 +21,10 @@
         const code = pre.textContent
         pre.innerHTML = await codeToHtml(code, {
           lang: lang,
-          theme: 'catppuccin-mocha'
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
         })
       }
     })
