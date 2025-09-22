@@ -1,5 +1,5 @@
 ---
-title: about
+title: About
 date: 2019-05-30
 ---
 
