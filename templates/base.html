@@ -18,7 +18,7 @@
     document.querySelectorAll('pre').forEach(async (pre) => {
       const lang = pre.getAttribute('data-lang')
       if (lang !== null) {
-        const code = pre.textContent
+        const code = pre.textContent.trimEnd()
         pre.innerHTML = await codeToHtml(code, {
           lang: lang,
           theme: 'everforest-dark',

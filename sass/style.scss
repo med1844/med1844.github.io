@@ -200,9 +200,8 @@ code {
   font-family: $mono;
   font-size: 14px;
   background-color: $darker_base;
-  padding: 0.2rem;
-  margin-y: -0.2rem;
-  border-radius: 0.2rem;
+  padding: 0 0.15rem;
+  border-radius: 0.15rem;
 }
 
 p:has(img) {
@@ -212,7 +211,6 @@ p:has(img) {
 }
 
 p code {
-  padding: 0 0.15rem;
   color: $yellow;
 }
 
