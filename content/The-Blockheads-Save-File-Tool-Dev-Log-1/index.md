@@ -33,7 +33,7 @@ After looking around on github there doesn't seems to be anything that could sat
 
 ## Reading the Save File
 
-After getting the save folder, there's only one folder inside of it, named `world_db`, in which there's only two files: `data.mdb`和`lock.mdb`.
+After getting the save folder, there's only one folder inside of it, named `world_db`, in which there's only two files: `data.mdb` and `lock.mdb`.
 
 Some online search reveals that this is likely `lmdb` files. Which is surprising given that before 1.7, all the save files are scattered across multiple sub-folders instead of just two files. This might be actually good because now the game gains the ACID properties of databases. This also eliminates item duplication by *copying inventory file, putting items in inventory in chests, pasting inventory file*.
 
