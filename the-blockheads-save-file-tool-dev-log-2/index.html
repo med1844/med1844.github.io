@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  The Blockheads Tools Dev Log - pt. 2
+</h1>
+<p class="date">2025-06-29</p>
+<h2 id="quick-recap">Quick Recap</h2>
+<p>In the <a href="/the-blockheads-save-file-tool-dev-log-1/">previous part of the dev log</a>, we:</p>
+<ul>
+<li>looked into the overall save file structure</li>
+<li>understood the meaning of some bytes of blocks</li>
+<li>found how to modify items and containers.</li>
+</ul>
+<p>It's been 5 years since the last part of the dev log. I was not able to work on this project since I can't run the game any more:</p>
+<ul>
+<li>Android game simulators are too new these days, while the blockheads needs Android version &lt;= 10.</li>
+<li>Even if there's simulators with old enough system, they usually doesn't support root access (e.g. accessing <code>/data/data</code>, where the  blockheads saves are stored).</li>
+</ul>
+<p>Though fortunately users of this project have shared me how to run the blockheads server on linux, and how bluestack 4 could still be used to run the blockheads.</p>
+<p>Miraculously, it turns out the blockheads server could run on WSL, <strong>and</strong> at the same time, communicate with bluestack 4 simulator.</p>
+<p>This means I can modify the world save file, and see the result much faster by simply re-joining the local server again, instead of closing the game, replace file, and restart it again.</p>
+<p>Of course there're some issues within this approach: most of the region are covered in dark on the client side.</p>
+<p>Thanks to info shared by them, I'm able to continue working on this, and we will start from exactly where I left.</p>
+<h2 id="gui">GUI</h2>
+<p>5 years ago, I decided that GUI is very important for future development:</p>
+<ul>
+<li>Being able to interactively inspect data would hugely boost the reverse engineering progress</li>
+<li>No more frustration of mapping raw coordinate numbers to their locations - you can see it!</li>
+</ul>
+<p>The question is, there's so many options out there, which one to choose? Well, it turns out another factor will help us narrow down selections.</p>
+<h3 id="better-typing">Better Typing</h3>
+<p>Whenever I have to maintain the codebase, mostly for fixing bugs, I found there's no typing and it's very hard to maintain.</p>
+<p>Everything is stored in a mega dictionary, to access <code>worldV2</code> you have to use <code>game_save._data[&quot;world_db&quot;][b&quot;main&quot;][b&quot;worldv2&quot;]</code>, and each of the <code>__getitem__</code> could go wrong.</p>
+<p>It's clearly the wrong way to do things - the game itself must stores these data in structs, and only exported everything as dictionary when being saved.</p>
+<p>To make things worse, there's basically no test at all.</p>
+<p>This leads to a total rewrite, with proper type system - Rust.</p>
+<p>Now knowing we will write everything in Rust, it's time to explore options that allows us to build UI that also supports 3D rendering.</p>
+<h3 id="picking-crate">Picking crate</h3>
+<p>It took me a good while to figure out what would be the best solution here. I tried:</p>
+<ul>
+<li>
+<p><code>egui</code> + <code>macroquad</code></p>
+<p>The <a href="https://github.com/optozorax/portal">portal explorer</a> is written in this combination.</p>
+<p>I'm not very happy with the fact that we implicitly have an static member that takes most care for you. Plus it seems to be <a href="https://www.reddit.com/r/rust_gamedev/comments/vvcd2v/comment/ifkei84/">unsound</a>.</p>
+<p>But it's indeed very easy to use! I was able to get this chunk render within 30 minutes of coding:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/test_mesh_build_trivial.png" alt="egui_and_macroquad" /></p>
+</li>
+<li>
+<p><code>eframe</code> + <code>egui-wgpu</code></p>
+<p>This seems to be the official way to add wgpu content into egui. There's too much limitations: the render pass is defined implicitly and you have no control over that unless you build your own pass and render it into texture, creating overhead. Plus callbacks creates a lot of unnecessary boilerplate code. The depth texture is created implicitly as well with two obscure parameter <code>depth_buffer: u8</code> and <code>stencil_buffer: u8</code>. Probably the worst crate UX I have ever had.</p>
+</li>
+<li>
+<p><code>egui</code> + <code>egui-wgpu</code></p>
+<p>It turns out that there's a <a href="https://github.com/kaphula/winit-egui-wgpu-template">good template</a> for this combination, which has much less implicitly defined things - you can just modify the code according to your need. Rendering egui is just another pass that you can take full control of. The raw input is exposed to you before passing into egui, thus you can take full control over how the application should work.</p>
+</li>
+</ul>
+<p>And thanks to the fact that everything other than <code>lmdb-sys</code> is written in Rust, if we rewrite that single dependency in pure Rust, we will be able to make the GUI a completely static single page application!</p>
+<p>Now with the crates chosen, we should move to generating 3d objects from world block information that gpu could understand and render on the screen, also known as mesh.</p>
+<h3 id="mesh-generation">Mesh Generation</h3>
+<p>I planned to do implement mesh generation, using a progressive approach:</p>
+<ol>
+<li>Spam a ton of cubes.</li>
+<li>Face culling: remove faces that is not exposed to air, thus will never be seen by the player.</li>
+<li>Optimized face culling: combine faces into single larger one, thus less vertices and indices for the GPU to draw.</li>
+</ol>
+<p>We have already spammed a ton of cubes in <code>egui</code> + <code>macroquad</code> test. Before working on face culling, I decided to work on texturing. It turns out that it's much deeper than I expected, thus we have to detour for a while.</p>
+<h3 id="texture-mapping">Texture Mapping</h3>
+<p>It's possible to manually find corresponding uv coords in <code>TileMap.png</code> for any given tile type (I call it block type). But it's tedious and not fun.</p>
+<p>Looking inside apk, I found glsl shaders. For example, here's <code>Block.fsh</code> (fragment shader):</p>
+<pre data-lang="glsl" class="language-glsl "><code class="language-glsl" data-lang="glsl">uniform sampler2D texture;
+uniform sampler2D light_texture;
+uniform sampler2D destruct_texture;
+uniform lowp vec4 daylight;
+
+varying lowp vec3 outTexCoord;
+varying lowp vec2 outLightTexCoord;
+varying highp vec3 outLightNormal;
+varying lowp vec4 outPaintColor;
+varying highp vec2 outTexIndex;
+
+void main()
+{
+    highp vec2 texCoord = outTexCoord.xy;
+    texCoord.x = ((((texCoord.x &#x2F; 255.0) * 0.984375) + 0.0078125) + outTexIndex.x) &#x2F; 32.0;
+    texCoord.y = ((((texCoord.y &#x2F; 255.0) * 0.984375) + 0.0078125) + outTexIndex.y) &#x2F; 32.0;
+    
+    highp vec4 tex = texture2D(texture, texCoord);
+    highp vec4 lightTex = texture2D(light_texture, outLightTexCoord);
+    highp vec4 destruct = texture2D(destruct_texture, texCoord);
+    
+    highp float outTexCoordZ = outTexCoord.z;
+</code></pre>
+<p>This is interesting since there's also a thing called <code>TileDestruct.png</code> right next to <code>TileMap.png</code>. This must have been loaded somewhere in the main app. There's a simple way to find where it's loaded.</p>
+<pre><code>&gt; rg &quot;Block.vsh&quot; --binary
+libApplication.so: binary file matches (found &quot;\0&quot; byte around offset 7)
+</code></pre>
+<p>This means the core logic is within <code>libApplication.so</code>. Since this is essentially a library we can extract symbols inside, here's some interesting ones:</p>
+<pre><code>&gt; nm -D libApplication.so
+004d6820 W _Z22texCoordsForImageIndexi
+00a13e6c T _Z25imageIndexForTileContentsP4TileP5World7intpair
+00a171f4 T _Z23drawBlockAtWorldPostioniiP9MacroTileP5World
+005f0450 W _Z24tileTexCoordsForItemType8ItemTypea
+00a17a70 T _Z26randomBonusItemTypeForTileP4Tile7intpairPiP5World
+</code></pre>
+<p><code>_Z24tileTexCoordsForItemType8ItemTypea</code> essentially hints this is a function for converting ItemType to tex coords. With some help from <a href="https://github.com/NationalSecurityAgency/ghidra">Ghidra</a>, a disassembler and decompiler developed by NSA, we get these two C function:</p>
+<pre data-lang="c" class="language-c "><code class="language-c" data-lang="c">&#x2F;* tileTexCoordsForItemType(ItemType, signed char) *&#x2F;
+
+void tileTexCoordsForItemType(float *param_1,undefined4 param_2,char param_3)
+
+{
+  undefined4 uVar1;
+  int iVar2;
+  int iVar3;
+  
+  uVar1 = imageTypeForItemType(param_2,(int)param_3);
+  iVar2 = __modsi3(uVar1);
+  iVar3 = __aeabi_idiv(uVar1,0x20);
+  *param_1 = (float)((double)(longlong)iVar2 * 0.03125 + 0.00048828125);
+  param_1[2] = 0.030273438;
+  param_1[1] = (float)((double)(longlong)iVar3 * 0.03125 + 0.00048828125);
+  param_1[3] = 0.030273438;
+  return;
+}
+
+&#x2F;* imageTypeForItemType(ItemType, signed char) *&#x2F;
+
+undefined4 imageTypeForItemType(int param_1,char param_2)
+
+{
+  if (param_1 &lt; 0xa8) {
+    if (param_1 == 0x3a) {
+      return 0x6d;
+    }
+  }
+  else if (param_1 &lt; 0x400) {
+    if (param_1 == 0xa8) {
+      if (param_2 != &#x27;\0&#x27;) {
+        return 0x131;
+      }
+      return 0x130;
+    }
+    if (param_1 == 0xae) {
+      return 0x76;
+    }
+  }
+  else {
+    switch(param_1) {
+    case 0x400:
+      return 0x21;
+    case 0x402:
+      return 0x22;
+    case 0x403:
+      return 0x42;
+    &#x2F;&#x2F; ...
+    case 0x413:
+      if (param_2 != &#x27;\0&#x27;) {
+        return 0x157;
+      }
+      return 0x156;
+    case 0x415:
+      return 0x55;
+    &#x2F;&#x2F; ...
+    case 0x451:
+      return 0x2ea;
+    }
+  }
+  return 0x20;
+}
+</code></pre>
+<p>Unfortunately though, there's no such a convenient function named something like <code>texCoordsForTileType</code>. After some clueless search, it turns out almost all references of <code>transparencyLevelForTile</code> comes from one function, and decompiling that function gives us an abomination of 6448 lines of code.</p>
+<p>It turns out that this function might be related to generating chunk png for the minimap.</p>
+<pre data-lang="c" class="language-c "><code class="language-c" data-lang="c">int UndefinedFunction_00a2d730
+    (undefined4 param_1,undefined4 param_2,int *param_3,World *param_4,int param_5,
+    int param_6,undefined4 param_7,undefined4 param_8)
+
+{
+  &#x2F;&#x2F; ...
+  switch(*pTStack_1c8) {
+  case (Tile)0x1:
+    iStack_540 = 0x20;
+    iStack_544 = 0x20;
+    TVar2 = pTStack_1c8[3];
+    if ((byte)TVar2 &lt; 0x6a) {
+      if ((byte)TVar2 &lt; 0x4d) {
+        switch(TVar2) {
+        case (Tile)0x3d:
+          iStack_540 = 1;
+          iStack_544 = 1;
+          break;
+        case (Tile)0x3e:
+          iStack_540 = 3;
+          iStack_544 = 3;
+          break;
+        case (Tile)0x3f:
+          iStack_540 = 2;
+          iStack_544 = 2;
+          break;
+        default:
+code_r0x00a31e60:
+          break;
+        case (Tile)0x41:
+          iStack_540 = 0x53;
+          iStack_544 = 0x53;
+        }
+      }
+      else {
+        if (TVar2 != (Tile)0x4d) goto code_r0x00a31e60;
+        iStack_540 = 0x54;
+        iStack_544 = 0x54;
+      }
+    }
+    else if (TVar2 == (Tile)0x6a) {
+      iStack_540 = 0x9d;
+      iStack_544 = 0x9d;
+    }
+    else {
+      if (TVar2 != (Tile)0x6b) goto code_r0x00a31e60;
+      iStack_540 = 0xdb;
+      iStack_544 = 0xdb;
+    }
+    uStack_560 = 2;
+    uStack_558 = uStack_560;
+    if (pTStack_1c8[5] == (Tile)0x0) {
+      uStack_560 = 0;
+      uStack_558 = uStack_560;
+    }
+    break;
+    &#x2F;&#x2F; ...
+  }
+  &#x2F;&#x2F;...
+}
+</code></pre>
+<p><code>case (Tile)0x1</code> means this tile is stone, and <code>TVar2 = pTStack_1c8[3];</code> means we are looking at block's subtype.</p>
+<p>Now take a look at values we are comparing against. As for comparison, here's a list of sub type ids we know so far:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">class SubType(Enum):
+    WORKBENCH = 46
+    PORTAL_GATE = 47
+    COPPER_ORE = 61
+    TIN_ORE = 62
+    IRON_ORE = 63
+    OIL = 64
+    COAL = 65
+    GOLD_NUGGETS = 77
+    PLATIUM_ORE = 106
+    TITANIUM_ORE = 107
+</code></pre>
+<p>We are comparing:</p>
+<ul>
+<li>no sub type, position <code>0x20</code> = 32</li>
+<li><code>0x3d</code> = 61 = <code>COPPER_ORE</code>, position 1</li>
+<li><code>0x3e</code> = 62 = <code>TIN_ORE</code>, position 3</li>
+<li><code>0x3f</code> = 63 = <code>IRON_ORE</code>, position 2</li>
+</ul>
+<p>Double checking <code>tileMap.png</code>, it seems it's actually mapping.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/TileMap_inspect_1.png" alt="TileMap_inspect_1" /></p>
+<p>Checking more comparison:</p>
+<ul>
+<li><code>0x41</code> = 65 = <code>COAL</code>, position <code>0x53</code> = 83 = <code>(2, 19)</code></li>
+<li><code>0x4d</code> = 77 = <code>GOLD_NUGGETS</code>, position <code>0x54</code> = 84 = <code>(2, 20)</code></li>
+<li><code>0x6a</code> = 106 = <code>PLATIUM_ORE</code>, position <code>0x9d</code> = 157 = <code>(4, 29)</code></li>
+<li><code>0x6b</code> = 107 = <code>TITANIUM_ORE</code>, position <code>0xdb</code> = 219 = <code>(6, 27)</code></li>
+</ul>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/TileMap_inspect_2.png" alt="TileMap_inspect_2" /></p>
+<p>While it's not clear the difference between <code>iStack_540</code> and <code>iStack_544</code>, I think it's safe to confirm that this function contains exactly what we are looking for, i.e. mapping tile type into tile map index.</p>
+<p>Now knowing how blocks and items are mapped into uv index, it's time to go back on mesh generation &amp; rendering.</p>
+<h3 id="mesh-generation-continued">Mesh Generation, continued</h3>
+<p>This is a voxel game, meaning everything is just blocks, just like minecraft, which also happens to be a voxel game. Therefore you can do a lot of optimizations with that property. 7 years ago when I was working on <a href="/zh/minecraft-clone-dev-log-2/">minecraft clone</a>, I only implemented the most trivial optimization algorithm, which is simply just removing faces that's deeply inside of chunks. But that doesn't help FPS much - the performance is still terrible.</p>
+<p>It turns out there's a thing called greedy meshing algorithm. There's a <a href="https://www.youtube.com/watch?v=4xs66m1Of4A">fantastic talk</a> about how to make it much, much faster by using bitwise operations to 32x the calculation speed of greedy meshing. But most importantly, the idea of sending GPUs the voxel type information and directly render on GPU is truly mindblowing to me.</p>
+<p>Then one comment suggests that with voxel type on GPU, <strong>ray-marching</strong> will be even faster, and you won't need any mesh at all. This eliminates the need of looping over all chunks in viewport each frame and add them into gpu operation queue, which is very slow.</p>
+<p>A normal sized world has 32 * 32 * 3 * 512 * 32 blocks. The <code>tileMap.png</code> has 1024 textures, thus each block texture needs <code>u16</code> to store, which is 2 bytes. In total, storing whole world on GPU would need 96MB VRAM, which is totally acceptable on modern hardwares.</p>
+<h3 id="ray-marching">Ray Marching</h3>
+<p>Ray marching is simply shooting rays from camera into the world, and calculate result color if it hit voxels. It's kind of similar to the buzz word ray-tracing you hear from all sorts of 3A games, but here we are not doing reflection or refraction - no bounce of light ray.</p>
+<p>I basically vibe-coded this by breaking down the task into smaller tasks of which the output could be manually inspected.</p>
+<ul>
+<li>
+<p>Display blocks</p>
+<p>To render a block on screen, that basically means the rays are calculated correctly and is able to hit things.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/ray_march_first_step.png" alt="first_step" /></p>
+<p>I used 4 dummy types as voxel types, for type 0, it's air; for type 1, 2, 3, they have color R, G, B.</p>
+<p>This is the result of 100 marching steps. It doesn't calculate the accurate hit point, thus the voxels doesn't look very cubic.</p>
+<p>I asked Gemini to vibe-code digital differential analysis into shader for me, and we get a much cleaner output:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/ray_march_dda.png" alt="dda" /></p>
+</li>
+<li>
+<p>Face normal</p>
+<p>Take grass block as an example. If you hit on top face, you get all grass. If you hit on side, only top pixels have grass and the rest are dirt. If you hit on bottom, it's dirt.</p>
+<p>Thus, which face do we hit is crucial information.</p>
+<p>Again after some vibe-coding and vibe-debugging we get this beautiful output:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/ray_marching_hit_face.png" alt="ray_marching_hit_face" /></p>
+</li>
+<li>
+<p>UV</p>
+<p>On top of hitting some voxel face, it's also important to know the exact location on that specific face in order to properly texture it.</p>
+<p>By asking AI to modify shader and use the uv coordinate within the face as color output, we can easily verify if it's correct:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/ray_marching_uv.png" alt="ray_marching_uv" /></p>
+</li>
+</ul>
+<p>Combining these information, the texture lookup simply becomes a function of three inputs:</p>
+<ol>
+<li>voxel type</li>
+<li>face id</li>
+<li>face uv coordinate</li>
+</ol>
+<p>The voxel type id could point us to <code>[uv_offset; 6]</code>, that is, the uv offset for each face. The texture is 32x32, thus <code>uv_offset</code> could be just a <code>u16</code>, which could be easily translated to upper-left corner pixel coordinate.</p>
+<p>In conclusion:</p>
+<ul>
+<li>
+<p>On Rust side, simply prepare a uv mapping buffer <code>&amp;[[u16; 6]]</code> with data coming from the decompiled function above, and send it to GPU.</p>
+<pre data-lang="rust" class="language-rust "><code class="language-rust" data-lang="rust">impl VoxelType {
+    &#x2F;&#x2F; [PX, NX, PY, NY, PZ, NZ]
+    pub(crate) const UV_AT_FACE: &amp;[[u32; 6]] = &amp;[
+        [0; 6],                         &#x2F;&#x2F; None
+        [32; 6],                        &#x2F;&#x2F; Stone
+        &#x2F;&#x2F; ...
+        [85; 6],                        &#x2F;&#x2F; GoldBlock
+        [160, 160, 161, 64, 160, 160],  &#x2F;&#x2F; GrassDirt
+        [162, 162, 163, 64, 162, 162],  &#x2F;&#x2F; SnowDirt
+        &#x2F;&#x2F; ...
+        [97; 6],                        &#x2F;&#x2F; Compost
+        [98, 98, 294, 97, 98, 98],      &#x2F;&#x2F; GrassCompost
+        [130, 130, 163, 97, 130, 130],  &#x2F;&#x2F; SnowCompost
+        &#x2F;&#x2F; ...
+        [291, 291, 161, 64, 291, 291],  &#x2F;&#x2F; GrassDirt + Clay
+        [289, 289, 161, 64, 289, 289],  &#x2F;&#x2F; GrassDirt + Flint
+        &#x2F;&#x2F; ...
+        [237; 6],                       &#x2F;&#x2F; PineTreeLeaf
+        [192, 192, 193, 193, 192, 192], &#x2F;&#x2F; PineTreeTrunk,
+        [236; 6],                       &#x2F;&#x2F; PineTreeTrunkWithLeaf
+        &#x2F;&#x2F; ...
+    ];
+}
+
+&#x2F;&#x2F; renderer.rs
+impl VoxelRenderer {
+    pub fn new(
+        &#x2F;&#x2F; ...
+    ) {
+        let uv_at_face_buf = device.create_buffer_init(&amp;wgpu::util::BufferInitDescriptor {
+            label: Some(&quot;Texture UV Atlas Buffer&quot;),
+            contents: bytemuck::cast_slice(VoxelType::UV_AT_FACE),
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+        });
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>On wgpu side, use voxel type and face id to get uv offset, then add the offset with face uv coordinate to get the final sample uv coordinate:</p>
+<pre data-lang="wgsl" class="language-wgsl "><code class="language-wgsl" data-lang="wgsl">fn sample_texture(voxel_type: u32, hit_face_id: u32, uv_on_face: vec2&lt;f32&gt;) -&gt; vec4&lt;f32&gt; {
+    let atlas_index_lookup = voxel_type * 6u + hit_face_id;
+    let tile_index = texture_uv_atlas_indices[atlas_index_lookup];
+
+    let tile_x = f32(tile_index % TILES_PER_ROW);
+    let tile_y = f32(tile_index &#x2F; TILES_PER_ROW);
+
+    let uv_min_tile = vec2&lt;f32&gt;(tile_x * TILE_SIZE_UV, tile_y * TILE_SIZE_UV);
+
+    let final_atlas_uv = uv_min_tile + uv_on_face * TILE_SIZE_UV;
+
+    return textureSample(texture_atlas, texture_sampler, final_atlas_uv);
+}
+</code></pre>
+</li>
+</ul>
+<p>The result is very beautiful.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/ray_marching_2.png" alt="ray_marching" /></p>
+<p>And, it's very fast.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/ray_marching_chunks_2.png" alt="ray_marching_2" /></p>
+<p>With some basic lighting, we have the shading looks like the game before 1.6.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/lighting.png" alt="lighting" /></p>
+<p>It would be amazing if we can have a save file that has all chunks generated to stress test the renderer as well as the lib. This would also be ideal for various kinds of statistics and could be used to test python bindings of the library.</p>
+<p>Only if such save file exists... right?</p>
+<p>Well it turns out, you can create them.</p>
+<h3 id="reverse-engineering-server-client-protocol">Reverse Engineering Server/Client Protocol</h3>
+<p>The same handy <code>nm -D</code> command shows that the server also contains a lot of symbols:</p>
+<pre><code>&gt; nm -D blockheads_server171 &gt; symbols.txt
+&gt; hx symbols.txt
+...
+0000000000965230 V .objc_sel_nameaddElectricityParticleWithPath:size:
+0000000000920f90 V .objc_sel_nameaddElevatorMotorAtPos:ofType:saveDict:placedByClient:
+...
+00000000004e1970 T enet_address_set_host
+00000000004da4c0 T enet_crc32
+...
+</code></pre>
+<p>Which means it's likely that we can inspect its runtime stacktrace. A simple way to do this is to simply use some profiler. Here, I'm using <a href="https://github.com/mstange/samply"><code>samply</code></a>. After running server for a while and controlling the blockhead to go right side for several chunks on client, it gives us this beautiful flamegraph:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/profiler.png" alt="profiler" /></p>
+<p>This shows us a lot of information, but most importantly, it seems that <code>-[WorldTileLoader loadPhysicalBlock:atXPos:yPos:createIfNotCreated:]</code> is likely to be the place where the generation happens due to the existence of perlin noise in downstream calls.</p>
+<p>Notice on the left side <code>-[BHServer match:didReceiveData:fromPlayer:]</code> also calls <code>createIfNotCreated</code>, though the downstream calls are simply just lookups.</p>
+<p>When searching functions with name <code>createIfNotCreated</code>, I found another interesting function that shows how the macro index is calculated from macro coordinates:</p>
+<pre data-lang="objc" class="language-objc "><code class="language-objc" data-lang="objc">&#x2F;* WARNING: Variable defined which should be unmapped: macroPos_local *&#x2F;
+&#x2F;* WARNING: Struct &quot;NPC&quot;: ignoring overlapping field &quot;damage&quot; *&#x2F;
+&#x2F;* DWARF original name: -[ClientTileLoader requestBlockFromServerAtPos:createIfNotCreated:]
+   DWARF original prototype: void
+   -[ClientTileLoader_requestBlockFromServerAtPos:createIfNotCreated:](ClientTileLoader * self, SEL
+   _cmd, intpair macroPos, BOOL createIfNotCreated) *&#x2F;
+
+void __thiscall
+-[ClientTileLoader_requestBlockFromServerAtPos:createIfNotCreated:]
+          (void *this,SEL _cmd,intpair macroPos,BOOL createIfNotCreated)
+
+{
+  &#x2F;&#x2F; some definitions omitted
+  ClientMacroBlockRequest request_1;
+  ClientMacroBlockRequest request;
+  int iStack_30;
+  int32_t local_28;
+  BOOL alreadyRequested;
+  uint32_t macroIndex;
+  BOOL createIfNotCreated_local;
+  SEL _cmd_local;
+  ClientTileLoader *this_local;
+  intpair macroPos_local;
+  
+  this_local._4_4_ = macroPos.y;
+  iVar6 = this_local._4_4_;
+  uVar9 = *(undefined8 *)((long)this + 8);
+  alreadyRequested = createIfNotCreated;
+  _macroIndex = _cmd;
+  _cmd_local = (SEL)this;
+  this_local = (ClientTileLoader *)macroPos;
+  pcVar7 = (code *)objc_msg_lookup(uVar9,0xce2aa0);
+  iVar5 = (*pcVar7)(uVar9,0xce2aa0);
+  iStack_30 = iVar6 * iVar5 + (int)this_local;
+  local_28 = iStack_30;
+  sVar8 = std::map&lt;&gt;::count((map&lt;&gt; *)(_cmd_local + 0x110),&amp;stack0xffffffffffffffd0);
+  i._3_1_ = sVar8 != 0;
+  if ((bool)i._3_1_) {
+    &#x2F;&#x2F; ...
+  }
+  poVar4 = _cmd_local;
+  pcVar7 = (code *)objc_msg_lookup(_cmd_local,0xce2ad0);
+  iVar6 = (*pcVar7)(poVar4,0xce2ad0);
+  if (iVar6 &lt; 0x11) {
+    &#x2F;&#x2F; ...
+  }
+  else {
+    bVar2 = false;
+    request.createIfNotCreated = &#x27;\0&#x27;;
+    request.padding[0] = &#x27;\0&#x27;;
+    request.padding[1] = &#x27;\0&#x27;;
+    request.padding[2] = &#x27;\0&#x27;;
+    for (; sVar12 = std::vector&lt;&gt;::size((vector&lt;&gt; *)(_cmd_local + 0xf8)),
+        (ulong)(long)(int)request._4_4_ &lt; sVar12; request._4_4_ = request._4_4_ + 1) {
+      pvVar13 = std::vector&lt;&gt;::at((vector&lt;&gt; *)(_cmd_local + 0xf8),(long)(int)request._4_4_);
+      if (pvVar13-&gt;macroIndex == local_28) {
+        bVar2 = true;
+        break;
+      }
+    }
+    if (!bVar2) {
+      request_1.macroIndex = local_28;
+      request_1.createIfNotCreated = alreadyRequested != &#x27;\0&#x27;;
+      std::vector&lt;&gt;::push_back((vector&lt;&gt; *)(_cmd_local + 0xf8),&amp;request_1);
+    }
+  }
+  return;
+}
+</code></pre>
+<p>Notice <code>request_1.macroIndex = local_28;</code>, which comes from <code>local_28 = iStack_30;</code>. Thus, <code>iStack_30 = iVar6 * iVar5 + (int)this_local;</code> seems to be <code>macroPos.y * worldWidthMacro + macroPos.x</code>.</p>
+<p>I was also doing some packet capturing at the same time and trying to figure out the private protocol between server and client. After running <code>tcpdump</code> on a gaming session where I commanded the blockhead to go continuously go right, we get some beautiful <code>.pcap</code> file that wireshark is able to read. It shows that all packets are UDP.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/wireshark.png" alt="wireshark" /></p>
+<p>But UDP is not the full story. Remember the <code>enet_xxx</code> functions in <code>nm -D</code> command output above? That turns out to be the application-level protocol that the server is using to talk to client.</p>
+<p>There is a <a href="https://github.com/cgutman/wireshark-enet-dissector">wireshark dissector for enet</a> but I can't get it to work. Thankfully, <code>enet.lua</code> in the dissector repository contains all information you need to parse enet packages. I asked Gemini to rewrite the lua into Rust, and viola. We are now able to understand the enet part of these packets:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/enet.png" alt="enet" /></p>
+<p>One particularly interesting packet shows:</p>
+<pre><code>--- Found UDP Packet #22: 62567 -&gt; 15151 ---
+Packet {
+    header: Header {
+        peer_id: 0,
+        compressed: false,
+        has_sent_time: true,
+        session_id: 0,
+        sent_time: Some(
+            46462,
+        ),
+    },
+    commands: [
+        SendReliable(
+            CommandHeader {
+                command: 6,
+                channel_id: 0,
+                reliable_sequence_number: 2,
+            },
+            SendReliableCommand {
+                data_length: 9,
+                data: 
+                03 4f 21 00 00 00 00 00 00                      | .O!......       ,
+            },
+        ),
+    ],
+}
+</code></pre>
+<p>Remember the relationship between macro index and macro coordinates we discovered above? It turns out <code>4f 21</code> is exactly the macro index of spawn portal chunk:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">&gt;&gt;&gt; def to_macro_index(x: int, y: int) -&gt; int:
+...   return y * 512 + x
+...
+&gt;&gt;&gt; 10740 &gt;&gt; 5, 520 &gt;&gt; 5
+(335, 16)
+&gt;&gt;&gt; hex(to_macro_index(335, 16))
+&#x27;0x214f&#x27;
+</code></pre>
+<p>While walking to the right side (positive x direction), we received some interesting data from server:</p>
+<pre><code>--- Found UDP Packet #428: 15151 -&gt; 62567 ---
+Packet {
+    header: Header {
+        peer_id: 0,
+        compressed: false,
+        has_sent_time: true,
+        session_id: 0,
+        sent_time: Some(
+            61922,
+        ),
+    },
+    commands: [
+        SendReliable(
+            CommandHeader {
+                command: 6,
+                channel_id: 0,
+                reliable_sequence_number: 256,
+            },
+            SendReliableCommand {
+                data_length: 208,
+                data: 
+                28 52 21 00 00 1f 8b 08 00 00 00 00 00 00 03 fb | (R!.............
+                ff 1f 07 f8 75 77 df 9c 8a 60 1d 5c d2 40 70 77 | ....uw...`.\.@pw
+                e7 e4 1c 17 3c f2 bf 2e af 6e 8a c0 23 ff ff d5 | ....&lt;....n..#...
+                81 a9 59 f8 e4 ff 5c 5c 5a 81 4f fe ff dd 0d 4d | ..Y...\\Z.O....M
+                78 e5 9f 6e ef c0 2b ff 7c 67 37 45 f2 84 cc 27 | x..n..+.|g7E...&#x27;
+                e0 3e 42 fe 23 10 3e 84 c2 17 7f fc e0 8f df 3f | .&gt;B.#.&gt;........?
+                af 2e ef 9c 53 13 65 2e 84 21 fe 1c 08 9e de bd | ....S.e..!......
+                78 60 f5 e4 8a 28 2b 49 86 e7 c8 00 24 be 13 08 | x`...(+I....$...
+                b6 6f 58 3a b5 29 27 d8 5c 92 81 61 27 32 00 89 | .oX:.)&#x27;.\..a&#x27;2..
+                77 03 41 47 53 45 56 84 8b 8e 10 03 03 43 37 32 | w.AGSEV......C72
+                00 89 c7 00 41 54 a8 b7 9d 9e 34 0b 50 9a 21 06 | ....AT....4.P.!.
+                19 80 c5 81 40 47 5d 4e 88 99 01 0c f4 90 01 92 | ....@G]N........
+                f8 28 20 0e 28 01 31 00 f0 6f 3c 89 04 04 00 00 | .( .(.1..o&lt;.....,
+            },
+        ),
+        SendReliable(
+            CommandHeader {
+                command: 6,
+                channel_id: 0,
+                reliable_sequence_number: 257,
+            },
+            SendReliableCommand {
+                data_length: 144,
+                data: 
+                28 52 1f 00 00 1f 8b 08 00 00 00 00 00 00 03 63 | (R.............c
+                60 18 05 a3 60 14 50 08 98 85 e4 d4 75 f4 60 40 | `...`.P.....u.`@
+                47 5d 4e 88 19 22 01 13 b2 f3 0e 8d 8a 81 81 a8 | G]N..&quot;..........
+                50 6f 3b 3d 69 16 90 3c 4c 28 ab a2 a9 a3 1b 06 | Po;=i..&lt;L(......
+                3a 9a 2a b2 22 5c 74 84 80 f2 30 a1 a9 4b 37 6c | :.*.&quot;\t...0..K7l
+                df 09 03 db 37 2c 9d da 94 13 6c 2e c9 c0 00 13 | ....7,....l.....
+                3a 70 f1 ee d3 e7 30 f0 f4 ee c5 03 ab 27 57 44 | :p....0......&#x27;WD
+                59 49 32 c0 84 5e fd f9 8f 0c fe bc ba bc 73 4e | YI2..^........sN
+                4d 94 b9 90 02 d0 0e 00 5d 64 04 37 04 04 00 00 | M.......]d.7....,
+            },
+        ),
+    ],
+}
+
+original data length: 208
+prefix: 
+28 52 21 00 00                                  | (R!..           
+decompressed: 
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff fa dd be 9c 78 53 2c | .............xS,
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff dd b9 93 6c 44 | ..............lD
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff fa d3 ab 82 58 | ...............X
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ea c0 95 6a | ...............j
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff fc d1 a5 78 | ...............x
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff dd b0 82 | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff e5 b7 88 | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff e7 b9 8b | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff e7 b9 8b | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff e5 b7 88 | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff dd b0 82 | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff fc d1 a5 78 | ...............x
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff ff ea c0 95 6a | ...............j
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff fa d3 ab 82 58 | ...............X
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff ff ff dd b9 93 6c 44 | ..............lD
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff ff ff fa dd be 9c 78 53 2c | .............xS,
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff | ................
+ff ff ff ff ff ff ff fc ea d3 b9 9c 7c 5a 37 12 | ............|Z7.
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fc | ................
+ea e7 e7 e7 e7 e5 dd d1 c0 ab 93 78 5a 3a 19 00 | ...........xZ:..
+e7 e7 e7 e7 e7 e7 e7 e7 e7 e7 e7 e7 e7 e5 dd d1 | ................
+c0 b9 b9 b9 b9 b7 b0 a5 95 82 6c 53 37 19 00 00 | ..........lS7...
+b9 b9 b9 b9 b9 b9 b9 b9 b9 b9 b9 b9 b9 b7 b0 a5 | ................
+95 8b 8b 8b 8b 88 82 78 6a 58 44 2c 12 00 00 00 | .......xjXD,....
+8b 8b 8b 8b 8b 8b 8b 8b 8b 8b 8b 8b 8b 88 82 78 | ...............x
+6a 5c 5c 5c 5c 5a 55 4b 3e 2e 1b 04 00 00 00 00 | j\\\\ZUK&gt;.......
+5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5a 55 4b | \\\\\\\\\\\\\ZUK
+3e 2e 2e 2e 2e 2c 27 1e 12 03 00 00 00 00 00 00 | &gt;....,&#x27;.........
+2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2e 2c 27 1e | .............,&#x27;.
+12 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ................
+22 00 00 00                                     | &quot;...            
+</code></pre>
+<p>It's very clear that this is the visibility layer, i.e. the black fog hiding unexplored area. Though profiling result above suggests that the server called this <code>lightBlock</code>. Notice that <code>52 21</code> in prefix <code>28 52 21 00 00</code> translates to:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">&gt;&gt;&gt; def from_macro_index(i: int) -&gt; tuple[int, int]:
+...   return (i % 512, i &#x2F;&#x2F; 512)
+...
+&gt;&gt;&gt; from_macro_index(0x2152)
+(338, 16)
+</code></pre>
+<p>Which is exactly 3 chunks away from <code>(335, 16)</code>, the spawn portal chunk, and matches the direction (positive x).</p>
+<p>Further investigation suggests <code>03</code> might be the type id for requesting chunks (macro tiles):</p>
+<pre><code>--- Found UDP Packet #36: 62567 -&gt; 15151 ---
+Packet {
+    header: Header {
+        peer_id: 0,
+        compressed: false,
+        has_sent_time: true,
+        session_id: 0,
+        sent_time: Some(
+            46770,
+        ),
+    },
+    commands: [
+        SendReliable(
+            CommandHeader {
+                command: 6,
+                channel_id: 0,
+                reliable_sequence_number: 4,
+            },
+            SendReliableCommand {
+                data_length: 9,
+                data: 
+                03 51 21 00 00 01 29 05 ad                      | .Q!...)..       ,
+            },
+        ),
+    ],
+}
+
+--- Found UDP Packet #38: 15151 -&gt; 62567 ---
+Packet {
+    header: Header {
+        peer_id: 0,
+        compressed: false,
+        has_sent_time: false,
+        session_id: 0,
+        sent_time: None,
+    },
+    commands: [
+        Acknowledge(
+            CommandHeader {
+                command: 1,
+                channel_id: 0,
+                reliable_sequence_number: 12,
+            },
+            AcknowledgeCommand {
+                received_reliable_sequence_number: 4,
+                received_sent_time: 46770,
+            },
+        ),
+    ],
+}
+
+--- Found UDP Packet #41: 15151 -&gt; 62567 ---
+Packet {
+    header: Header {
+        peer_id: 0,
+        compressed: false,
+        has_sent_time: true,
+        session_id: 0,
+        sent_time: Some(
+            46922,
+        ),
+    },
+    commands: [
+        SendFragment(
+            CommandHeader {
+                command: 8,
+                channel_id: 0,
+                reliable_sequence_number: 14,
+            },
+            SendFragmentCommand {
+                start_sequence_number: 14,
+                data_length: 1372,
+                fragment_count: 2,
+                fragment_number: 0,
+                total_length: 2476,
+                fragment_offset: 0,
+                data: 
+                04 51 21 00 00 3c 3f 78 6d 6c 20 76 65 72 73 69 | .Q!..&lt;?xml versi
+                6f 6e 3d 22 31 2e 30 22 20 65 6e 63 6f 64 69 6e | on=&quot;1.0&quot; encodin
+                67 3d 22 55 54 46 2d 38 22 3f 3e 0a 3c 21 44 4f | g=&quot;UTF-8&quot;?&gt;.&lt;!DO
+                43 54 59 50 45 20 70 6c 69 73 74 20 50 55 42 4c | CTYPE plist PUBL
+                49 43 20 22 2d 2f 2f 41 70 70 6c 65 2f 2f 44 54 | IC &quot;-&#x2F;&#x2F;Apple&#x2F;&#x2F;DT
+                44 20 50 4c 49 53 54 20 31 2e 30 2f 2f 45 4e 22 | D PLIST 1.0&#x2F;&#x2F;EN&quot;
+                20 22 68 74 74 70 3a 2f 2f 77 77 77 2e 61 70 70 |  &quot;http:&#x2F;&#x2F;www.app
+                6c 65 2e 63 6f 6d 2f 44 54 44 73 2f 50 72 6f 70 | le.com&#x2F;DTDs&#x2F;Prop
+                65 72 74 79 4c 69 73 74 2d 31 2e 30 2e 64 74 64 | ertyList-1.0.dtd
+                22 3e 0a 3c 70 6c 69 73 74 20 76 65 72 73 69 6f | &quot;&gt;.&lt;plist versio
+                6e 3d 22 31 2e 30 22 3e 0a 3c 64 69 63 74 3e 0a | n=&quot;1.0&quot;&gt;.&lt;dict&gt;.
+                20 20 20 20 3c 6b 65 79 3e 72 3c 2f 6b 65 79 3e |     &lt;key&gt;r&lt;&#x2F;key&gt;
+                0a 20 20 20 20 3c 64 61 74 61 3e 0a 48 34 73 49 | .    &lt;data&gt;.H4sI
+                41 41 41 41 41 41 41 41 41 2f 76 2f 48 78 50 38 | AAAAAAAAA&#x2F;v&#x2F;HxP8
+                65 58 56 35 35 35 79 61 4b 48 4d 68 42 67 59 47 | eXV555yaKHMhBgYG
+                4c 4e 4a 41 38 4f 76 75 76 6a 6b 56 77 54 6f 73 | LNJA8OvuvjkVwTos
+                75 4f 54 2f 2f 37 2b 37 63 33 4b 4f 69 7a 52 75 | uOT&#x2F;&#x2F;7+7c3KOizRu
+                ...
+                2b 76 73 32 6d 54 2f 34 4a 4b 75 2f             | +vs2mT&#x2F;4JKu&#x2F;    ,
+            },
+        ),
+    ],
+}
+</code></pre>
+<p>See how this goes?</p>
+<ul>
+<li>In packet 36, client sends <code>03 51 21</code> to server. Server replys packet 38 for ack.</li>
+<li>In packet 41, server sends <code>04 51 21</code> to client.</li>
+</ul>
+<p>To confirm this, it's time for some more Ghidra decompliation sessions. Knowing from profiler that right below the enet layer (<code>-[BHNetServerMatch pollNetEvents]</code>) we go into <code>-[BHServer_match:didReceiveData:fromPlayer:]</code>, we will start from this function.</p>
+<p>For now, we will focus on how the request is passed down in the server. For request started with <code>03</code>:</p>
+<pre data-lang="objc" class="language-objc "><code class="language-objc" data-lang="objc">void __thiscall
+-[BHServer_match:didReceiveData:fromPlayer:]
+          (void *this,SEL _cmd,BHMatch *match_,NSData *data,NSString *peer)
+
+{
+  ClientMacroBlockRequest request;
+  &#x2F;&#x2F; ... var declarations omitted
+
+  pcVar11 = (code *)objc_msg_lookup(this,0xbe8058); &#x2F;&#x2F; this.updatePlayers
+  (*pcVar11)(this,0xbe8058);
+  pcVar11 = (code *)objc_msg_lookup(data,0xbe7d28); &#x2F;&#x2F; data.bytes
+  puVar12 = (uint8_t *)(*pcVar11)(data,0xbe7d28);
+  request.padding[2] = *puVar12; &#x2F;&#x2F; request.padding[2] = data.bytes[0];
+
+  &#x2F;&#x2F; !!!!!! Request started with 03! !!!!!!
+  if (request.padding[2] == &#x27;\x03&#x27;) {
+
+    playerInfo = *(NSDictionary **)(puVar12 + 1);
+    uVar14 = *(undefined8 *)((long)this + 0x38); &#x2F;&#x2F; world (World*)
+    local_60 = playerInfo;
+    pcVar11 = (code *)objc_msg_lookup(uVar14,0xbe8168); &#x2F;&#x2F; requestForBlock:fromClient:
+    (*pcVar11)(uVar14,0xbe8168,playerInfo,peer); &#x2F;&#x2F; this.world.requestForBlock(ClientMacroBlockRequest request,NSString *clientID)
+    return;
+  }
+</code></pre>
+<p>Thus according to <code>this.world.requestForBlock</code> we go into <code>World::requestForBlock</code>:</p>
+<pre data-lang="objc" class="language-objc "><code class="language-objc" data-lang="objc">__thiscall
+-[World_requestForBlock:fromClient:]
+          (void *this,SEL _cmd,ClientMacroBlockRequest request,NSString *clientID)
+
+{
+  char cVar1;
+  code *pcVar2;
+  undefined8 uVar3;
+  NSString *clientID_local;
+  SEL _cmd_local;
+  World *this_local;
+  ClientMacroBlockRequest request_local;
+  
+  uVar3 = *(undefined8 *)((long)this + 0x4d0); &#x2F;&#x2F; this.serverClients (NSMutableDictionary*)
+  pcVar2 = (code *)objc_msg_lookup(uVar3,0xbe2ef0); &#x2F;&#x2F; NSMutableDictionary_objectForKey:
+  uVar3 = (*pcVar2)(uVar3,0xbe2ef0,clientID);
+  pcVar2 = (code *)objc_msg_lookup(uVar3,0xbe20b0); &#x2F;&#x2F; ServerClient::connected()
+  cVar1 = (*pcVar2)(uVar3,0xbe20b0);
+  if (cVar1 != &#x27;\0&#x27;) {
+    uVar3 = *(undefined8 *)((long)this + 0x4d0);
+    pcVar2 = (code *)objc_msg_lookup(uVar3,0xbe2ef0);
+    uVar3 = (*pcVar2)(uVar3,0xbe2ef0,clientID); &#x2F;&#x2F; uVar3 = ServerClient again
+    pcVar2 = (code *)objc_msg_lookup(uVar3,0xbe2160); &#x2F;&#x2F; ServerClient_requestForBlock:
+    (*pcVar2)(uVar3,0xbe2160,request); &#x2F;&#x2F; ServerClient::requestForBlock(request)
+  }
+  return;
+}
+</code></pre>
+<p>And we goes into <code>ServerClient::requestForBlock</code>:</p>
+<pre data-lang="objc" class="language-objc "><code class="language-objc" data-lang="objc">void __thiscall
+-[ServerClient_requestForBlock:](void *this,SEL _cmd,ClientMacroBlockRequest request)
+
+{
+  &#x2F;&#x2F; ... omitted definitions
+  ServerClient *this_local;
+  ClientMacroBlockRequest request_local;
+  
+  this_local._0_4_ = request.macroIndex;
+  local_24 = (key_type.conflict1)this_local;
+  local_20 = _cmd;
+  _cmd_local = (SEL)this;
+  this_local = (ServerClient *)request;
+  pmVar2 = std::map&lt;&gt;::operator[]((map&lt;&gt; *)((long)this + 0x20),&amp;local_24); &#x2F;&#x2F; this + 0x20 -&gt; this.requestedBlockRequestTypes[request.macroIndex] (map&lt;unsigned_int, unsigned_char&gt;)
+  if (*pmVar2 == &#x27;\0&#x27;) {
+    uVar1 = *(undefined8 *)(_cmd_local + 0x18); &#x2F;&#x2F; this.requestedBlockIndices (NSMutableIndexSet *)
+    lVar4 = (long)(int)(key_type.conflict1)this_local;
+    pcVar3 = (code *)objc_msg_lookup(uVar1,0xce5108); &#x2F;&#x2F; NSMutableIndexSet::addIndex
+    (*pcVar3)(uVar1,0xce5108,lVar4); &#x2F;&#x2F; this.requestedBlockIndices.addIndex(request.macroIndex)
+    mVar5 = &#x27;\x02&#x27;;
+    if (this_local._4_1_ != &#x27;\0&#x27;) {
+      mVar5 = &#x27;\x01&#x27;;
+    }
+    local_28 = (key_type.conflict1)this_local;
+    pmVar2 = std::map&lt;&gt;::operator[]((map&lt;&gt; *)(_cmd_local + 0x20),&amp;local_28);
+    *pmVar2 = mVar5;
+    uVar1 = *(undefined8 *)(_cmd_local + 0x50); &#x2F;&#x2F; this.wiredBlocks (NSMutableIndexSet *)
+    lVar4 = (long)(int)(key_type.conflict1)this_local;
+    pcVar3 = (code *)objc_msg_lookup(uVar1,0xce5108); &#x2F;&#x2F; NSMutableIndexSet::addIndex
+    (*pcVar3)(uVar1,0xce5108,lVar4); &#x2F;&#x2F; this.wiredBlocks.addIndex(request.macroIndex)
+  }
+  return;
+}
+</code></pre>
+<p>It seems that the actual generation is delayed by using a task queue - in this case, the queue is simply <code>this.requestedBlockIndices</code>, which is likely equivalent to <code>HashSet</code>.</p>
+<p>Once the generation is done and the chunk is ready, the server will send the bytes back to chunk.</p>
+<p>And surprise surprise, Ghidra is able to parse the internal structure of <code>ClientMacroBlockRequest</code>:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/client_macro_block_request.png" alt="client_macro_block_request" /></p>
+<p>Which means for the packet <code>UDP Packet #36: 62567 -&gt; 15151</code> we seen above, it's payload <code>03 51 21 00 00 01 29 05 ad</code> could be dissected into these components:</p>
+<ul>
+<li><code>03</code> means this is client macro block request.</li>
+<li><code>51 21 00 00</code> is <code>macroIndex</code>, i.e. 8529 or <code>(337, 16)</code>.</li>
+<li><code>01</code> means <code>createIfNotCreated</code>, i.e. <code>true</code>.</li>
+<li><code>29 05 ad</code> should be padding. While the decompiled server code suggested that they could mean something else, as for our use case, it's not that important.</li>
+</ul>
+<p>Now having confirmation from server code, it should now be possible to write a small client that spams requests to enforce server to generate all chunks. The source code is now part of the crates, named <a href="https://github.com/med1844/TheBlockheadsTools/tree/rust/crates/chunk_gen">chunk_gen</a>, and I have put some of the implementation details in the crate <code>README.md</code>.</p>
+<p>After running this for 13m42s continuously bombing the server with request, here we have it, the amazing view of all chunks visible at once and interactive @ 60fps:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/whole_world_2.png" alt="whole_world_2" /></p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/whole_world.png" alt="whole_world" /></p>
+<p>This is much better than my previous attempt 5 years ago, which ended up using the older version of the tool to clean up every other column of chunks so that with manual flying I can force the game to generate all the rest chunks:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/ore_height_test.png" alt="ore_height_test" /></p>
+<p>The image above took me 6 hours to finish travelling around the globe and is very boring. Now, I only have to start the program and do something else while waiting for the result. Love this.</p>
+<h3 id="editing">Editing</h3>
+<p>You can't call it save editor if you can't edit at all! Some quick code leads to this:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/edit_before.png" alt="edit_before" /></p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/edit.png" alt="edit" /></p>
+<p>It's primitive but for now it's good enough for reverse-engineering purpose.</p>
+<p>Now with the editing super power, it's time to get the id of all content blocks. I was able to get most content block types by simply looking at unknown blocks in the world and do some manual texture mapping using the decompiled function.</p>
+<p>For example, for normal trees, just look around the world, inspect it's block type id, check the texture coordinate and name it.</p>
+<p>However for dead trees blocks, which is also content blocks, it's not that straight forward. There's a good amount kinds of them and it's kind of tricky to tell them apart. Remember the block type -&gt; texture index function we decompiled before? Take a look at the section where it decides the texture of dead trees:</p>
+<pre data-lang="objc" class="language-objc "><code class="language-objc" data-lang="objc">  switch(pTStack_1c8[3]) {
+    case (Tile)0x1b:
+    case (Tile)0x1e:
+    case (Tile)0x20:
+    case (Tile)0x22:
+    case (Tile)0x23:
+    case (Tile)0x25:
+    case (Tile)0x27:
+    case (Tile)0x29:
+    case (Tile)0x5c:
+      iStack_54c = 0x1c1;
+      iStack_548 = 0x1c1;
+      uStack_55c = 2;
+      break;
+    case (Tile)0x1c:
+    case (Tile)0x1d:
+    case (Tile)0x1f:
+    case (Tile)0x21:
+    case (Tile)0x24:
+    case (Tile)0x26:
+    case (Tile)0x28:
+    case (Tile)0x2a:
+    case (Tile)0x5d:
+      uStack_55c = 2;
+      iStack_548 = 0xc2;
+      iStack_54c = 0xc3;
+      if (pTStack_1c8[5] == (Tile)0x0) {
+        uStack_55c = 0;
+      }
+      break;
+  }
+</code></pre>
+<p>All these tile types maps to two block textures, <code>0x1c1</code> maps to dead leaf, and <code>0xc2</code>, <code>0xc3</code> maps to dead tree trunk.</p>
+<p>It's very likely that for each tree type, there's a corresponding dead tree trunk and leaf type for it. Chopping trees near the portal gives me some good start:</p>
+<pre data-lang="rust" class="language-rust "><code class="language-rust" data-lang="rust">#[derive(Debug, PartialEq, Eq, Hash)]
+#[repr(u8)]
+pub enum BlockContent {
+    DeadPineTreeTrunk = 29,
+    DeadPineTreeLeaf = 34,
+    DeadOrangeTreeLeaf = 37,
+    DeadOrangeTreeTrunk = 38,
+    DeadCherryTreeLeaf = 39,
+    DeadCherryTreeTrunk = 40,
+}
+</code></pre>
+<p>But this is not enough as it's very apparent that the ids doesn't have clear pattern, for pine tree at least.</p>
+<p>To find out the exact id for each of them, I manually planted two trees hoping to get some data:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/manual_trees.png" alt="manual_trees" /></p>
+<p>But turns out the game doesn't like them:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/tree_not_dying.png" alt="tree_not_dying" /></p>
+<p>When you dig out the dirt under a tree, the whole tree should be converted into their dead counterparts. But our manually planted trees, well, doesn't need dirt at root to survive.</p>
+<p>It turns out trees are also stored as dynamic objects. And thus, it's time to finally visit them.</p>
+<h3 id="dynamic-objects">Dynamic Objects</h3>
+<p><code>world_db.dw</code> contains dynamic objects. It's a dictionary.</p>
+<ul>
+<li>
+<p><code>x_y/14</code> seems to be about items dropped on the ground:</p>
+<pre data-lang="xml" class="language-xml "><code class="language-xml" data-lang="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-&#x2F;&#x2F;Apple&#x2F;&#x2F;DTD PLIST 1.0&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.apple.com&#x2F;DTDs&#x2F;PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;dynamicObjects&lt;&#x2F;key&gt;
+    &lt;array&gt;
+        &lt;dict&gt;
+            &lt;key&gt;floatPos&lt;&#x2F;key&gt;
+            &lt;array&gt;
+                &lt;real&gt;10739.42&lt;&#x2F;real&gt;
+                &lt;real&gt;520.25&lt;&#x2F;real&gt;
+            &lt;&#x2F;array&gt;
+            &lt;key&gt;itemType&lt;&#x2F;key&gt;
+            &lt;integer&gt;16&lt;&#x2F;integer&gt;
+            &lt;key&gt;uniqueID&lt;&#x2F;key&gt;
+            &lt;integer&gt;3005&lt;&#x2F;integer&gt;
+        &lt;&#x2F;dict&gt;
+        &lt;dict&gt;
+            &lt;key&gt;floatPos&lt;&#x2F;key&gt;
+            &lt;array&gt;
+                &lt;real&gt;10737.35&lt;&#x2F;real&gt;
+                &lt;real&gt;520.25&lt;&#x2F;real&gt;
+            &lt;&#x2F;array&gt;
+            &lt;key&gt;itemType&lt;&#x2F;key&gt;
+            &lt;integer&gt;12&lt;&#x2F;integer&gt;
+            &lt;key&gt;subItems&lt;&#x2F;key&gt;
+            &lt;array&gt;
+                &lt;array&gt;
+                &lt;&#x2F;array&gt;
+                &lt;array&gt;
+                &lt;&#x2F;array&gt;
+                &lt;array&gt;
+                &lt;&#x2F;array&gt;
+                &lt;array&gt;
+                &lt;&#x2F;array&gt;
+            &lt;&#x2F;array&gt;
+            &lt;key&gt;uniqueID&lt;&#x2F;key&gt;
+            &lt;integer&gt;3012&lt;&#x2F;integer&gt;
+        &lt;&#x2F;dict&gt;
+</code></pre>
+<p>Here, we have a flint spade (id = 16), and a basket (id = 12) with the inner slots to be empty.</p>
+<p>It's interesting to see how it also exposes how things are named internally. I previously call these extra data, but it turns out the official name is sub items.</p>
+<p>The items seems to match what I actually dropped on the ground:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/items_dropped.png" alt="items_dropped" /></p>
+</li>
+<li>
+<p><code>x_y/57</code> is gem tree type.</p>
+<pre data-lang="xml" class="language-xml "><code class="language-xml" data-lang="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-&#x2F;&#x2F;Apple&#x2F;&#x2F;DTD PLIST 1.0&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.apple.com&#x2F;DTDs&#x2F;PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;dynamicObjects&lt;&#x2F;key&gt;
+    &lt;array&gt;
+        &lt;dict&gt;
+            &lt;key&gt;age&lt;&#x2F;key&gt;
+            &lt;real&gt;400.3962&lt;&#x2F;real&gt;
+            &lt;key&gt;dead&lt;&#x2F;key&gt;
+            &lt;false&#x2F;&gt;
+            &lt;key&gt;floatPos&lt;&#x2F;key&gt;
+            &lt;array&gt;
+                &lt;real&gt;2576.5&lt;&#x2F;real&gt;
+                &lt;real&gt;638&lt;&#x2F;real&gt;
+            &lt;&#x2F;array&gt;
+            &lt;key&gt;fruitYear&lt;&#x2F;key&gt;
+            &lt;integer&gt;5&lt;&#x2F;integer&gt;
+            &lt;key&gt;gemTreeType&lt;&#x2F;key&gt;
+            &lt;integer&gt;15&lt;&#x2F;integer&gt;
+            &lt;key&gt;height&lt;&#x2F;key&gt;
+            &lt;integer&gt;7&lt;&#x2F;integer&gt;
+            &lt;key&gt;pos_x&lt;&#x2F;key&gt;
+            &lt;integer&gt;2576&lt;&#x2F;integer&gt;
+            &lt;key&gt;pos_y&lt;&#x2F;key&gt;
+            &lt;integer&gt;638&lt;&#x2F;integer&gt;
+            &lt;key&gt;removeCheckCount&lt;&#x2F;key&gt;
+            &lt;real&gt;0&lt;&#x2F;real&gt;
+            &lt;key&gt;saveTime&lt;&#x2F;key&gt;
+            &lt;real&gt;5454.200029030442&lt;&#x2F;real&gt;
+            &lt;key&gt;timeDied&lt;&#x2F;key&gt;
+            &lt;real&gt;0&lt;&#x2F;real&gt;
+            &lt;key&gt;treeFruit&lt;&#x2F;key&gt;
+            &lt;array&gt;
+                &lt;dict&gt;
+                    &lt;key&gt;hasCreatedFreeBlockThisSeason&lt;&#x2F;key&gt;
+                    &lt;false&#x2F;&gt;
+                    &lt;key&gt;pos.x&lt;&#x2F;key&gt;
+                    &lt;integer&gt;2576&lt;&#x2F;integer&gt;
+                    &lt;key&gt;pos.y&lt;&#x2F;key&gt;
+                    &lt;integer&gt;644&lt;&#x2F;integer&gt;
+                &lt;&#x2F;dict&gt;
+                &lt;dict&gt;
+                    &lt;key&gt;hasCreatedFreeBlockThisSeason&lt;&#x2F;key&gt;
+                    &lt;false&#x2F;&gt;
+                    &lt;key&gt;pos.x&lt;&#x2F;key&gt;
+                    &lt;integer&gt;2577&lt;&#x2F;integer&gt;
+                    &lt;key&gt;pos.y&lt;&#x2F;key&gt;
+                    &lt;integer&gt;641&lt;&#x2F;integer&gt;
+                &lt;&#x2F;dict&gt;
+            &lt;&#x2F;array&gt;
+            &lt;key&gt;treeSeasonOffset&lt;&#x2F;key&gt;
+            &lt;integer&gt;15&lt;&#x2F;integer&gt;
+            &lt;key&gt;uniqueID&lt;&#x2F;key&gt;
+            &lt;integer&gt;124208&lt;&#x2F;integer&gt;
+        &lt;&#x2F;dict&gt;
+    &lt;&#x2F;array&gt;
+&lt;&#x2F;dict&gt;
+&lt;&#x2F;plist&gt;
+</code></pre>
+</li>
+</ul>
+<p>Did you notice that for gem tree, there's a thing called <code>gemTreeType</code> and it has value 15?</p>
+<p>Look it up in our trustworthy Ghidra and boom, there we have it.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/tree_type.png" alt="tree_type" /></p>
+<p>Well if these enum could survive after compilation, why not lookup other enums?</p>
+<p>And so, our quest of getting the complete list of content type id and dynamic world id ends much earlier than expected:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/content.png" alt="content" /></p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/dynamic_object_type.png" alt="dynamic_object_type" /></p>
+<p>To further ruin the fun, this handy function connects the dynamic object type id to their actual classes:</p>
+<pre data-lang="objc" class="language-objc "><code class="language-objc" data-lang="objc">Class classForDynamicObjectType(int type)
+
+{
+  undefined8 uVar1;
+  code *pcVar2;
+  Class poStack_10;
+  int type_local;
+  
+  switch(type) {
+  case 0:
+  case 0x41:
+  default:
+    poStack_10 = (Class)0x0;
+    break;
+  case 1:
+    uVar1 = objc_lookup_class(&quot;AppleTree&quot;);
+    pcVar2 = (code *)objc_msg_lookup(uVar1,.objc_selector_list);
+    poStack_10 = (Class)(*pcVar2)(uVar1,.objc_selector_list);
+    break;
+  case 2:
+    uVar1 = objc_lookup_class(&quot;MapleTree&quot;);
+    pcVar2 = (code *)objc_msg_lookup(uVar1,.objc_selector_list);
+    poStack_10 = (Class)(*pcVar2)(uVar1,.objc_selector_list);
+    break;
+  case 3:
+    uVar1 = objc_lookup_class(&quot;MangoTree&quot;);
+    pcVar2 = (code *)objc_msg_lookup(uVar1,.objc_selector_list);
+    poStack_10 = (Class)(*pcVar2)(uVar1,.objc_selector_list);
+    break;
+  &#x2F;&#x2F; ...
+  case 0x10:
+    uVar1 = objc_lookup_class(&quot;FireObject&quot;);
+    pcVar2 = (code *)objc_msg_lookup(uVar1,.objc_selector_list);
+    poStack_10 = (Class)(*pcVar2)(uVar1,.objc_selector_list);
+    break;
+  case 0x11:
+    uVar1 = objc_lookup_class(&quot;Torch&quot;);
+    pcVar2 = (code *)objc_msg_lookup(uVar1,.objc_selector_list);
+    poStack_10 = (Class)(*pcVar2)(uVar1,.objc_selector_list);
+    break;
+  &#x2F;&#x2F; ...
+}
+</code></pre>
+<p>Which maps to real classes:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/corn_plant.png" alt="corn_plant" /></p>
+<p>Notice <code>renderImageType</code> in the methods? Turns out there's an enum class for this too:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/image_type.png" alt="image_type" /></p>
+<p>This exactly maps to the tile texture. So, the mapping should actually be much more readable!</p>
+<p>Anyway, it seems better to treat such objects as blocks as well - same code.</p>
+<p>After some heavy refactoring, we get this beautiful rendered tomato plant:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/tomato.png" alt="tomato" /></p>
+<p>And after making depth buffer correctly rendered in voxel renderer, the plant could be properly occluded now. Though it doesn't work very well with transparent voxels:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/transparent_dyn_obj.png" alt="transparent_dyn_obj" /></p>
+<p>The reason is simply because we are drawing voxels first, so that we have the depth information and color info. Then, we draw these dynamic objects that are based on actual meshes.</p>
+<p>We would need to render solid pixels first, in this case voxels and dynamic objects, then use a separate pass to render transparent objects. This needs a lot more rework on the GPU side.</p>
+<hr />
+<p>It's been really fun journey, I especially love the achievement that we're now able to generate the whole map. I'm feeling burnt out so I will stop here for now. Here's a list of things to work on in the future:</p>
+<ul>
+<li>Python bindings - needed before we can replace the main branch with the new rust branch.</li>
+<li>Get all dynamic object's serde fields. This requires manually reading decompiled code and thus is very labor-intense, at the same time repetitive and not funny at all. Maybe some plugin for Ghidra or better decompiler would make this easier.</li>
+<li>Figure out how to support dynamic object editing. It would be great if we can generate egui code for it using macro, but since they are defined in lib, and egui should only exist in gui crate, which makes it hard to derive.</li>
+<li>Actually make the 3d widget resizable and works as a normal component. Currently it doesn't respect egui sizing (pixels are rendered under menu bar).</li>
+</ul>
+<p>All these are big changes that might result in full rewrite! I'm starting to feel that python bindings are more useful than a full GUI at this point. I might also switch to dioxus if I could get lmdb r/w done in pure Rust.</p>
+<p>To be honest, I'm overwhelmed by all possible ways to design a good user interface. However as we proceed further with decompilation, the conclusion that &quot;GUI is important for future development&quot; no longer holds true. The GUI development will get deprioritized. Instead, easy to use and fast python bindings will be more important.</p>
+<p>See you in the next post!</p>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

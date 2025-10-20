@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<h1 class="title">
+  Med&#x27;s blog
+</h1>
+<h2>Posts</h2>
+<div class="posts">
+  
+    
+      <article class="post">
+        <a href="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-2/">The Blockheads Tools Dev Log - pt. 2</a>
+        <div class="date">2025-06-29</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/c-memory-from-rustacean-viewpoint/">C++ Memory From Rustacean Viewpoint</a>
+        <div class="date">2024-07-14</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/moving-to-zola/">Moving to zola</a>
+        <div class="date">2024-06-03</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/predicting-ffxiv-job-choices-based-on-personality/">Predicting FFXIV Job Choices Based on Personality</a>
+        <div class="date">2024-04-30</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/lr-1-based-compiler-frontend-framework/">Refactoring Compiler Frontend Framework</a>
+        <div class="date">2024-03-18</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/">The Blockheads Tools Dev Log - pt. 1</a>
+        <div class="date">2020-03-02</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/about/">About</a>
+        <div class="date">2019-05-30</div>
+      </article>
+    
+  
+</div>
+
+
+    </div>
+  </section>
+</body>
+
+</html>

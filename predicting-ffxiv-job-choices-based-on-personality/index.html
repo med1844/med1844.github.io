@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  Predicting FFXIV Job Choices Based on Personality
+</h1>
+<p class="date">2024-04-30</p>
+<h2 id="tl-dr">TL;DR</h2>
+<p>Click <a href="/ffxiv_job_pred">here</a> to try out the bayes'-theorem-based FFXIV job recommender based on your personality!</p>
+<h2 id="introduction">Introduction</h2>
+<p>Final Fantasy XIV (FFXIV) is a popular MMORPG with a diverse set of jobs (classes) that players can choose from. Each job has its own unique playstyle, abilities, and role in the game. With so many options available, it can be overwhelming for new players to decide which job to play.</p>
+<p>A previous <a href="https://www.wjx.cn/wjx/activitystat/verifyreportpassword.aspx?viewtype=1&amp;activity=170647260&amp;type=1">questionnaire</a> (password: ff14) was conducted to collect data on players' personality and job choices in FFXIV. The corresponding <a href="https://www.bilibili.com/video/av982552290">result analysis video</a> did a preliminary analysis on the weighted sum of choice distribution for each job.</p>
+<p>In this post, we will explore the relationship between questionnaire answers and job choices, and build a predictive model to recommend jobs based on a player's personality.</p>
+<h2 id="data-preprocessing">Data Preprocessing</h2>
+<p>We obtained the raw response data from the <a href="https://pan.baidu.com/s/1xgEtntmWhia5fjVUc-eIFA">link</a> (password: ff14) provided in video comment section. There were 10525 responses in total.</p>
+<p>Upon inspection we found several issues with the data:</p>
+<ul>
+<li>There are some questions in the questionnaire that allows optional answer, which would be turned to <code>-2</code> in the raw data. We removed all responses that contains such choice.</li>
+<li>The first question, which asks for the player's job choice, contains an option for &quot;I have no preferred job&quot;. We removed these responses as well.</li>
+</ul>
+<p>This could be done with the following Python code:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def read_data(filename: str) -&gt; Tuple[np.ndarray, np.ndarray]:
+    res = pd.read_excel(filename, sheet_name=&quot;Sheet1&quot;, skiprows=1)
+
+    # Clean up any row that contains value &lt; 0
+    res = res[(res &gt;= 0).all(axis=1)]
+
+    # Remove rows with first column = 22
+    res = res[res.iloc[:, 0] != 22]
+
+    # Splitting the first column and the rest into two numpy arrays
+    y = res.iloc[:, 0].to_numpy() - 1
+    X = res.iloc[:, 1:].to_numpy() - 1
+    y[y &gt; 21] -= 1  # remove job id 21 and thus all job id &gt;= 22 should -= 1
+    return y, X
+</code></pre>
+<p>In code above, 22 is the job id for &quot;I have no preferred job&quot;.</p>
+<h2 id="data-visualization">Data Visualization</h2>
+<p>We used UMAP to reduce 22-dimension to 3-dimension. For even further simplification, we reduced job categories from 22 to 7 major ones.</p>
+<h2 id="attempted-approaches">Attempted Approaches</h2>
+<p>We tried out several approaches, and got the following table:</p>
+<table><thead><tr><th>Model</th><th>Accuracy</th><th>Balanced Acc</th><th>F1</th></tr></thead><tbody>
+<tr><td>Random</td><td>6.42%</td><td>4.55%</td><td>6.42%</td></tr>
+<tr><td>Most frequent</td><td>10.76%</td><td>4.55%</td><td>2.09%</td></tr>
+<tr><td>Naive Bayesian</td><td>10.66%</td><td><strong>7.21%</strong></td><td><strong>8.95%</strong></td></tr>
+<tr><td>Lace</td><td>10.09%</td><td>4.81%</td><td>4.09%</td></tr>
+<tr><td>Neural</td><td><strong>10.85%</strong></td><td>5.30%</td><td>5.83%</td></tr>
+<tr><td>Random Forest</td><td>10.38%</td><td>6.55%</td><td>8.41%</td></tr>
+</tbody></table>
+<p>We used StratifiedKFold with k = 5 to train and evaluate the performance.</p>
+<p>When trained on full dataset, and asked to evaluate on the full dataset, bayesian shows a great improvement:</p>
+<table><thead><tr><th>Model</th><th>Accuracy</th><th>Balanced Acc</th><th>F1</th></tr></thead><tbody>
+<tr><td>Random</td><td>6.42%</td><td>4.55%</td><td>6.42%</td></tr>
+<tr><td>Most frequent</td><td>10.76%</td><td>4.55%</td><td>2.09%</td></tr>
+<tr><td>Naive Bayesian</td><td><strong>14.16%</strong></td><td><strong>11.57%</strong></td><td><strong>12.11%</strong></td></tr>
+</tbody></table>
+<p>We only tested bayesian and baseline methods against full dataset, as neural method and random forest would easily remember everything in the dataset and yield absurdly high accuracy.</p>
+<p>We would only discuss naive bayesian and leave other approaches in the appendix.</p>
+<h2 id="bayes-theorem">Bayes' Theorem</h2>
+<p>Bayes' theorem is a fundamental theorem in probability theory that describes the probability of an event based on prior knowledge of conditions that might be related to the event.</p>
+<p>We chose to use Bayes' theorem to predict job choices, as we want to model the distribution of job preference, rather than predicting one specific job. Most machine learning models are not designed for this task, instead they were more likely to be designed to predict a single output (or classification).</p>
+<p>Specifically, we used the following formula to calculate the probability of a job given a player's responses:</p>
+<p>$$
+\mathbf{P}(c\space|\space Q_1, Q_2, \dots) = \frac{\mathbf{P}(Q_1, Q_2, \dots \space|\space c) \mathbf{P}(c)}{\mathbf{P}(Q_1, Q_2, \dots) }
+$$</p>
+<p>Where $c$ is the job choice, $Q_1, Q_2, \dots$ are the question responses for question $1$, $2$, etc.</p>
+<p>For simplicity, we approximate $\mathbf{P}(c\space|\space Q_1, Q_2, \dots)$ by assuming that questions are independent:</p>
+<p>$$
+\mathbf{P}(c\space|\space Q_1, Q_2, \dots) \approx \mathbf{P}(c)\prod_{i=1}^{n}\mathbf{P}(Q_i\space|\space c)
+$$</p>
+<p>where $n$ is the number of questions in the questionnaire.</p>
+<h3 id="covariance-matrix">Covariance Matrix</h3>
+<p>Even we decided to assume independency, it's still worth taking a look at the covariance matrix of the data to have an idea how off we are.</p>
+<details>
+<summary>Code</summary>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">import numpy as np
+import matplotlib.pyplot as plt
+from data import read_data
+
+first_column, rest_columns = read_data(&quot;data.xlsx&quot;)
+job_ids = np.unique(first_column)  # Get unique job IDs from first_column
+job_names = [
+    &quot;骑士&quot;,
+    &quot;暗黑骑士&quot;,
+    &quot;战士&quot;,
+    &quot;白魔法师&quot;,
+    &quot;占星术士&quot;,
+    &quot;学者&quot;,
+    &quot;贤者&quot;,
+    &quot;钐镰师&quot;,
+    &quot;龙骑士&quot;,
+    &quot;武僧&quot;,
+    &quot;武士&quot;,
+    &quot;忍者&quot;,
+    &quot;机工士&quot;,
+    &quot;吟游诗人&quot;,
+    &quot;舞者&quot;,
+    &quot;黑魔法师&quot;,
+    &quot;召唤师&quot;,
+    &quot;赤魔法师&quot;,
+    &quot;能工巧匠&quot;,
+    &quot;大地使者&quot;,
+    &quot;青魔法师&quot;,
+    &quot;绝枪战士&quot;,
+]
+
+subset_corr_mats = []  # List to store subset arrays for each job ID
+subset_len = []
+
+for job_id in job_ids:
+    subset_array = rest_columns[
+        first_column == job_id
+    ]  # Generate subset array for current job ID
+    # calculate the correlation matrix for the subset array
+    corr_matrix = np.corrcoef(subset_array, rowvar=False)
+    subset_corr_mats.append(corr_matrix)
+    subset_len.append(subset_array.shape[0])
+
+# there should be 23 matrices, put them in 5x5 grid
+fig, axes = plt.subplots(5, 5, figsize=(20, 20))
+plt.rcParams[&#x27;font.sans-serif&#x27;] = [&#x27;Microsoft YaHei&#x27;]
+plt.rcParams[&#x27;axes.unicode_minus&#x27;] = False
+
+# turn off y-axis ticks for all subplots, x-axis to have offset of 2, i.e. 0-th column shown as 2.
+for ax in axes.flat:
+    ax.set_yticks([])
+    ax.set_xticks(np.arange(0, 18, 4).tolist() + [18, 19, 21])
+    ax.set_xticklabels(np.arange(2, 20, 4).tolist() + [20, 22, 24])
+
+for i, ax in enumerate(axes.flat):
+    if i &lt; len(subset_corr_mats):
+        ax.imshow(subset_corr_mats[i], cmap=&quot;RdBu&quot;, vmin=-1, vmax=1)
+        ax.set_title(job_names[i] + &quot; (n=%d)&quot; % subset_len[i])
+    else:
+        ax.axis(&quot;off&quot;)
+avg_corr = np.mean(subset_corr_mats, axis=0)
+# add colorbar
+avg_ax = ax.imshow(avg_corr, cmap=&quot;RdBu&quot;, vmin=-1, vmax=1)
+ax.set_title(&quot;Average (n=%d)&quot; % sum(subset_len))
+fig.colorbar(avg_ax, ax=axes, shrink=0.6)
+plt.savefig(&quot;corr.svg&quot;)
+</code></pre>
+</details>
+<p><img src="https://med1844.github.io/predicting-ffxiv-job-choices-based-on-personality/corr.svg" alt="Covariance Matrix" /></p>
+<p>Some questions shows relatively strong correlation. For example, for question 10 and 11,</p>
+<blockquote>
+<p>第10题：先不算有没有表现出来，你的独占欲强烈吗？（对待朋友、恋人、物品、幻化捏脸等等）</p>
+<p>第11题：那么你会表现出来的独占欲如何呢（哪怕是装出来的）？</p>
+</blockquote>
+<p>Which translates to:</p>
+<blockquote>
+<p>Question 10: Not counting whether it shows or not, do you have a strong desire for exclusivity? (With friends, lovers, items, glamours, etc.)</p>
+<p>Question 11: So how exclusive would you show it (even if it's faked)?</p>
+</blockquote>
+<p>shows strong correlation (0.40997773). While this is expected as the two questions are related, it's still worth noting that the assumption of independence is not entirely correct, and thus the prediction might be off for that reason.</p>
+<h2 id="prediction-engine">Prediction Engine</h2>
+<p>I tried to play around with WASM when building the front-end for this project. The goal is to build a static website, such that the prediction engine can be run entirely within the browser. The prediction engine is built using Rust and compiled to WebAssembly using <code>wasm-pack</code>.</p>
+<p>There are several reasons for choosing Rust and compiling to WASM:</p>
+<ul>
+<li>Rust has many packages. I wanted to explore more probablistic models in the future to improve the prediction accuracy, and Rust is likely to be helpful in such case.</li>
+<li>It has good performance. Even though for current approach, where we simply compute posterior by performing element-wise multiplication, the performance gain is not that significant, due to the first reason we might still want to use something faster than vanilla js.</li>
+</ul>
+<p>We first calculate likelihood and prior using <code>numpy</code>, and store them to binary files.</p>
+<details>
+    <summary>Code</summary>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">import numpy as np
+from data import read_data
+from typing import List
+
+
+y, X = read_data(&quot;data.xlsx&quot;)
+prior = np.bincount(y) &#x2F; len(y)
+
+
+def estimate_likelihood(
+    X: np.ndarray, y: np.ndarray, question_indices: List[int]
+) -&gt; np.ndarray:
+    num_jobs = np.max(y) + 1
+
+    likelihood = np.zeros((len(question_indices), num_jobs, X.max() + 1))
+
+    for idx, question_index in enumerate(question_indices):
+        for job in range(num_jobs):
+            for response in range(X[:, question_index].max() + 1):
+                job_filter = y == job
+                response_count = np.sum(X[job_filter, question_index] == response)
+                total_job_count = np.sum(job_filter)
+                if total_job_count &gt; 0:
+                    likelihood[idx, job, response] = response_count &#x2F; total_job_count
+                else:
+                    likelihood[idx, job, response] = 0
+
+    return likelihood
+
+
+if __name__ == &quot;__main__&quot;:
+    likelihood = estimate_likelihood(X, y, list(range(22)))
+    prior.tofile(&quot;prior.bin&quot;)
+    likelihood.tofile(&quot;likelihood.bin&quot;)
+</code></pre>
+</details>
+<p>Then, given likelihood ($\mathbf{P}(Q_i\space|\space c)$) and prior ($\mathbf{P}(c)$), we can easily calculate the posterior ($\mathbf{P}(c\space|\space Q_1, Q_2, \dots)$) by multiplying them together. In python the code looks like this:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def calculate_posterior(
+    prior: np.ndarray, likelihood: np.ndarray, responses: List[int]
+) -&gt; np.ndarray:
+    posterior = np.copy(prior)
+
+    for question_index, response in enumerate(responses):
+        posterior *= likelihood[question_index, :, response]
+
+    posterior &#x2F;= np.sum(posterior_distribution)
+
+    return posterior
+</code></pre>
+<p>This could be turned into the following rust code:</p>
+<pre data-lang="rust" class="language-rust "><code class="language-rust" data-lang="rust">use ndarray::{s, ArrayView3};
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+pub fn calc_posterior(
+    prior: &amp;[f64],
+    raw_likelihood: &amp;[f64],
+    answers: Vec&lt;u8&gt;,
+    indexes: Vec&lt;u8&gt;,
+) -&gt; Box&lt;[f64]&gt; {
+    let mut posterior = prior.iter().map(|v| v.to_owned()).collect::&lt;Vec&lt;_&gt;&gt;();
+    let likelihood = ArrayView3::from_shape((22, 22, 7), raw_likelihood).unwrap();
+    for (q_index, response) in indexes.iter().zip(answers.iter()) {
+        for (i, v) in likelihood
+            .slice(s![*q_index as usize, .., *response as usize])
+            .iter()
+            .enumerate()
+        {
+            posterior[i] *= v;
+        }
+    }
+    let sum = posterior.iter().sum::&lt;f64&gt;();
+    for v in posterior.iter_mut() {
+        *v &#x2F;= sum;
+    }
+    posterior.into_boxed_slice()
+}
+</code></pre>
+<p>In rust version, we added <code>answers</code> and <code>indexes</code>, due to the fact that the questionnaire questions could be answered in any order, and thus we need to specify what questions have been answered, and what the answers are.</p>
+<p>After compiling the rust code to wasm using command <code>wasm-pack build --target web</code>, we can use it in the front-end to calculate the posterior distribution given the responses.</p>
+<h2 id="front-end">Front-end</h2>
+<p>I'm not familiar with front-end, thus I choose to stay away from frameworks like <code>React</code> and instead just go with vanilla js + tailwind css. However, for visualization, I used <code>plotly.js</code> to generate the bar chart and the transition animation.</p>
+<h3 id="question-generation">Question Generation</h3>
+<p>We can easily parse question statements and their choices from the original <a href="https://www.wjx.cn/report/170647260.aspx?quesId=-1">questionnaire html</a> using <code>beautifulsoup4</code>, then convert these questions into json format.</p>
+<details>
+    <summary>Code</summary>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">from bs4 import BeautifulSoup
+from dataclasses import dataclass
+from typing import List
+
+
+@dataclass
+class Question:
+    statement: str
+    choices: List[str]
+
+
+def extract_questions(html_content: str) -&gt; List[Question]:
+    soup = BeautifulSoup(html_content, &quot;html.parser&quot;)
+    questions = []
+
+    question_blocks = soup.find_all(class_=&quot;title-item&quot;)
+
+    for block in question_blocks:
+        statement = block.find(class_=&quot;title&quot;).get_text(strip=True)
+        choices = [
+            td.get_text(strip=True) for td in block.find_all(&quot;td&quot;, {&quot;val&quot;: True})
+        ]
+        questions.append(Question(statement, choices))
+
+    return questions
+
+
+with open(&quot;test.html&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+    html_content = f.read()
+questions = extract_questions(html_content)
+print(questions)
+
+res = []
+for question in questions:
+    res.append(
+        {
+            &quot;statement&quot;: question.statement,
+            &quot;choices&quot;: question.choices,
+        }
+    )
+with open(&quot;questions.json&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
+    json.dump(res, f, ensure_ascii=False)
+</code></pre>
+</details>
+<p>We could then load the json file in the front-end and generate the questions dynamically:</p>
+<pre data-lang="html" class="language-html "><code class="language-html" data-lang="html">&lt;script&gt;
+    async function fetchQuestions() {
+        try {
+            const response = await fetch(&#x27;questions.json&#x27;);
+            const questions = await response.json();
+
+            generateQuestions(questions);
+        } catch (error) {
+            console.error(&#x27;Failed to load questions:&#x27;, error);
+        }
+    }
+
+    function generateQuestions(questions) {
+        const container = document.getElementById(&#x27;questionContainer&#x27;);
+        questions.forEach((question, q_index) =&gt; {
+            &#x2F;&#x2F; ...
+        });
+    }
+
+    fetchQuestions();
+&lt;&#x2F;script&gt;
+</code></pre>
+<h3 id="connecting-radio-changes-to-plotly-updates">Connecting radio changes to plotly updates</h3>
+<p>We could use a callback function that updates plotly data whenever a radio button is changed:</p>
+<pre data-lang="javascript" class="language-javascript "><code class="language-javascript" data-lang="javascript">var map = new Map();
+window.updateSelection = function (value, index) {
+    map.set(index, value);
+    let indices = Uint8Array.from(map.keys());
+    let choices = Uint8Array.from(map.values());
+    genPlotlyData(choices, indices);
+}
+</code></pre>
+<p>And when we generate the radio buttons, we could set the callback function to each of them:</p>
+<pre data-lang="javascript" class="language-javascript "><code class="language-javascript" data-lang="javascript">    function generateQuestions(questions) {
+        const container = document.getElementById(&#x27;questionContainer&#x27;);
+        questions.forEach((question, q_index) =&gt; {
+            question.choices.forEach((choice, i) =&gt; {
+                const radio = document.createElement(&#x27;input&#x27;);
+                radio.onchange = () =&gt; updateSelection(i, q_index);
+                &#x2F;&#x2F; ...
+            });
+            &#x2F;&#x2F; ...
+        });
+    }
+</code></pre>
+<h3 id="implementing-the-plotly-update-function">Implementing the plotly update function</h3>
+<p>Before we can call WASM function that computes posterior distribution, we need to load the wasm module, the likelihood and prior data.</p>
+<pre data-lang="javascript" class="language-javascript "><code class="language-javascript" data-lang="javascript">    import init, { calc_posterior } from &quot;.&#x2F;pkg&#x2F;client.js&quot;;
+    await init();
+    async function loadF64Array(name) {
+        let response = await fetch(name);
+        let buffer = await response.arrayBuffer();
+        return new Float64Array(buffer);
+    }
+    const likelihood = await loadF64Array(&#x27;likelihood.bin&#x27;);
+    const prior = await loadF64Array(&#x27;prior.bin&#x27;);
+</code></pre>
+<p>Then we can calculate posteriors based on the selected radio buttons:</p>
+<pre data-lang="javascript" class="language-javascript "><code class="language-javascript" data-lang="javascript">function genPlotlyData(choices, indices) {
+    let posteriors = calc_posterior(
+        prior,
+        likelihood,
+        choices,
+        indices,
+    );
+}
+</code></pre>
+<h3 id="animating-plotly-data">Animating plotly data</h3>
+<p>Given the posteriors, we can calculate difference between posterior and prior, and use it to color the bars in the plotly chart:</p>
+<pre data-lang="javascript" class="language-javascript "><code class="language-javascript" data-lang="javascript">    let diff = prior.map((pri, index) =&gt; posteriors[index] - pri);
+    let colors = Array.from(diff).map(d =&gt; d &gt; 0 ? &#x27;rgba(75, 192, 192, 0.7)&#x27; : &#x27;rgba(255, 99, 132, 0.7)&#x27;);
+</code></pre>
+<p>Then animate this using the following code:</p>
+<pre data-lang="javascript" class="language-javascript "><code class="language-javascript" data-lang="javascript">    Plotly.animate(&#x27;myDiv&#x27;, {
+        data: data,
+        layout: layout
+    }, {
+        transition: {
+            duration: duration,
+            easing: &#x27;cubic-in-out&#x27;
+        },
+        frame: {
+            duration: duration
+        }
+    });
+</code></pre>
+<p>where <code>data</code> and <code>layout</code> are values that's built based on the posteriors, differences, and priors.</p>
+<p>However it's worthnoting that when max y value is updated, and bars are also updated, then only the change of max y value would be animated. A simple workaround is to animate max y change first, then animate the bars.</p>
+<h2 id="deliverables">Deliverables</h2>
+<p>The final deliverable is a static website that allows users to answer questions and see the predicted job choices based on their personality. The website is hosted <a href="/ffxiv_job_pred/">here</a>.</p>
+<p>The website is built using vanilla JavaScript, HTML, and CSS, with the prediction engine implemented in Rust and compiled to WebAssembly. The prediction engine uses Bayes' theorem to calculate the posterior distribution of job choices based on the user's responses to the questionnaire.</p>
+<h2 id="references">References</h2>
+<ul>
+<li>https://github.com/rust-ndarray/ndarray/blob/master/README-quick-start.md</li>
+<li>https://docs.rs/ndarray/latest/ndarray/struct.ArrayBase.html#array-views</li>
+<li>https://rustwasm.github.io/docs/wasm-bindgen/reference/types/boxed-slices.html</li>
+<li>https://rustwasm.github.io/docs/wasm-pack/commands/build.html#target</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#map.prototype.keys </li>
+</ul>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

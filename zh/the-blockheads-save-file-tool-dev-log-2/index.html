@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  The Blockheads存档修改工具开发记录（二）
+</h1>
+<p class="date">2020-03-10</p>
+<p>第一阶段留下来的问题虽然还有不少，不过似乎要解决也不是很困难。只需要堆时间上去，把控制变量法玩出花来，总是能出结果的。</p>
+<p>虽说是因为篇幅原因将第一篇拦腰截断，说实话仅凭剩下的那些问题强行凑第二篇，大概率要违反自己的<a href="https://med1844.github.io/zh/the-blockheads-save-file-tool-dev-log-2/%5Bhttps://medioqrity.github.io/2019/05/30/%E5%8E%9F%E5%88%99/%5D(https://medioqrity.github.io/2019/05/30/%E5%8E%9F%E5%88%99/)">原则</a>。所以，分篇的原因除了第一篇过长之外，其实还包含另一点:</p>
+<p><strong>我要给它开发GUI。</strong></p>
+<p>虽然目前还没有想好具体的技术细节，但是大致已经确定了要用electron。如果可能的话，也许也会试着加上web GL之类的----毕竟有了minecrash的经验，想要把The Blockheads渲染出来还是没什么问题的。</p>
+<p>而剩下的部分，在有了GUI的基础上，想要进行测试也许也会变得方便一些吧?</p>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

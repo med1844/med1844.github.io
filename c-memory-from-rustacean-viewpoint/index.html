@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  C++ Memory From Rustacean Viewpoint
+</h1>
+<p class="date">2024-07-14</p>
+<p>Years before I started learning Rust, I learned C++ and used it quite happily.</p>
+<p>After spending a lot of time developing things in Rust, I have reached a point where I found C++'s memory management so foreign, error-prone, and counterintuitive.</p>
+<p>Unfortunately, I still have to pick up C++ for job hunting purposes, and C++ is still very important right now.</p>
+<p>I decide to record my thoughts here, as I will probably continue to think in the Rust way and might want to review C++ from time to time.</p>
+<h2 id="copy-by-default"><code>Copy</code> by default</h2>
+<p>Basic types like <code>int</code>(<code>i32</code>), <code>bool</code>, <code>float</code>(<code>f32</code>) are stored on stack and could easily be copied.</p>
+<p>However for custom structs and enums, Rust would not automatically derive <code>Copy</code> for you. Whereas for C++, almost all custom types have <code>Copy</code> automatically derived, and objects are usually copied implicitly.</p>
+<p>The primary implicit copying mechanisms in C++ are the <strong>copy constructor</strong> and the <strong>assignment operator</strong>. By default, copy constructors are auto-derived to simply copy all members within the struct &amp; enum, as is the assignment operator.</p>
+<h2 id="implicit-copy">Implicit copy</h2>
+<p>C++ implicitly calls copy constructor and assignment operator. For example,</p>
+<pre data-lang="c++" class="language-c++ "><code class="language-c++" data-lang="c++">#include &lt;iostream&gt;
+
+class MyClass {
+public:
+  MyClass() { std::cout &lt;&lt; &quot;Default constructor\n&quot;; }
+  MyClass(const MyClass &amp;other) { std::cout &lt;&lt; &quot;Copy constructor\n&quot;; }
+  MyClass &amp;operator=(const MyClass &amp;other) {
+    std::cout &lt;&lt; &quot;Assignment operator\n&quot;;
+    return *this;
+  }
+};
+
+void foo(MyClass obj) {
+  MyClass copied;
+  copied = obj;
+}
+
+int main() {
+  MyClass a;
+  foo(a);
+  return 0;
+}
+</code></pre>
+<p>Executing the code above would result in:</p>
+<pre><code>Default constructor
+Copy constructor
+Default constructor
+Assignment operator
+</code></pre>
+<p>Which shows that when passing values into function, we get passed. After <code>foo(a)</code> is called, <code>a</code> is still available and not moved.</p>
+<p>The copy constructor is also called for each iteration of the loop:</p>
+<pre data-lang="c++" class="language-c++ "><code class="language-c++" data-lang="c++">  std::vector&lt;MyClass&gt; vec = {MyClass(), MyClass(), MyClass()};
+  for (auto v : vec) {}
+</code></pre>
+<p>Results:</p>
+<pre><code>Default constructor
+Default constructor
+Default constructor
+Copy constructor
+Copy constructor
+Copy constructor
+Copy constructor
+Copy constructor
+Copy constructor
+</code></pre>
+<p>Well, that pretty much tells you why you would like to use <code>for (const auto&amp; v : vec)</code>, or <code>for v in &amp;vec_</code> in Rust.</p>
+<h2 id="c-raii">C++ RAII</h2>
+<p>C++ proposes &amp; provides RAII, which is revolutionary, but unfortunately not enforced like Rust. For memory resources, it's usually managed by <code>unique_ptr</code>. If you look at the source code, you'll see how you can change the default <code>#[derive(Copy)]</code> behavior in C++ by simply overriding the copy constructor and assignment operator. Have a look at the <a href="https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/bits/unique_ptr.h#L271">source</a>:</p>
+<pre data-lang="c++" class="language-c++ "><code class="language-c++" data-lang="c++">  &#x2F;&#x2F;&#x2F; A move-only smart pointer that manages unique ownership of a resource.
+  &#x2F;&#x2F;&#x2F; @headerfile memory
+  &#x2F;&#x2F;&#x2F; @since C++11
+  template &lt;typename _Tp, typename _Dp = default_delete&lt;_Tp&gt;&gt;
+    class unique_ptr
+    {
+      &#x2F;&#x2F;&#x2F; Move constructor.
+      unique_ptr(unique_ptr&amp;&amp;) = default;
+
+      unique_ptr&amp; operator=(unique_ptr&amp;&amp;) = default;
+
+      &#x2F;&#x2F; Disable copy from lvalue.
+      unique_ptr(const unique_ptr&amp;) = delete;
+      unique_ptr&amp; operator=(const unique_ptr&amp;) = delete;
+    };
+</code></pre>
+<p>By disabling the copy constructor and assignment operator, <code>unique_ptr</code> eliminates implicit copies.</p>
+<p>Unfortunately, as Rust shows, the default is important. Shallow copy is apparently not a good default.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>When working with C++, remember to use <code>const T&amp;</code> as function parameter whenever possible, and try to avoid pass by values. Also, remember that you are not working with a language that automatically move values but instead shallow copies them by default. IMO this is even worse than some GC languages like Java and Python where <code>Rc::clone()</code> is the default.</p>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

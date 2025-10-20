@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  小学期开发记录 - 第四周
+</h1>
+<p class="date">2019-07-15</p>
+<h2 id="2019-07-15">2019/07/15</h2>
+<p>明天就要开始写文档了，所以今天很可能就是最后一天开发了。</p>
+<p>突然对自己之前那些摸鱼的日子感到后悔，但是后悔又有什么用呢?</p>
+<p>按照惯例，首先开幕雷击:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/Review.png" alt="Review" /></p>
+<p>这是前三周的成果。</p>
+<p>早上起来先加了Frustum Culling，也就是把视野范围外的区块直接抛弃掉。这样就可以减少GL调用。</p>
+<p>不过FPS没有什么实质上的提升。后来看了一下是因为要正确的渲染阴影还是需要把所有的mesh都渲染一遍才行。正是这一步骤使得FPS降到了20。</p>
+<p>稍微查了一下，有一种叫shadow frustum culling的方法，通过它我们可以去除掉那些不会对阴影产生贡献的mesh。不过这要求我们正确地实现CSM中计算正投影和光照视角矩阵的代码，而这两个都被我橄榄了。被我无脑橄榄的结果是，几乎没有任何区块能被剔除掉。</p>
+<p>所以只能先修一下CSM了，果然不能投机取巧啊...</p>
+<hr />
+<p>为了寻找正确的Ortho实现（没错就是懒），找到了PPSM的论文。很难懂啊。而且也没怎么仔细讲要怎么实现OrthoProjectionMatrix。</p>
+<p>改了一天都没搞出正确的正投影矩阵。</p>
+<p>最大的感想大概就是，人类的尝试大多是以失败而告终的。</p>
+<p>不过，在一天的最后，还是搞出了一个非常有用的优化的:</p>
+<pre data-lang="java" class="language-java "><code class="language-java" data-lang="java">    public void renderSolid(FrustumCullFilter frustumCullFilter) {
+        for (int i = 0; i &lt; (Y &gt;&gt; 4); ++i) {
+            if (isEmpty[i]) continue;
+            if (frustumCullFilter == null || frustumCullFilter.insideFrustum((x &lt;&lt; 4) + (X &gt;&gt; 1), (i &lt;&lt; 4) + 8, (z &lt;&lt; 4) + (Z &gt;&gt; 1), 13.856406460551018f)) {
+                if (solid[i] != null) {
+                    solid[i].render();
+                }
+            }
+        }
+    }
+
+    public void renderTransparencies(FrustumCullFilter frustumCullFilter) {
+        for (int i = 0; i &lt; (Y &gt;&gt; 4); ++i) {
+            if (isEmpty[i]) continue;
+            if (frustumCullFilter == null || frustumCullFilter.insideFrustum((x &lt;&lt; 4) + (X &gt;&gt; 1), (i &lt;&lt; 4) + 8, (z &lt;&lt; 4) + (Z &gt;&gt; 1), 13.856406460551018f)) {
+                if (transparencies[i] != null) {
+                    transparencies[i].render();
+                }
+            }
+        }
+    }
+</code></pre>
+<p>看到<code>isEmpty[i]</code>了吗?</p>
+<p>这减少了非常多无用的GL Call。现在我们的帧率又回到了60:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/ISEMPTY.png" alt="ISEMPTY" /></p>
+<p>动图看起来是这样:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/60fps.gif" alt="60fps" /></p>
+<p>看起来质量应该很低...没办法了，毕竟动图的size不能太大呀...</p>
+<p>大概还是能够看出晨雾是最浓的。</p>
+<p>准备在写文档之前最后再搞一下物品栏和物品系统。</p>
+<h2 id="2019-07-16">2019/07/16</h2>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/DynamicMap.png" alt="DynamicMap" /></p>
+<p>但是先搞的不是物品栏，而是队友那边的动态地图。也确实没办法，因为单线程的缘故，移动的时候都会很卡...</p>
+<p>先把这个修复完再开始写文档吧...</p>
+<hr />
+<p>因为实在太慢了，打算用多线程优化一下。结果就凉了:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/MultiThread.png" alt="MultiThread" /></p>
+<p>新枪战地图的感觉?</p>
+<hr />
+<p>出了一堆莫名其妙的bug，果然是minecrash。总之最后直接重写了多线程生成地图，以及多线程生成Mesh的方法。</p>
+<p>经过测算平均下来是提高了300%的速度。但是更新一次地图还是要100ms+，所以最后甚至提出并且实现了把生成mesh放到多轮update内去完成。</p>
+<p>最后大约是走一段距离会小卡一下，感觉已经是我们的极限了。</p>
+<h2 id="2019-07-17">2019/07/17</h2>
+<p>DDL是第一生产力！</p>
+<p>实现了行走功能:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/LeapOfFaith.gif" alt="LeapOfFaith" /></p>
+<p>在测试行走的过程中，发现把生成Mesh放到多轮update中偶尔会产生NullPointerException。现在要先把这个Bug排除掉。</p>
+<p>暂时用最简单的方式，也就是在出错的函数周围圈上同步解决了。但是这并不能说明这个bug已经被完全修复了。暂时还是不能够确定它产生的原因的。</p>
+<p>之后是发现了另一个bug，也就是在判定碰撞箱是否与人物碰撞箱相交的地方，在第62格处会神奇的判断为不相交。我想这大概是精度问题?</p>
+<hr />
+<p>花了一天时间把物品栏做好了。</p>
+<p>首先是根据HUD的教程把物品栏加了进去:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/Inventory.png" alt="Inventory" /></p>
+<p>然后，把选择框加了进去，并且建立了鼠标回调函数来与之相连:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/Selection.png" alt="Selection" /></p>
+<p>最后，由于时间关系简单地用面填充了一下物品栏，顺便把放置方块的逻辑和物品栏类连起来了。于是很愉快地 <del>种</del> 建出了minecrash的第一颗树:</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/Tree.png" alt="Tree" /></p>
+<p>该写报告啦...可能minecrash也就到此为止了。</p>
+<p>多少还是感到有点可惜的。</p>
+<h2 id="2019-07-18">2019/07/18</h2>
+<p>今天发生了非常令人悲伤的事情。但是由于原则，我不能在这里多说什么。</p>
+<p>RIP，京アニ。</p>
+<hr />
+<p>在做答辩PPT了。最后来贴几张其中的项目展示部分的截图吧...</p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/Presentation1.png" alt="Presentation1" /></p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/Presentation2.png" alt="Presentation2" /></p>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/Presentation3.png" alt="Presentation3" /></p>
+<h2 id="2019-07-19">2019/07/19</h2>
+<p>顺利完成答辩。休息一天，明天就要回到ACM训练中了。</p>
+<h2 id="2019-07-20">2019/07/20</h2>
+<p><img src="https://med1844.github.io/zh/minecraft-clone-dev-log-4/TheFinal.png" alt="TheFinal" /></p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>PPSM:
+<ul>
+<li>https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch10.html</li>
+<li>https://promethe.io/2015/01/21/exponential-cascaded-shadow-mapping-with-webgl/</li>
+</ul>
+</li>
+<li>HUD:
+<ul>
+<li>https://ahbejarano.gitbook.io/lwjglgamedev/chapter12</li>
+</ul>
+</li>
+</ul>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  The Blockheads Tools Dev Log - pt. 1
+</h1>
+<p class="date">2020-03-02</p>
+<p>After I got access to VPN, the thought of downloading <em>some</em> game and play it again lingers around my head. It's subliminal and implicit, so that it took me a good while to recall the name of the game.</p>
+<p>The blockheads.</p>
+<p>It was such a good game that enlightened my junior high school time. It has surprisingly good quality and playable content amongst indie games on mobile, and was #1 on App Store. To this day, even after the creator has abandoned it for years, there's still many active users on forums.</p>
+<p>Here's how the game looks like if you have never played it before:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/nick_redbrick.jpg" alt="nick_redbrick" /></p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/su_you_shao_chinese_architecture_detail.jpg" alt="su_you_shao_chinese_architecture_detail" /></p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/kaga_painting_full.jpg" alt="kaga_painting_full" /></p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/kaga_painting.jpg" alt="kaga_painting" /></p>
+<p>As you could probably tell, this is a sandbox game. And unfortunately the creativity you could usually find in sandbox games are constraint by the fact that this is a mobile game, and the crafting mechanism, and the lack of creative mode:</p>
+<ul>
+<li>Mobile platform makes it extremely difficult to modify save files. Either you jailbreak or you root.</li>
+<li>To craft items, it takes times. This is important monetization for the creator other than ads. Unfortunately for mega-structures, the crafting time might take more than thousands of hours.</li>
+<li>No creative mode. Though we gotta admit that after customizable world rules becomes a thing, but still when it comes to removing mis-placed industrial blocks like steel or carbon fiber blocks, it's still a miserable experience. Plus you can't copy and paste atomic architecture elements, and you are limited to blocks that's available to you (think about unmined limestone/marble/ores - could be good building materials!).</li>
+</ul>
+<p>While minecraft are getting updated and having thriving mod community, it's sad to see the game slowly dying because of constraints mentioned above, it's definitely sad to see for someone truely likes the game.</p>
+<p>What if you can create your own world generator? Generating funny mazes? Customized island survival just like skyblock? Nope.</p>
+<p>After looking around on github there doesn't seems to be anything that could satisfy these needs. Most of the repositories related to blockheads are merely chatbots for the server. We have to create these ourselves.</p>
+<h2 id="reading-the-save-file">Reading the Save File</h2>
+<p>After getting the save folder, there's only one folder inside of it, named <code>world_db</code>, in which there's only two files: <code>data.mdb</code> and <code>lock.mdb</code>.</p>
+<p>Some online search reveals that this is likely <code>lmdb</code> files. Which is surprising given that before 1.7, all the save files are scattered across multiple sub-folders instead of just two files. This might be actually good because now the game gains the ACID properties of databases. This also eliminates item duplication by <em>copying inventory file, putting items in inventory in chests, pasting inventory file</em>.</p>
+<p>Without any post processing, this is how the data looks like after you read them out from the database:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/raw_data.png" alt="raw_data" /></p>
+<p>It's a hell of binaries and xml plist data that no one understands.</p>
+<p>Good news is, the chunk data is gzip-compressed just like save files from older game versions. There's also binary plist and xml plist which could be easily parsed with some imports.</p>
+<p>However, when writing the parsing function, I found that there would be situations where there was a plist or gzip or base64 inside an xml plist, which was really annoying. There was no other way, so I had to rely on recursion:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def process(v):
+    if isinstance(v, list):
+        for i, _ in enumerate(v):
+            v[i] = process(_)
+        return v
+    elif isinstance(v, dict):
+        for a, b in v.items():
+            v[a] = process(b)
+        return v
+    elif isinstance(v, bytes):
+        f = io.BytesIO(v)
+        result = None
+        if v.startswith(b&quot;bplist00&quot;):
+            result = ccl_bplist.load(f)
+            result = process(result)
+        elif v.startswith(b&quot;\x1f\x8b&quot;):
+            with gzip.open(f, &quot;rb&quot;) as f2:
+                content = f2.read()
+            result = process(content)
+        else:
+            result = v
+        return result
+    else:
+        return v
+</code></pre>
+<p>Then write the file to any folder for easy inspection:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">env = lmdb.open(FOLDER + &quot;world_db&quot;, readonly=True, max_dbs=114514)
+with env.begin() as txn:
+    cursor = txn.cursor()
+    for k, v in cursor:
+        sub_db = env.open_db(k, txn=txn, create=False)
+        for k2, v2 in txn.cursor(sub_db):
+            filename = FOLDER + OUT_FOLDER + &quot;%s_%s&quot; \
+                       % (k.decode(), k2.decode().replace(&quot;&#x2F;&quot;, &quot;_&quot;))
+            result = process(v2)
+            if isinstance(result, bytes):
+                with open(filename, &quot;wb&quot;) as f:
+                    f.write(result)
+            else:
+                with open(filename, &quot;w&quot;) as f:
+                    f.write(pprint.pformat(result))
+env.close()
+</code></pre>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/output.png" alt="output" /></p>
+<p>Pick a file and inspect it:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/parsed_output_dw.png" alt="parsed_output_dw" /></p>
+<p>We can read it! The natural next step would be to figure out how to write it.</p>
+<h2 id="writing-the-save-file">Writing the Save File</h2>
+<p>Writing save files is honestly quite a hassle. I won't go into too much technical detail here.</p>
+<p>In short, the <code>world_db</code> is divided into several sub-databases, each storing key-value pairs. The values are all binary data of various types.</p>
+<p>Currently known data types include:</p>
+<ul>
+<li>bplist, Apple's binary property list</li>
+<li>plist, a standard property list stored in XML format</li>
+<li>base64</li>
+<li>gzip</li>
+</ul>
+<p>The core goal is to distinguish and parse these contents while ensuring that they can be correctly repackaged into binary data. Thus, I created an abstract class called <code>Exportable</code>, which represents a class that can be exported as binary data. Such a class must provide a method called <code>export</code> for use during the export process.</p>
+<p>That's basically it.</p>
+<p>A good way to test whether <code>export</code> is working correctly is to pass the exported binary data into the class's constructor and see if the same data can be parsed. Once this test passes, there's a high probability that it won't fail with real data.</p>
+<p>The implementation process was still a bit of a headache, after all, dealing with recursive structures. The debugging experience wasn't very user-friendly either. Even the slightest mistake would cause the game to reject the save file and not tell you what was wrong. But I guess you should not expect any decent debugging experience when reverse engineering someone else's game anyway.</p>
+<p>Thankfully, it finally worked. To demonstrate its capabilities, I wrote a code snippet to randomly place time crystals:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">if __name__ == &quot;__main__&quot;:
+    from pprint import pprint
+    from random import randint
+    from blockType import BlockType
+    FOLDER = &quot;.&#x2F;test_data&#x2F;saves&#x2F;c8185b81198a1890dac4b621677a9229&#x2F;&quot;
+    gs = GameSave(FOLDER)
+    for name, chunk in gs.chunks.items():
+        for _ in range(128):
+            block = chunk.get_block(randint(0, 31), randint(0, 31))
+            block.set_attr(&quot;first_layer_id&quot;, BlockType.TIME_CRYSTAL.value)
+    print(&quot;saving...&quot;)
+    gs.save(&quot;.&#x2F;test_data&#x2F;saves&#x2F;out&#x2F;&quot;)
+</code></pre>
+<p>The general idea is to iterate through all chunks, independently randomly sample 128 block coordinates and then replace the block at the selected coordinate with time crystals.</p>
+<p>The results are as follows:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/modify_test.png" alt="modify_test" /></p>
+<p>Let's test the IDs of all blocks in 1.7. Considering that there are unlikely to be more than 256 types, a 16*16 grid should be enough.</p>
+<p>Code:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">FOLDER = &quot;.&#x2F;test_data&#x2F;saves&#x2F;c8185b81198a1890dac4b621677a9229&#x2F;&quot;
+gs = GameSave(FOLDER)
+info = gs.get_info()
+chunk_pos = [_ &gt;&gt; 5 for _ in info[&quot;start_portal_pos&quot;]]
+chunk_pos[1] += 1
+chunk = gs.get_chunk(*chunk_pos)
+for y in range(15, -1, -1):
+    for x in range(16):
+        b = chunk.get_block(x, y)
+        b.set_attr(&quot;first_layer_id&quot;, ((15 - y) &lt;&lt; 4 | x) % 128)
+gs.save(&quot;.&#x2F;test_data&#x2F;saves&#x2F;out&#x2F;&quot;)
+</code></pre>
+<p>Basically, we get the block above the spawn point and iterate from (0, 0) to (15, 15), i.e. from left to right and from top to bottom. Result:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/ALLBLOCKS.png" alt="ALLBLOCKS" /></p>
+<p>There are quite a few blocks we don't really know what type it is. The amazing thing is that, for blocks 0 and 78 to 127, although they are transparent, they are all solid blocks:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/solid_unknown_block.png" alt="solid_unknown_block" /></p>
+<p>Notice there's no ores, oil blocks, etc. I'm guessing there might be some additional value for blocks, like the stained glass and planks in minecraft. After all, a block takes 64 bytes, and we only know that the meaning of the very first byte is block type.</p>
+<h2 id="inventory">Inventory</h2>
+<p>Once you've can change the world, it's time to do the same for inventory.</p>
+<p>To figure out how the inventory is stored, we can simply control variables.</p>
+<p>First, discard all your items. Then parse the inventory. You'll get the following result:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">[[&#x27;\x01\x00\x00\x00\x00\x00\x00\x0c&#x27;], [], [], [], [], [], [], []]
+</code></pre>
+<p>The 8 bytes in the first list apparently represent the clothing slot, presumably a special item. The following seven lists are empty, as expected.</p>
+<p>Next, place the dirt block into the first slot. Here's the result:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">[[&#x27;\x01\x00\x00\x00\x00\x00\x00\x0c&#x27;], [&#x27;\x18\x04\x00\x00\x00\x00\x00\x0c&#x27;], [], [], 
+[], [], [], []]
+</code></pre>
+<p>Based on the query strings for items on the <a href="http://blockmarket.theblockheads.net/">Global Market</a>, it's easy to see that the ID for <a href="http://blockmarket.theblockheads.net/graph/?item_id=1048">Dirt Block</a> is 1048. Its hexadecimal value is <code>0x418</code>, which corresponds to <code>\x18\x04</code>. This proves that item IDs are stored in little-endian format.</p>
+<p>Next, place one more dirt block in the first slot:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">[[&#x27;\x01\x00\x00\x00\x00\x00\x00\x0c&#x27;], 
+[&#x27;\x18\x04\x00\x00\x00\x00\x00\x0c&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;], 
+[], [], [], [], [], []]
+</code></pre>
+<p>It's quite surprising to know that it's not using some bits to represent the amount of dirt blocks. Also, the last byte goes from <code>\x0c</code> to <code>\x00</code>. What does this mean?</p>
+<p>To further confirm how the amount of item is represented, we put one more dirt block into the same slot:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">[[&#x27;\x01\x00\x00\x00\x00\x00\x00\x0c&#x27;], 
+[&#x27;\x18\x04\x00\x00\x00\x00\x00\x0c&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, 
+&#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;], 
+[], [], [], [], [], []]
+</code></pre>
+<p>It's still <code>\x00</code>. Does the first item always end with <code>\x0c</code>?</p>
+<p>Add the quantity and try putting 13 dirt blocks:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">[[&#x27;\x01\x00\x00\x00\x00\x00\x00\x0c&#x27;], [&#x27;\x18\x04\x00\x00\x00\x00\x00\x0c&#x27;, 
+&#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, 
+&#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, 
+&#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, 
+&#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, 
+&#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, 
+&#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;, &#x27;\x18\x04\x00\x00\x00\x00\x00\x00&#x27;], 
+[], [], [], [], [], []]
+</code></pre>
+<p>This seems to confirm my hypothesis.</p>
+<p>Since <code>\x01</code> is the ID for the clothing, why not try <strong>turning all slots into clothing</strong>?</p>
+<p>It turns out it works:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/modify_inventory_1.png" alt="modify_inventory_1" /></p>
+<p>Walking around with a hand in my hand is kinda creepy, so I dropped it. Interestingly though I couldn't pick it up any more...</p>
+<p>Now we can change item type, what happens if we make all the items empty? I tested it and found that the first item is always set to the clothing.</p>
+<p>Since we've confirmed that it's little-endian encoding, let's try to figure out what the first few item IDs correspond to. The code is simple:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">FOLDER = &quot;.&#x2F;test_data&#x2F;saves&#x2F;c8185b81198a1890dac4b621677a9229&#x2F;&quot;
+gs = GameSave(FOLDER)
+inv = gs[&quot;world_db&quot;][&quot;main&quot;][&quot;blockhead_321_inventory&quot;]
+for i in range(1, 8):
+    inv[i] = [biplist.Data(struct.pack(&quot;&lt;i&quot;, i + 1) + &quot;\0\0\0\x0c&quot;)]
+print(gs[&quot;world_db&quot;][&quot;main&quot;][&quot;blockhead_321_inventory&quot;])
+gs.save(&quot;.&#x2F;test_data&#x2F;saves&#x2F;out&#x2F;&quot;)
+</code></pre>
+<p>This yields items with id from 2 to 8:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/item_enum_test.png" alt="item_enum_test" /></p>
+<p>Which looks somewhat similar to the early screenshots of the game from Dave's <a href="https://www.gamedeveloper.com/business/postmortem-the-blockheads">postmortem</a>.</p>
+<p>Putting baskets back and cleaning up all other items, we get:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">[[&#x27;\x01\x00\x00\x00\x00\x00\x00\x0c&#x27;], [&#x27;\x0c\x00\x00\x00\x00\x00\x03\x0c&#x27;], 
+[&#x27;\x0c\x00\x00\x00\x00\x00\x03\x0c&#x27;], [&#x27;\x0c\x00\x00\x00\x00\x00\x03\x0c&#x27;], 
+[&#x27;\x0c\x00\x00\x00\x00\x00\x00\x0c&#x27;], [&#x27;\x0c\x00\x00\x00\x00\x00\x00\x0c&#x27;], 
+[&#x27;\x0c\x00\x00\x00\x00\x00\x00\x0c&#x27;], [&#x27;\x0c\x00\x00\x00\x00\x00\x00\x0c&#x27;]]
+</code></pre>
+<p>It looks like the basket's ID is 12. Then, what the heck is this <code>\x03</code>?</p>
+<p>Let's put this weird byte aside for now and put one dirt block into the first basket. Something interesting happened...</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">[[&#x27;\x01\x00\x00\x00\x00\x00\x00\x0c&#x27;], 
+[&#x27;\x0c\x00\x00\x00\x00\x00\x03\x0c\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x07
+\x85\x8e\xcd\x0e\x820\x10\x84\xcf\xf2\x14\xb5wX\xbd\x19S0(hL\x88b\x84\x83
+\xc7\x866J\xe4\xa7i\x1b\xd1\xb7\xb7\x051\xf1d&#x2F;\xfd\xba3\x9d\x1d\xb2z\xd6
+\x15zp\xa9\xca\xb6\xf1\xf1\xdc\x9ba\xc4\x9b\xa2ees\xf5q\x9em\xdd\x05^\x05
+\x0e\x99F\xc7MvIc$\xaaRi\x94\xe6\xebd\xbfA\xd8\x05\x08\x85\xa88@\x94E(M
+\xf6\xe7\x0c\x99\x0c\x80\xf8\x80\x11\xbei-\x96\x00]\xd7y\xd4\xba\xbc\xa2
+\xad\xadQA*[\xc1\xa5~%&amp;\xcc5\x1f&lt;\xa6\x196k\x86\xf4\x9f:f\xca\xcaB\x07
+\xce\x84\xdc\xf9+P\x04\xece^TJj\xe1C\xf0\x0f-M\x08\xa3\x9a\xf6\xb4\x0bO
+\xe1p:\xbfW`\x94\x08\x8c\xfe&#x2F;\x19\xb1\xef@\xa0o\x188o\x0b\xd3m\x148\x01
+\x00\x00&#x27;], 
+[&#x27;\x0c\x00\x00\x00\x00\x00\x03\x0c&#x27;], [&#x27;\x0c\x00\x00\x00\x00\x00\x03\x0c&#x27;], 
+[&#x27;\x0c\x00\x00\x00\x00\x00\x03\x0c&#x27;], [&#x27;\x0c\x00\x00\x00\x00\x00\x00\x0c&#x27;], 
+[&#x27;\x0c\x00\x00\x00\x00\x00\x00\x0c&#x27;], [&#x27;\x0c\x00\x00\x00\x00\x00\x00\x0c&#x27;]]
+</code></pre>
+<p>Why one dirt block could lead to this many new bytes??😳😳😳</p>
+<p>Well if you look closely, you will notice <code>\x1f\x8b</code>, which is the header of gzip.</p>
+<p>Decompression yields:</p>
+<pre data-lang="xml" class="language-xml "><code class="language-xml" data-lang="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-&#x2F;&#x2F;Apple&#x2F;&#x2F;DTD PLIST 1.0&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.apple.com&#x2F;DTDs&#x2F;PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+        &lt;key&gt;s&lt;&#x2F;key&gt;
+        &lt;array&gt;
+                &lt;array&#x2F;&gt;
+                &lt;array&#x2F;&gt;
+                &lt;array&#x2F;&gt;
+                &lt;array&gt;
+                        &lt;data&gt;
+                        GAQAAAAAAAw=
+                        &lt;&#x2F;data&gt;
+                &lt;&#x2F;array&gt;
+        &lt;&#x2F;array&gt;
+&lt;&#x2F;dict&gt;
+&lt;&#x2F;plist&gt;
+</code></pre>
+<p>Decoding <code>GAQAAAAAAAw=</code> with base64, you get <code>18 04 00 00 00 00 00 0c</code> - a dirt block!</p>
+<p>Then wouldn't it be possible to add <code>&lt;array/&gt;</code> yourself? And what on earth is this <code>&lt;key&gt;s&lt;/key&gt;</code>?</p>
+<p>Regardless of all the unsolved mysterious bytes, we now understands the format of an item. For an item with a length of only 8 bytes, it's a single item. For an item with a length greater than 8 bytes, it's a container. To extract data from such container, just decompress everything from the 8th byte onwards and recursively parse it.</p>
+<p>After some coding we get this beautiful parsing result:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/recursive_items.png" alt="recursive_items" /></p>
+<p>Now, remember the 13 dirt blocks above? Since we are not using bits to represent the amount, we will try to put more than 99 items in one slot:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">gs = GameSave(&quot;.&#x2F;test_data&#x2F;saves&#x2F;c8185b81198a1890dac4b621677a9229&#x2F;&quot;)
+bh = gs.get_blockheads()
+inv = gs.get_inventory(bh[0])
+inv[1].set_id(1049)
+inv[1].set_count(1919)
+gs.save(&quot;.&#x2F;test_data&#x2F;saves&#x2F;out&#x2F;&quot;)
+</code></pre>
+<p>Got this result:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/item_count_test.png" alt="item_count_test" /></p>
+<h2 id="item-durability-or-wear-level">Item durability (or wear level)</h2>
+<p>When I was working on code, I once assumed that item id takes 4 bytes. This resulted items with id 229553894. Clearly we mis-interpreted bytes that means something else. Item ID thus must be 2 bytes.</p>
+<p>Interestingly, after fixing the exploding item id, all once problematic ids turns into tool ids. Naturally, it might be item durability that caused this. Some code helps checking the hypothesis:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/durability_code_output.png" alt="durability_code_output" /></p>
+<p>Which after visualization looks like:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/durability.png" alt="durability" /></p>
+<p>The last byte seems to indicate the wear level of the tool. The less durability left, the larger the value becomes.</p>
+<p>Since everything is stored little-endian, the wear level should only use the 4-th byte.</p>
+<p>Is it possible the value could be larger than <code>3f</code>? What about bronze, steel and better level tools?</p>
+<p>Well we can simply change the value to <code>7f</code>. And we got this:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/durability_negative_test.png" alt="durability_negative_test" /></p>
+<p>While this might look like photoshoped, this is indeed a screenshot.</p>
+<p>What about wear level of better tools? Is <code>3f</code> still the maximum value?</p>
+<p>Titanium pickaxe is the most durable pickaxe in the game and would be a great reference. Result:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/durability_titanium.png" alt="durability_titanium" /></p>
+<p>So yes, <code>3f</code> is the maximum. In decimal it's 63. But we know titanium can be used much more than 64 times. Or maybe wear level takes 2 bytes, i.e. <code>00 3e</code> is the real value?</p>
+<p>After hitting a few rocks, we check the item bytes:</p>
+<pre><code>C:\Game\BH\BHCore (master -&gt; origin) 
+λ c:&#x2F;python27&#x2F;python inventory_tester.py
+&#x27;\x1d\x01!&gt;\x00\x00\x00\x0c&#x27;
+</code></pre>
+<p>The 2-byte hypothesis is correct. The maximum loss is <code>ff 3f</code>. This means that each item has 16384 wear level / durability. The lower the item's level, the greater the loss of durability each time it's used. I used a titanium pickaxe to mine 11 blocks of stone, and the loss went from 00 to 21 3e . This increase of 33 points means that the titanium pickaxe loses 3 durability per use, meaning the titanium pickaxe can be used to mine 16384 / 3 = 5461.33 stones.</p>
+<p>Similarly, we can test the durability of each kind of pickaxe. Since different pickaxe may have different bonuses for mining stone, the test method is to use the pickaxe to dig a block of sand, observe the wear and tear, and divide it by the number of times it takes to hit the block of sand by hand. This calculates the wear / durability loss caused by each pickaxe usage (gather 1 time). For convenience, this will be referred to as <strong>base wear</strong>.</p>
+<p>Result:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/base_damage.png" alt="base_damage" /></p>
+<p>Based on the previous observation, we can get the maximum number of usage by dividing 16384 by the base wear of the corresponding tool. The result is as follows:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/durability_res.png" alt="durability_res" /></p>
+<p>But don't forget that blocks also have &quot;health&quot; (sounds weird, but I can't think of a better word). Some pickaxes deal more damage to blocks, while others do less. This can lead to pickaxes with essentially the same wear and tear, mining the same block, but one will run out of durability first.</p>
+<p>For this reason, it's obviously necessary to test the health of the block. I used a shovel for a fair comparison. The result...</p>
+<p>Well, no matter how I adjust the block's hardness, there's always only one byte change... So I tried enumerating the changed byte from 0 to 255:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/damage_gradient.png" alt="damage_gradient" /></p>
+<p>It seems the damage value is indeed stored in just one byte... but the hardness of industrial blocks clearly exceeds 256? So where exactly is the actual block hardness stored?</p>
+<p>Just when I was at my wit's end, two blocks I'd previously tested actually recovered! This suggests the damage value and damage time must be stored somewhere other than the blocks. So I opened DW and pulled out all the files for the corresponding block. A DW file named <code>466_17/26</code> struck me as suspicious:</p>
+<pre data-lang="json" class="language-json "><code class="language-json" data-lang="json">{&#x27;dynamicObjects&#x27;: [{&#x27;floatPos&#x27;: [14918.5, 544.0],
+                     &#x27;lastKnownGatherValue&#x27;: 201,
+                     &#x27;pos_x&#x27;: 14918,
+                     &#x27;pos_y&#x27;: 544,
+                     &#x27;timer&#x27;: 7.865746974945068,
+                     &#x27;uniqueID&#x27;: 5815},
+                    {&#x27;floatPos&#x27;: [14914.5, 544.0],
+                     &#x27;lastKnownGatherValue&#x27;: 2,
+                     &#x27;pos_x&#x27;: 14914,
+                     &#x27;pos_y&#x27;: 544,
+                     &#x27;timer&#x27;: 0.43180203437805176,
+                     &#x27;uniqueID&#x27;: 6437}]}
+</code></pre>
+<p>Since I tested at blocks <code>2, 0</code> and <code>6, 0</code> of block <code>466, 17</code>, which converts to 14914 and 14918 respectively. Their heights are exactly 544. Furthermore, I mined <code>6, 0</code> first, then <code>2, 0</code>, so the timer data is correct.</p>
+<p>So I guess it's <code>lastKnownGatherValue</code> that's controlling the damage (or maybe we should use <code>gather</code> as suggested by the game itself). However, after a few tests (by hitting the steel block with my hand), I found that the value hasn't changed at all... If the game uses floating point numbers for storage, then it's likely that the block's health is being forcibly converted to an unsigned short when it's stored.</p>
+<p>Re-examining the measured damage data and dividing it by the base wear, we can get the number of hits each pickaxe takes to hit each block. End result:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/relative_hardness.png" alt="relative_hardness" /></p>
+<p>The y-axis means the number of usage needed to mine one block. Everything looks good until steel block. Steel block is resilient to bronze pickaxe only, and titanium block is weak to steel, diamond, and titanium pickaxe??</p>
+<p>I guess this leaves more question for me than what we learned here.</p>
+<h2 id="item-id-mapping">Item ID mapping</h2>
+<p>Around 2015, there was a craze for collecting <em>unknown</em> items. The so-called <em>unknown</em> items were items without names. For some reason, these items of unknown origin suddenly began to circulate throughout the servers, and the myth that &quot;the more you collect, the more powerful you become&quot; took hold.</p>
+<p>At the time, I didn't know how to modify item IDs, but I did know how to change the IDs of items dropped on the ground. This is because items on the ground are stored in a datastore (dw), which is just a regular binary plist before 1.7 update. So, with this rudimentary but effective technique, I successfully made a batch of home-made unknown items.</p>
+<p>Knowing this works, I have considered mapping the ID back then. However, this method only allows me to test the ID of one item at a time. Such repetitive actions were hard to avoid getting bored with.</p>
+<p>Thankfully, with code, it's much easier to finish what used to be a dream.</p>
+<p>There are 7 baskets, each with 4 slots, meaning 28 items can be tested at a time. That's a 28x efficiency boost! The code is very simple:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">inv = gs.get_inventory(bh[0])
+offset = 28 * 0
+for i in range(1, 8):
+    for j in range(3, -1, -1):
+        item = inv[i][0][&#x27;s&#x27;][j]
+        item.set_id(((i - 1) &lt;&lt; 2 | (3 - j)) + offset)
+        item.set_count(1)
+</code></pre>
+<p>The following are all items with ID 0 to 27:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/item_id_test.png" alt="item_id_test" /></p>
+<p>It only took about a dozen times to finish. Here's some interesting findings:</p>
+<ul>
+<li>
+<p>Placing a diamond portal obtained by changing the ID, only to find it turned into a normal portal.</p>
+</li>
+<li>
+<p>Paint obtained by changing the ID has no effect when applied to blocks.</p>
+</li>
+<li>
+<p>All workbenches obtained by changing the ID will function, but they are all at the lowest level.</p>
+</li>
+<li>
+<p>Some unmined blocks can be obtained by setting the ID:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/item_id_test_14.png" alt="item_id_test_14" /></p>
+<p>We get unmined limestone, marble, red marble, and stone. However, they can't be placed - the game stops you from doing that.</p>
+</li>
+</ul>
+<p>I suspect the remaining <code>00 00 00 0c</code> in the item data contain the bytes describing the workbench level and paint color.</p>
+<h2 id="workbench">Workbench</h2>
+<p>The byte that describes workbench level can be easily found by actually upgrading a workbench and see what changed.</p>
+<p>However the upgraded workbench yields frustrating output:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/workbench_test.png" alt="workbench_test" /></p>
+<p>A workbench item contains a lot of additional information, rather than just a bit representing the level as previously thought. There's just so much information that I suspect Dave has simply thrown out all the class members.</p>
+<blockquote>
+<p>Note from 2025: after checking decompiled code of the blockheads server, this is indeed simply a serialized workbench instance.</p>
+</blockquote>
+<p>Try changing <code>['d']['level']</code> to 3, we successfully get a workbench of the highest level:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/workbench_test_success.png" alt="workbench_test_success" /></p>
+<h2 id="paints">Paints</h2>
+<p>Maybe paint color is stored in these bytes! First, just craft a bunch of paints:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/paint_item_data_2.png" alt="paint_item_data_2" /></p>
+<p>Which could be visualized as:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/paint_item_data_res.png" alt="paint_item_data_res" /></p>
+<p>Now for the mixing part. To start simple, we will do white + black and white + white + black. Result:</p>
+<pre><code>C:\Game\BH\BHCore (master -&gt; origin)
+λ c:&#x2F;python27&#x2F;python workbench_paint_tester.py
+&#x27;g\x00\x00\x00\x00\x12\x00\x0c&#x27;
+&#x27;g\x00\x00\x00\x20\x11\x00\x0c&#x27;
+</code></pre>
+<p>So the second dye will be placed in the lower 4 bits of the 5th byte, and the third dye will be placed in the upper 4 bits of the 4th byte? Will the lower 4 bits of the 4th byte be effective?</p>
+<p>Anyway we can write the function to support this:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">    def set_color(self, *colors):
+        assert 1 &lt;= len(colors) &lt;= 4
+        val = 0
+        for i in range(4):
+            val &lt;&lt;= 4
+            if i &lt; len(colors):
+                val |= colors[i]
+        self._data = self._data[:4] + struct.pack(&quot;&lt;H&quot;, val) + self._data[6:]
+</code></pre>
+<p>The logic is simple. If we convert the previous <code>\x20\x11</code> to an unsigned short, we get <code>11 20</code>. It's easy to see the relationship between the order of the dyes and the number of bits. Therefore, we can construct paints with only left shift.</p>
+<p>Unfortunately though <code>set_color(1, 1, 2, 3)</code> doesn't yield the color I was expecting to see. So the game probably only read 3 4-bits.</p>
+<p>What about cloth and bed? They should work the same. We can just try it:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">item = inv[2].get(2)
+item.set_color(3, 4, 7)
+
+item = inv[4].get(3)
+item.set_color(5, 6, 8)
+</code></pre>
+<p>Result:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/paint_item_data_res_2.png" alt="paint_item_data_res_2" /></p>
+<p>Their previous colors were <code>(1, 1, 2)</code> and <code>(0, 0, 0)</code>, meaning that the change was successful!</p>
+<h2 id="more-on-block-data-format">More on block data format</h2>
+<p>We have only covered the 0th and 2nd byte of blocks, meaning foreground and background block type respectively.</p>
+<p>But there's so much more: ore, color, discovered, brightness, temperature, water and snow height, and many more. We need more tests.</p>
+<h3 id="ore">Ore</h3>
+<p>There is a piece of clay next to the spawn point:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/test_ore_type.png" alt="test_ore_type" /></p>
+<p>It's at <code>6, 27</code> in the chunk. We can compare the bytes with the dirt block below it:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">dirt_clay = chunk.get_block(6, 27)
+dirt_normal = chunk.get_block(6, 26)
+binary = &#x27;&#x27;.join([struct.pack(&#x27;b&#x27;, dirt_clay[i]) for i in range(64)])
+binary_normal = &#x27;&#x27;.join([struct.pack(&#x27;b&#x27;, dirt_normal[i]) for i in range(64)])
+print(repr(binary))
+print(repr(binary_normal))
+</code></pre>
+<p>Got:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">&#x27;\x06\x06\x02\x02\xff\x00\xff\xbe\x00...&#x27;
+&#x27;\x06\x06\x02\x00\xff\x00\xff\x8f\x00...&#x27;
+</code></pre>
+<p>Although there is a <code>0xbe</code> at the end, which is different from <code>0x8f</code>, the mineral type should obviously be placed at the front, and the number should not be so large. Considering that soil only has two minerals, <code>flint</code> and <code>clay</code>, it is very likely that <code>flint</code> is <code>\x01</code>.</p>
+<p>After some coding, we now supports setting the ore type:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">dirt_clay.set(&quot;sub_type&quot;, 1)
+</code></pre>
+<p>And the result is good:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/test_ore_type_step2.png" alt="test_ore_type_step2" /></p>
+<p>Now that this works, we must try something everyone wants to see:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/hell.png" alt="hell" /></p>
+<p>Similarly for other blocks we just need to how many possible sub-types there are, right? Like maybe coal is 1, iron is 2?</p>
+<p>I tried to find ore types for stone:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/sub_type1.png" alt="sub_type1" /></p>
+<p>It's quite surprising that ores are separated very far apart. Turns out that if you take look at the middle layer...</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/sub_type.png" alt="sub_type" /></p>
+<p>Yep, there's even trees.</p>
+<p>This means, the sub types of different blocks are mixed together - it's not like minecraft, where you get multiple variants for a block, like birch and bamboo plank or black and red stained glass.</p>
+<p>Changing block id to air confirms the understanding above:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/sub_type2.png" alt="sub_type2" /></p>
+<p>Guess it will take another eternity for me to find all the sub-type mapping.</p>
+<p>Before that, let's just try something everyone wants to see again:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/oresoresores.png" alt="oresoresores" /></p>
+<h3 id="height-of-water-and-snow">Height of water and snow</h3>
+<p>First, put some water in our home sweet home:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/water_height.png" alt="water_height" /></p>
+<p>Then pull out the block data corresponding to these 7 water blocks:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">for i in range(24, 31):
+    print(chunk.get_block(i, 29).to_hex())
+</code></pre>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/water_height_data.png" alt="water_height_data" /></p>
+<p>You can see that the 4-th byte of the last four blocks is <code>2e</code>, so the subtype value for the tool bench is 46. We can roughly guess that the 5-th digit represents the height of the water and snow.</p>
+<p>Let's check snow:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/snow_height.png" alt="snow_height" /></p>
+<p>Corresponds to bytes:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/snow_height_data.png" alt="snow_height_data" /></p>
+<p>We can confirm that the 5-th byte represents the height of the water and snow. Looking at the following bytes, you can see that the top two blocks both have a value of 0. The only difference in the image seems to be lighting. Lighting itself requires three colors, which explains the presence of the three bytes: <code>11 0a 03</code>.</p>
+<p>We'll leave lighting for later. Now, for some fun, we can generate an entire chunk of water and snow:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">chunk = gs.get_chunk(*chunk_pos)
+for y in range(15, -1, -1):
+    for x in range(16):
+        b = chunk.get_block(x, y)
+        b.set(&quot;first_layer_id&quot;, choice([BlockType.SNOW, BlockType.WATER]))
+        b.set(&quot;height&quot;, 0xff)
+</code></pre>
+<p>And we get:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/snow_water_height_test.png" alt="snow_water_height_test" /></p>
+<p>That's the messiness I always wanted to see!</p>
+<h3 id="visibility">Visibility</h3>
+<p>Places that's not discovered are hidden behind fog. A good way to find which byte stores this info is to print out a column of blocks, here we chose the 17-th column of chunk <code>465, 17</code> and <code>465, 16</code> and printed out block bytes:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/visibility_test.png" alt="visibility_test" /></p>
+<ul>
+<li>The red part likely indicates whether it has been explored. <code>ff</code> means fully explored, and <code>00</code> means complete dark. However, I have no idea why this is represented by two identical bytes.</li>
+<li>I suspect the yellow part is caused by the darkness of solid blocks. After all, the further inside, the less light is received, and the closer it is to <code>00</code>. Blocks like air don't have this issue, so they're all <code>ff</code>.</li>
+<li>The green part shows strange data that remains unknown to me.</li>
+</ul>
+<p>Let's test what happens if the values of the two red bytes are different:</p>
+<pre data-lang="py" class="language-py "><code class="language-py" data-lang="py">for y in range(15, -1, -1):
+    for x in range(16):
+        b = chunk.get_block(x, y)
+        b.set(&quot;first_layer_id&quot;, BlockType.AIR)
+        b.set(&quot;visibility&quot;, ((15 ^ y) &lt;&lt; 4 | x) &amp; 255, randint(0, 255))
+</code></pre>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/visibility_test_res.png" alt="visibility_test_res" /></p>
+<p>So the second byte means... nothing?</p>
+<p>After swapping the value, we get:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/visibility_test_res_2.png" alt="visibility_test_res_2" /></p>
+<p>Guess I can't figure out why there's two identical bytes but only one of them actually works.</p>
+<h3 id="brightness">Brightness</h3>
+<p>Based on previous observations, we infer that brightness is at 8-th byte. Therefore, the result after making all blocks other than air unlit is as follows:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/brightness_test.png" alt="brightness_test" /></p>
+<p>This shows that the blockheads uses their foot to perceive brightness.</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/brightness_test2.png" alt="brightness_test2" /></p>
+<p>Changing the brightness and visibility of all blocks, we can visualize all generated chunks:</p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/world_with_no_darkness.png" alt="world_with_no_darkness" /></p>
+<p><img src="https://med1844.github.io/the-blockheads-save-file-tool-dev-log-1/world_with_no_darkness2.png" alt="world_with_no_darkness2" /></p>
+<hr />
+<p>To keep the length of this article down, I'll stop here for this part. See you in the next one!</p>
+<blockquote>
+<p>2025 update: click <a href="/the-blockheads-save-file-tool-dev-log-2/">here</a> to read the second part!</p>
+</blockquote>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>http://deepdish.io/2015/04/28/creating-lmdb-in-python/</li>
+<li>https://blog.separateconcerns.com/2016-04-03-lmdb-format.html</li>
+<li>https://lmdb.readthedocs.io/en/release/</li>
+</ul>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

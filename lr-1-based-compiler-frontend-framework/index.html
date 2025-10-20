@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  Refactoring Compiler Frontend Framework
+</h1>
+<p class="date">2024-03-18</p>
+<p>I refactored the compiler frontend framework that I have <a href="https://github.com/med1844/Toy-Compiler-Frontend">written years ago</a>. Here's what I have done:</p>
+<ul>
+<li>Replace <code>re</code>-based lexer with a real regex engine, which is based on finite automata.</li>
+<li>Implement LR(1) item automata and corresponding algorithms.</li>
+<li>Added automated tests.</li>
+</ul>
+<h2 id="finite-automata">Finite Automata</h2>
+<p>Regex are powered by finite automata. There're two types of them:</p>
+<ul>
+<li>Non-deterministic finite automata (NFA)</li>
+<li>Determinisitic finite automata (DFA)</li>
+</ul>
+<p>You may find more on how regexes could be converted to such automatas in <a href="https://cyberzhg.github.io/toolbox/nfa2dfa">here</a>.</p>
+<h3 id="transitions">Transitions</h3>
+<p>The only difference between them is that NFA allows $\epsilon$ transition while DFA doesn't allow it.</p>
+<p>The problem with $\epsilon$ transition is that it causes state ambiguity: at the next time step you might stay unmoved or transit to some next state via an $\epsilon$ transition.</p>
+<p>By calculating $\epsilon$ closure, we get DFA.</p>
+<p>However when it comes to implementation, how to design transition is worth pondering. At first glance, it seems straight forward to come up with something like this:</p>
+<pre data-lang="rust" class="language-rust "><code class="language-rust" data-lang="rust">enum Transition {
+  Epsilon,
+  Char(u8),
+}
+</code></pre>
+<p>But it turns out that such design could not fulfill some common regex expressions such as <code>[a-zA-Z0-9]</code>, <code>.*$</code>, etc. The more general way is actually to store ranges:</p>
+<pre data-lang="rust" class="language-rust "><code class="language-rust" data-lang="rust">enum Transition {
+  Epsilon,
+  Ranges(Vec&lt;(char, char)&gt;),
+}
+
+impl Transition {
+  fn match_char(&amp;self, c: char) -&gt; bool {
+    match self {
+      Self::Epsilon =&gt; true,
+      Self::Ranges(v) =&gt; {
+        v.iter().any(|(l, r)| l &lt;= c &amp;&amp; c &lt; r)
+      }
+    }
+  }
+}
+</code></pre>
+<p>Unfortunately the old project was written in python, which doesn't have ADT. We have to write in OOP fashion:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class Transition:
+  def __call__(self, c: str) -&gt; bool:
+    ...
+
+class EpsilonTransition(Transition):
+  ...
+
+class CharTransition(Transition):
+  ...
+</code></pre>
+<p>We could then move on to build automatas. According to the definition of finite state automata:</p>
+<p>$$
+A = (Q, \Sigma, q_0, F, \delta(q, i))
+$$</p>
+<p>where:</p>
+<ul>
+<li>$Q$ is a finite set of states ${q_0, q_1, \dots, q_{n-1}}$</li>
+<li>$\Sigma$ is finite input alphabet of symbols. In our case, precisely speaking, it's the range of <code>char</code> or <code>u32</code> in rust.</li>
+<li>$q_0$ is the designated start state.</li>
+<li>$F$ is the set of final states and $F \subseteq Q$.</li>
+<li>$\delta(q, i)$ is the transition function.</li>
+</ul>
+<p>We could view states $Q$ as nodes in graph, and $\delta(q, i)$ as edges. We store $\delta(q, i)$ in $q$, like this:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class FiniteAutomataNode:
+    def __init__(self) -&gt; None:
+        self.successors: List[Tuple[Transition, &quot;FiniteAutomataNode&quot;]] = []
+</code></pre>
+<p>All states except $q_0$ must have been referred (or <code>Rc::clone</code>-ed) in some other state's <code>successors</code>. Thus we don't have to store $Q$ in the finite automata class. Which result in definition like this:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class FiniteAutomata:
+    def __init__(
+        self,
+        start_node: FiniteAutomataNode,
+        accept_states: Set[FiniteAutomataNode] = set(),
+    ) -&gt; None:
+        self.start_node = start_node
+        self.accept_states = accept_states
+</code></pre>
+<p>Where <code>start_node</code> corresponds to $q_0$, and <code>accept_states</code> corresponds to $F$.</p>
+<h3 id="nfa-to-dfa">NFA to DFA</h3>
+<p>We can now implement the closure-based NFA to DFA algorithm. However, it turns out that we need to take extra care when generating the outcoming edges of each closure.</p>
+<p>This is caused by range-based transitions. Consider the following case:</p>
+<pre data-lang="regex" class="language-regex "><code class="language-regex" data-lang="regex">[c-e]|[b-ce]|[cf]
+</code></pre>
+<p>Which could be converted to the following NFA:</p>
+<p><img src="https://med1844.github.io/lr-1-based-compiler-frontend-framework/nfa_0.drawio.svg" alt="nfa_0" /></p>
+<p>Please notice that edges with no condition are $\varepsilon$ transitions.</p>
+<p>The initial $\varepsilon$-closure is ${0, 1, 3, 5}$. If the next matching char is <code>c</code>, we would then land on ${2, 4, 6}$; If the next matching char is <code>e</code>, we land on ${2, 4}$. With different chars, we land on different state sets.</p>
+<p>The relationship could be further visualized by viewing ranges as 01-masks:</p>
+<p><img src="https://med1844.github.io/lr-1-based-compiler-frontend-framework/nfa_1.drawio.svg" alt="nfa_1" /></p>
+<p>By iterating thru column (or each char), we get these destination masks: $\underbrace{000}_\text{a}, \underbrace{010}_\text{b}, \underbrace{111}_\text{c}, \underbrace{100}_\text{d}, \underbrace{110}_\text{e}, \underbrace{001}_\text{f}$.</p>
+<p>We then aggregate identical masks. There might be different chars that leads to the same destination sets. For example, consider this regex that matches C-style comment:</p>
+<pre data-lang="regex" class="language-regex "><code class="language-regex" data-lang="regex">&#x2F;\*.*\*&#x2F;
+</code></pre>
+<p>The range of <code>.</code> covers <code>*</code>, meaning that there are two cases: $\underbrace{10}_{\text{.} \ne \text{*}}, \underbrace{11}_\text{*}$. Apparently $\text{.} \ne \text{*}$ contains two ranges: those has ascii id smaller than $\text{*}$, and those has ascii id larger than $\text{*}$. They should both point to the closure set of $10$, and we need to aggregate the ranged transition to be <code>[0, '*')</code>, <code>['*' + 1, ...)</code>.</p>
+<p>However when the charset and/or the number of states are large, it's inefficient to calculate using this algorithm.</p>
+<p>After sorting the ranges, we could get something like this:</p>
+<pre><code>a b c d e f
+  &lt;4&gt;
+    6
+    &lt;-2-&gt;
+        4
+          6
+</code></pre>
+<p>We could use a scan line algorithm to quickly figure out all splits. During scanning, we keep track of all ranges that contains the scan line. After scan line moved, each time a new range goes in or a range no longer covers the scan line, we know that we have a new set of destination mask.</p>
+<p>Further simplify this, we know that all range's start and end point (note that we are using [start, end)) would introduce destination mask change. Then the algorithm becomes something as simple as this:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">all_ranges: List[Tuple[range, FiniteAutomataNode]] = [
+    (r, nxt_node)
+    for cur_node in cur.closure
+    for t, nxt_node in cur_node.successors
+    for r in t.ranges
+]
+all_ranges.sort(key=lambda k: (k[0].start, k[0].stop))
+range_to_nodes: Dict[range, List[FiniteAutomataNode]] = {}
+splits = sorted(
+    set(map(lambda k: k[0].start, all_ranges))
+    | set(map(lambda k: k[0].stop, all_ranges))
+)
+for r, n in all_ranges:
+    for sub_r in self.split_by(r, splits):
+        range_to_nodes.setdefault(sub_r, list()).append(n)
+</code></pre>
+<p>This stores dissected ranges to corresponding masks, e.g., <code>range('c', 'c' + 1)</code> points to ${2, 4, 6}$.</p>
+<p>We then aggregate ranges points to the same sets:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">nodes_to_ranges: Dict[Tuple[FiniteAutomataNode, ...], List[range]] = {}
+for range_, nxts in range_to_nodes.items():
+    nodes_to_ranges.setdefault(tuple(sorted(nxts, key=id)), list()).append(
+        range_
+    )
+</code></pre>
+<p>This gives us all outcoming edges in the given $\varepsilon$-closure, alongside with their destination sets.</p>
+<p>The rest of the algorithm is standard BFS, thus I will skip it.</p>
+<h2 id="min-dfa">Min-DFA</h2>
+<p>According to <a href="https://en.wikipedia.org/wiki/DFA_minimization#Brzozowski&#x27;s_algorithm">wiki</a>, we know that it's possible to generate min-DFA by simply doing this:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class FiniteAutomata:
+    def minimize(self) -&gt; Self:
+        return self.reverse_edge().determinize().reverse_edge().determinize()
+</code></pre>
+<p>However such method would only yield sub-optimal Min-DFA, usually with one more state. This is caused by these finite automata assumptions:</p>
+<ul>
+<li>There's <strong>one</strong> designated start state $q_0$.</li>
+<li>The set of accept states is $F$.</li>
+</ul>
+<p>When we reverse edges, we turn $F$ into start states, which contradicts the design of finite automata where there should be only one start state. To resolve this issue, I decide to add new state and connect all accept states to the new state with $\varepsilon$-transition:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class FiniteAutomata:
+    def unify_accept(self):
+        if len(self.accept_states) &gt; 1:
+            new_accept_state = FiniteAutomataNode()
+            for state in self.accept_states:
+                state.add_edge(EpsilonTransition(), new_accept_state)
+            self.accept_states.clear()
+            self.accept_states.add(new_accept_state)
+</code></pre>
+<p>Take a DFA as an example:</p>
+<p><img src="https://med1844.github.io/lr-1-based-compiler-frontend-framework/min_dfa_0.drawio.svg" alt="min_dfa_0" /></p>
+<p>After <code>unify_accept</code>, we get this:</p>
+<p><img src="https://med1844.github.io/lr-1-based-compiler-frontend-framework/min_dfa_1.drawio.svg" alt="min_dfa_1" /></p>
+<p>Then reverse edges:</p>
+<p><img src="https://med1844.github.io/lr-1-based-compiler-frontend-framework/min_dfa_2.drawio.svg" alt="min_dfa_2" /></p>
+<p>Finally determinize:</p>
+<p><img src="https://med1844.github.io/lr-1-based-compiler-frontend-framework/min_dfa_3.drawio.svg" alt="min_dfa_3" /></p>
+<p>While we could tell that the simplest form would be only containing one state, due to the existence of start state $2$, we can't simplify it further.</p>
+<h2 id="automatically-testing-fa-structures">Automatically testing FA structures</h2>
+<p>It's hard to verify if constructed finite automata has the expected structure. It's possible to use graph isomorphism algorithms to check if the generated structure matches the expectation, but it's possible to do roughly the same task using hash. Here's some key requirements:</p>
+<ul>
+<li>back edges must contribute to the result</li>
+<li>the order we visit the out coming edges doesn't change results, i.e. the hash must use operator with communitativity</li>
+</ul>
+<p>Here's the algorithm outline:</p>
+<ol>
+<li>In the first pass, we store the order we visited each node during BFS in order to determine back edges and sink nodes, similar to Tarjan's SCC algorithm. We then use it to determine sink nodes (those have no out edges or all out edges are back edges).</li>
+<li>Initialize the hash for each node, according to the number of outcoming edges, and if it's accept state.<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">node_hash: Dict[FiniteAutomataNode, int] = {
+    node: len(node.successors) + (10000 * (node in self.accept_states))
+    for node in edges.keys()
+}
+</code></pre>
+</li>
+<li>We put these sink nodes to the second pass queue, and start updating hash backward on the graph. We only update the hash of not visited next node, using current node's hash. This means we ignores all backward edges, but since we initialized node hash using the number of outcoming edges, they still contributes to the result.<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">second_pass_que: Deque[FiniteAutomataNode] = deque()
+for node, edge in edges.items():
+    if node in self.accept_states and all(
+        visit_order[nxt_node] &lt;= visit_order[node] for _, nxt_node in edge
+    ):
+        second_pass_que.append(node)
+visited: Set[FiniteAutomataNode] = set()
+while second_pass_que:
+    cur_node = second_pass_que.popleft()
+    if cur_node in visited:
+        continue
+    visited.add(cur_node)
+    x = node_hash[cur_node]
+    x = ((x &gt;&gt; 16) ^ x) * 0x45D9F3B
+    x = ((x &gt;&gt; 16) ^ x) * 0x45D9F3B
+    node_hash[cur_node] = x
+    for prv_cond, prv_node in rev_edges[cur_node]:
+        if prv_node not in visited:
+            node_hash[prv_node] ^= (
+                hash(prv_cond) * node_hash[cur_node]
+            ) &amp; 0xFFFFFFFFFFFFFFFF
+            second_pass_que.append(prv_node)
+
+return node_hash[self.start_node]
+</code></pre>
+</li>
+</ol>
+<p>It's designed to handle NFA/DFAs so apparently it would not work for all directed graphs. A good approximation is enough here, as shown by these two tests:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def test_nfa_hash_0():
+    # test if a back edge causes difference in the hash result
+    s0 = FiniteAutomataNode()
+    e0 = FiniteAutomataNode()
+    s0.add_edge(CharTransition(&quot;a&quot;), e0)
+    e0.add_edge(EpsilonTransition(), s0)
+    nfa_0 = FiniteAutomata(s0, {e0})
+
+    s1 = FiniteAutomataNode()
+    e1 = FiniteAutomataNode()
+    s1.add_edge(CharTransition(&quot;a&quot;), e1)
+    nfa_1 = FiniteAutomata(s1, {e1})
+
+    assert hash(nfa_0) != hash(nfa_1)
+
+
+def test_nfa_hash_1():
+    # make sure that the order we add edges doesn&#x27;t effect hash result
+    s0 = FiniteAutomataNode()
+    e0 = FiniteAutomataNode()
+    s0.add_edge(CharTransition(&quot;a&quot;), e0)
+    s0.add_edge(CharTransition(&quot;b&quot;), e0)
+    nfa_0 = FiniteAutomata(s0, {e0})
+
+    s1 = FiniteAutomataNode()
+    e1 = FiniteAutomataNode()
+    s1.add_edge(CharTransition(&quot;b&quot;), e1)
+    s1.add_edge(CharTransition(&quot;a&quot;), e1)
+    nfa_1 = FiniteAutomata(s1, {e1})
+
+    assert hash(nfa_0) == hash(nfa_1)
+</code></pre>
+<h2 id="finite-automata-set">Finite Automata Set</h2>
+<p>It's nice that we have finite automata that could match single regex expression. However for lexers we need to match dozens of different kind of tokens at the same time. A straightforward but slow algorithm would be, try to match the input with all automatas. Pick the one with longest match. This results in $\mathcal{O}(|S| \times |T|)$ complexity where $S$ is the set of finite automata and $T$ is the token sequence.</p>
+<p>One way to improve the performance is to build a finite automata set. For each finite automata, we give all it's accept states with a unique color/id. We then merge them into one mega NFA and determinize it:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class FiniteAutomataSet:
+    def __init__(self, fa_set: Iterable[FiniteAutomata]):
+        # merge into one mega dfa
+        start = FiniteAutomataNode()
+        accept_states = set()
+        for i, fa in enumerate(fa_set):
+            start.add_edge(EpsilonTransition(), fa.start_node)
+            for accept_state in fa.accept_states:
+                accept_state.fa_id = i
+                accept_states.add(accept_state)
+        self.fa = FiniteAutomata(start, accept_states).determinize()
+</code></pre>
+<p>It's possible that the language described by some regex is a subset of the language described by other regex. It doesn't seems to be trivial to figure out such partial order for any two given regex. Thus, a simple solution would be, whenever there are multiple states in a closure that have been colored and there're multiple unique colors, we pick the smallest id as the closure's color.</p>
+<h3 id="matching">Matching</h3>
+<p>Since we have a mega-min-DFA, matching could be as simple as this:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class FiniteAutomataSet:
+    def match_one(self, s: Iterable[str]) -&gt; str:
+        return self.fa.match_first(s)
+</code></pre>
+<p>However we still need to implement the matching from scratch in the <code>FiniteAutomata</code> class.</p>
+<p>The logic is simple: as long as the input is valid, each char must either:</p>
+<ul>
+<li>there's only one outgoing edge that matches this char</li>
+<li>there's no outgoing edge matches this char, but current state is accept state.</li>
+</ul>
+<p>We greedily match as long as we can until we have no matching outgoing edge or we run out of the input stream. We reset the current state to be the start state and repeat until we run out of input. With that, we could finally implement the core scanner method:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def scan(self, s: str) -&gt; Iterable[Tuple[int, str]]:
+    deque_s = deque(s)
+    while deque_s:
+        (id, word) = self.match_one(self.dfa_set_json, deque_s)
+        if word:
+            yield id, word
+        else:
+            deque_s.popleft()  # if no match, simply move forward
+        while deque_s and deque_s[0] in {&quot; &quot;, &quot;\t&quot;, &quot;\n&quot;}:
+            deque_s.popleft()
+    yield -1, &quot;$&quot;
+</code></pre>
+<p>Which is essentially a min-dfa-based regex engine!</p>
+<h2 id="refactoring-lr-1-item-set-generation">Refactoring LR(1) Item Set Generation</h2>
+<p><em>WIP</em></p>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

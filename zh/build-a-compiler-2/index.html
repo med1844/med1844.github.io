@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<header id="page-header" class="header">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<h1 class="title">
+  从零写一个编译器（二）- SA, IR与实际应用
+</h1>
+<p class="date">2020-01-31</p>
+<h2 id="review-overview">Review &amp; Overview</h2>
+<p>在前一篇<a href="/zh/build-a-compiler-1/">文章</a>中，我已经实现了Lexer, Parser，并且已经能够建立Parse Tree了。</p>
+<p>接下来就是利用Semantic Analysis，也就是语义分析，创建Intermediate Representation，即中间表示。值得注意的是，可能会产生多种中间表示。</p>
+<p>由于不同的应用所需要做的事情不尽相同，因此在简要说明SA和IR之后，就会进入实例部分，通过两个实际能够运行的简单应用来说明SA与IR是如何工作的。</p>
+<h2 id="ir">IR</h2>
+<p>我觉得抛开IR，上来就干讲语义分析，多少会让人有种*&quot;我为啥要学这些&quot;*的疑惑。即便已经事先知道SA是用来产生IR的，但是因为对IR的具体细节了解甚少，所以学的时候依然会感到十分困惑，没有目的性。</p>
+<p>所以我在这里先简单说明一下一些简单且常见的IR。</p>
+<h3 id="ast">AST</h3>
+<p>全称Abstract Syntax Tree，语义树。</p>
+<p>它和Parse Tree的最大区别就在于，<strong>AST略去了很多没必要的节点</strong>。</p>
+<p>举个例子，考虑如下计算器文法:</p>
+<pre><code>START
+START -&gt; E
+E -&gt; E &quot;+&quot; T | E &quot;-&quot; T | T
+T -&gt; T &quot;*&quot; F | T &quot;&#x2F;&quot; F | F
+F -&gt; F &quot;**&quot; G | G
+G -&gt; &quot;(&quot; E &quot;)&quot; | &quot;int_const&quot;
+</code></pre>
+<p>其中<code>**</code>代表幂。再考虑<code>((1 + 2) * 3) ** 4 - 5 ** 6</code>这样略复杂的输入串。</p>
+<p>由于<code>()</code>和<code>**</code>都需要从<code>E</code>推导多次才能够到达，因此这个语法产生的Parse Tree相比之下非常臃肿:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/PT.png" alt="AST" /></p>
+<p>相比之下，它的AST就很简单了:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/AST_Tree.png" alt="AST_Tree" /></p>
+<h3 id="control-flow-graph">Control-Flow Graph</h3>
+<p>控制流图。似乎当初学校教C语言的时候有用这个来说明结构化程序。</p>
+<p>来看看用java实现的二分搜索的例子:</p>
+<pre data-lang="java" class="language-java "><code class="language-java" data-lang="java">public class test {
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 3, 4, 5, 6, 7};
+        int l = 0, r = arr.length, key = 5;
+        while (l &lt; r) {
+            int mid = l + ((r - l) &gt;&gt; 1);
+            if (arr[mid] == key) break;
+            else if (arr[mid] &lt; key) l = mid + 1;
+            else r = mid;
+        }
+        assert(l == r);
+        System.out.println(arr[l] == key);
+    }
+}
+</code></pre>
+<p>对应的控制流图如下:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/ControlFlowGraph.png" alt="ControlFlowGraph" /></p>
+<h3 id="three-address-code">Three-Address Code</h3>
+<p>三地址代码。格式大致是<code>a = b op c</code>。</p>
+<p>比方说对于:</p>
+<pre data-lang="c" class="language-c "><code class="language-c" data-lang="c">int test(int n) {
+    return (n - 2) * ((n - 2) * (n - 2) + 6 * (n - 2) + 11) &#x2F; 3;
+}
+</code></pre>
+<p>只关注<code>return</code>后的表达式的话，它的三地址代码应该是:</p>
+<pre><code>t0 = n - 2
+t1 = n - 2
+t2 = n - 2
+t3 = t1 * t2
+t4 = n - 2
+t5 = 6 * t4
+t6 = t3 + t5
+t7 = t6 + 11
+t8 = t0 * t7
+t9 = t8 &#x2F; 3
+</code></pre>
+<p>当然上面的写法只是为了好看，实际上是使用tuple来存储以上信息的:</p>
+<pre><code>(SUB, n, 2, t0)
+(SUB, n, 2, t1)
+(SUB, n, 2, t2)
+(MUL, t1, t2, t3)
+(SUB, n, 2, t4)
+(MUL, 6, t4, t5)
+(ADD, t3, t5, t6)
+(ADD, t6, 11, t7)
+(MUL, t0, t7, t8)
+(DIV, t8, 3, t9)
+</code></pre>
+<h3 id="qi-ta-ir">其他IR</h3>
+<p>包括但不限于:</p>
+<ul>
+<li>Dependence Graph</li>
+<li>Call Graph</li>
+<li>Single Static Assignment Form</li>
+<li>Hybrid
+<ul>
+<li>Control-Flow Graph &amp; TAC Blocks</li>
+</ul>
+</li>
+</ul>
+<h2 id="semantic-analysis">Semantic Analysis</h2>
+<p>语义分析。它出现的原因是，有时我们需要用到上下文相关的信息，而CFG产生的Parse Tree不能提供这些。</p>
+<p>毕竟是<em>Context-Free</em> Grammar。</p>
+<p>因此，我们需要在CFG的基础上，通过额外的信息，来使信息能够在上下文无关的Parse Tree的<strong>不同节点中传递</strong>，进而实现<strong>上下文相关</strong>的分析。</p>
+<p>举一个非常常见的例子: <strong>类型系统</strong>。</p>
+<p>在上下文无关文法中，仅凭Parse Tree是无法明确每个变量的类型的。因此，类似如下的代码可以通过Parser:</p>
+<pre data-lang="java" class="language-java "><code class="language-java" data-lang="java">String a = &quot;123&quot;;
+int b = 5 + a;
+</code></pre>
+<p>但是怎么可能让一个<code>int</code>和<code>String</code>相加呢? 仅从逻辑上来看，就可以知道不会有任何有意义的结果。</p>
+<p>所以，在对<code>5 + a</code>进行分析的时候，就要检查它们的类型相加之后是否合法。由于<code>a</code>的类型是上文定义的，因此是上下文相关的分析。</p>
+<p>另外一个例子就是<strong>作用域</strong>。显然你不能跨域访问变量:</p>
+<pre data-lang="java" class="language-java "><code class="language-java" data-lang="java">for (int i = 0; i &lt; 5; ++i);
+System.out.println(i);
+</code></pre>
+<p>上述代码显然是可以通过Parser的，但是确实是非法的代码。</p>
+<p>那么要怎么在不同节点间传递数据呢? 语义分析又要怎么和IR联系起来呢?</p>
+<h3 id="shu-xing-wen-fa">属性文法</h3>
+<p>简单来说，就是给Parse Tree的节点附加属性，并且给这些属性提供操作。通过预先定义的动作，我们可以建立AST，建立中间变量，生成TAC序列，生成Control-Flow Graph，建立符号表，建立作用域符号表等。</p>
+<p>回到最简单的计算器的例子，我们可以给每个文法加上对应的动作，来计算答案:</p>
+<pre><code>START
+START -&gt; STMT
+STMT -&gt; Assignment                 { print(Assignment.val) }
+      | E                          { print(E.val) }
+E -&gt; E &quot;+&quot; T                       { E.val = E1.val + T.val }
+   | E &quot;-&quot; T                       { E.val = E1.val - T.val }
+   | T                             { E.val = T.val}
+T -&gt; T &quot;*&quot; F                       { T.val = T1.val * F.val }
+   | T &quot;&#x2F;&quot; F                       { T.val = T1.val &#x2F; F.val }
+   | F                             { T.val = F.val }
+F -&gt; F &quot;**&quot; G                      { F.val = F1.val ** G.val }
+   | G                             { F.val = G.val }
+G -&gt; &quot;(&quot; E &quot;)&quot;                     { G.val = E.val }
+   | &quot;int_const&quot;                   { G.val = int(int_const.lexString) }
+   | &quot;id&quot;                          { G.val = d[id.lexString]}
+Assignment -&gt; &quot;id&quot; &quot;=&quot; &quot;int_const&quot; { d[id.lexString] = int(int_const.lexString) 
+                                     Assignment.val = d[id.lexString] }
+</code></pre>
+<p>这样就可以实现最简单的交互式计算器。</p>
+<p>有的时候，文法需要在产生式中间使用，比方说:</p>
+<pre><code>Declaration -&gt; Type { id.type = Type.lexString } &quot;id&quot;
+</code></pre>
+<p>这种情况下，一般会需要根据前面已经计算出来的属性，去设置后面那些节点的属性。</p>
+<p><em>如果去看教科书，可能还会看到利用依赖图和拓扑排序算出计算顺序的。不过目前在我的项目里还没看到。</em></p>
+<h3 id="shi-xian-parse-tree">实现Parse Tree</h3>
+<p>核心是正确地实现Parse Tree，确保它能够支持属性文法。同时，尽可能让编写动作变得简单易懂，可读性强。</p>
+<p>为了能够在Parse Tree Node中设置必要的属性，而不用每次都通过<code>node[&quot;...&quot;]</code>这样的繁琐操作来对属性进行设置，需要实现<code>__setattr__</code>和<code>__getattr__</code>方法。</p>
+<p>又考虑到AST可能也要用到基于属性文法的翻译，因此建立两个基类: <a href="https://github.com/medioqrity/newCompilerTest/blob/master/tree.py#L1"><code>TreeNode</code></a>和<a href="https://github.com/medioqrity/newCompilerTest/blob/master/tree.py#L168"><code>Tree</code></a>。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class TreeNode:
+
+    SPLIT_LENGTH = 3
+
+    def __init__(self, content):
+        super().__setattr__(&quot;__content&quot;, content)
+        super().__setattr__(&quot;__d&quot;, {})
+        super().__setattr__(&quot;__childs&quot;, [])
+
+
+class Tree:
+
+    def __init__(self, root):
+        assert isinstance(root, TreeNode)
+        self.__root = root
+</code></pre>
+<p>通过<code>__d</code>记录属性名值对的映射关系。</p>
+<p><em>注: 这里，如果不用<code>super().__setattr__()</code>和<code>__getattribute__()</code>的话，会因为获取<code>self.__d</code>导致无限递归。</em></p>
+<p>其中占很长一部分的<code>def format(self)</code>是用来打印<strong>以当前节点为根节点的整棵树</strong>的方法。因为要使得输出美观，有非常多的变量需要控制，因此实在繁琐; 又因为与编译没有太大关系，倒更像是计算机图形学的内容，因此没有做注释。</p>
+<p>接下来是<a href="https://github.com/medioqrity/newCompilerTest/blob/master/parseTree.py#L4"><code>PTNode</code></a>，即Parse Tree Node:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">from core.myToken import Token
+from core.Types import Types
+from core.tree import TreeNode, Tree
+
+
+class PTNode(TreeNode):
+
+    def __init__(self, content, isTerminal=False, terminalType=None, grammarID=-1):
+        # content may be either Token or Str
+        super().__init__(content)
+        super().setAttribute(&quot;__grammarID&quot;, grammarID)
+</code></pre>
+<p>额外记录了grammar ID，也就是在说明当前节点和它的子节点对应着哪个产生式。</p>
+<p>然后是用于将函数注册到对应产生式上的<a href="https://github.com/medioqrity/newCompilerTest/blob/master/parseTree.py#L30"><code>ParseTreeActionRegister</code></a>类:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class ParseTreeActionRegister:
+
+    def __init__(self, cfg):
+        self.__productionToAction = {}
+        self.__cfg = cfg
+
+    def production(self, *productions, index=-1):
+        def decorate(function):
+            for prod in productions:
+                self.__productionToAction.\
+                    setdefault(self.__cfg.getIDByRawGrammar(prod), {})\
+                        [index] = function
+            return function
+        return decorate
+</code></pre>
+<p>我将<code>production</code>方法写成了装饰器。这样，就不用做出类似于<em>定义一大堆函数然后再用一个手动维护的字典来说明函数和产生式的对应情况</em>这种维护起来非常麻烦的事情了。</p>
+<p>光有注册的工具还不够，需要明确<a href="https://github.com/medioqrity/newCompilerTest/blob/master/parseTree.py#L56"><code>ParseTree</code></a>内部是怎么使用<code>ActionRegister</code>提供的函数的，才能够写出正确的动作:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class ParseTree(Tree):
+
+    def evaluate(self, ar, currentNode=None):
+	# get mapping
+        productionToAction = ar.getProductionMapping()
+
+        # get current node
+        if currentNode is None:
+            currentNode = self.getRoot()
+        
+        # try to perform action when iterating
+        grammarID = currentNode.getGrammarID()
+        for i, child in enumerate(currentNode.getChilds()):
+            productionToAction[grammarID][i](currentNode, *currentNode.getChilds())
+            self.evaluate(ar=ar, currentNode=child)
+</code></pre>
+<p>通过<code>evaluate(ar=register)</code>方法，就可以对整棵树应用预先定义好的规则了。</p>
+<p>由于<code>productionToAction[grammarID][i]</code>的返回值是一个函数，不妨记为<code>func</code>，那么调用方式就是<code>func(currentNode, *currentNode.getChilds())</code>。后面一个参数使用了<em>自动解包</em>，这么做的好处很快就能看到。</p>
+<h2 id="dai-bian-liang-cun-chu-gong-neng-de-jian-yi-biao-da-shi-ji-suan-qi">带变量存储功能的简易表达式计算器</h2>
+<p>在写完Parse Tree之后，就可以来实现一个简单的计算器了。</p>
+<p>在一切开始之前，首先书写CFG:</p>
+<pre><code>START
+START -&gt; Statement
+Statement -&gt; Assignment | E
+E -&gt; E &quot;+&quot; T | E &quot;-&quot; T | T
+T -&gt; T &quot;*&quot; F | T &quot;&#x2F;&quot; F | T &quot;%&quot; F | F
+F -&gt; F &quot;^&quot; G | G
+G -&gt; &quot;(&quot; E &quot;)&quot; | &quot;int_const&quot; | &quot;id&quot;
+Assignment -&gt; &quot;id&quot; &quot;=&quot; E
+</code></pre>
+<p>接下来就可以开始写代码了。第一步，建立CFG、生成该CFG对应的Action &amp; Goto表、并声明Action Register:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">cfg = CFG.createCFGByFileName(&quot;CFGs&#x2F;CFG4&quot;)
+action, goto = myParser.generateActionAndGoto(cfg)
+ar = ActionRegister(cfg)
+</code></pre>
+<p>由于要存储变量，因此设定一个字典:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">global d
+d = {}
+</code></pre>
+<p>然后注册对应的动作:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">@ar.production(&#x27;Statement -&gt; E&#x27;, &#x27;Statement -&gt; Assignment&#x27;)
+def __stmt(stmt, _):
+    print(_.val)
+
+@ar.production(&#x27;E -&gt; E &quot;+&quot; T&#x27;)
+def __e0(e, e1, _, t):
+    e.val = e1.val + t.val
+
+@ar.production(&#x27;E -&gt; E &quot;-&quot; T&#x27;)
+def __e1(e, e1, _, t):
+    e.val = e1.val - t.val
+
+# omitted
+
+@ar.production(&#x27;G -&gt; &quot;int_const&quot;&#x27;)
+def __g1(g, int_const):
+    g.val = int(int_const.getContent())
+
+@ar.production(&#x27;G -&gt; &quot;id&quot;&#x27;)
+def __g2(g, id_):
+    global d
+    g.val = d[id_.getContent()]
+
+@ar.production(&#x27;Assignment -&gt; &quot;id&quot; &quot;=&quot; E&#x27;)
+def __assign(assi, id_, _, E):
+    d[id_.getContent()] = E.val
+    assi.val = d[id_.getContent()]
+</code></pre>
+<p>通过<em>自动解包</em>，直接将子节点作为参数传进来，省去了<code>t1, _, f = t.getChilds()</code>这类的臃肿且重复的语句，写起来确实很方便。</p>
+<p>最后写一个<code>while</code>循环就可以实现读入，建树并求值的过程了:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">while True:
+    try:
+        inputString = input(&quot;&gt;&gt;&gt; &quot;)
+        tokenList = lexer.parse(inputString)
+        pt = myParser.parse(cfg, tokenList, action, goto)
+        pt.evaluate(ar)
+    except EOFError:
+        break
+</code></pre>
+<p>来看看实际的结果:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/calc.png" alt="calc" /></p>
+<p>这个项目中，只涉及到了翻译。不过，只需稍微改变一点文法，就可以将它与AST结合起来，生成三地址代码:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">@ar.production(&#x27;E -&gt; E &quot;+&quot; T&#x27;)
+def __e0(e, e1, _, t):
+    e.node = ASTNode(&quot;ADD&quot;, e1.node, t.node)
+
+@ar.production(&#x27;E -&gt; E &quot;-&quot; T&#x27;)
+def __e1(e, e1, _, t):
+    e.node = ASTNode(&quot;SUB&quot;, e1.node, t.node)
+
+# ...
+</code></pre>
+<p>建立ASTNode后，声明一个用于生成三地址代码的函数:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def dfs(cur, childs):
+    global count
+    if not childs:
+        cur.varName = cur.getContent()
+    else:
+        cur.varName = &quot;t%d&quot; % count
+        count += 1
+        l, r = childs
+        print(&quot;%s %s %s %s&quot; % (cur.getContent(), l.varName, r.varName, cur.varName))
+</code></pre>
+<p>最后，稍微修改一下<code>while</code>主循环部分，建AST并应用该函数即可:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">while True:
+    try:
+        count = 0
+        inputString = input(&quot;&gt;&gt;&gt; &quot;)
+        tokenList = lexer.parse(inputString)
+        pt = myParser.parse(cfg, tokenList, action, goto)
+        pt.evaluate(ar)
+        ast = AbstractSyntaxTree(pt.getRoot().node)
+        print(ast)
+        ast.apply(dfs)
+
+    except EOFError:
+        break
+</code></pre>
+<p>得到的结果大致如下:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/calc_AST.png" alt="calc_AST" /></p>
+<h2 id="jian-yi-shu-ju-ku-cha-xun-yin-qing">简易数据库查询引擎</h2>
+<p>CCSP 2019的那道<a href="https://medioqrity.github.io/2019/10/17/CCSP-2019%E6%B8%B8%E8%AE%B0/#SQL-Query">SQL查询</a>一直是我心心念念想要补的题。</p>
+<p>我想，也许现在我终于有战胜它的能力了。</p>
+<hr />
+<h3 id="yuan-ti-ti-gan">原题题干</h3>
+<p>顿顿想要建立一个简单的教务管理数据库，用于存储学生的考试成绩并支持一些基本的查询操作。</p>
+<h4 id="shu-ju-ge-shi">数据格式</h4>
+<p>该数据库包含以下五张<strong>数据表</strong>：</p>
+<pre><code>Student(sid, dept, age)
+</code></pre>
+<p>学生信息表：<code>sid</code> 为主键，表示学生 ID；<code>dept</code> 表示学生所在院系名称；<code>age</code> 表示学生的年龄。</p>
+<pre><code>Course(cid, name)
+</code></pre>
+<p>课程信息表：<code>cid</code> 为主键，表示课程 ID；<code>name</code> 表示课程名称。</p>
+<pre><code>Teacher(tid, dept, age)
+</code></pre>
+<p>教师信息表：<code>tid</code> 为主键，表示教师 ID；<code>dept</code> 表示教师所在院系名称；<code>age</code> 表示教师的年龄。</p>
+<pre><code>Grade(sid, cid, score)
+</code></pre>
+<p>成绩信息表：<code>sid</code> 和 <code>cid</code> 分别来自 <code>Student</code> 表和 <code>Course</code> 表的主键（即每条<strong>记录</strong>中的 <code>sid</code> 和 <code>cid</code> 一定存在于相应的<strong>表</strong>中，下同），二者一起作为该表的主键；<code>score</code> 表示该学生这门课程的成绩。</p>
+<pre><code>Teach(cid, tid)
+</code></pre>
+<p>授课信息表：<code>cid</code> 和 <code>tid</code> 分别来自 <code>Course</code> 表和 <code>Teacher</code> 表的主键，二者一起作为该表的主键；需要注意的是，一门课程可以有多个老师授课。</p>
+<p>注：**主键（Primary Key）**可以唯一标识表中的每条记录，换言之在一张表中所有记录的主键互不相同。</p>
+<p>在上述表中，<code>age</code> 和 <code>score</code> 是 $[0,100]$ 的整数，其余都是长度小于等于 $10$ 的非空字符串。其中三个主键 <code>sid</code>、<code>cid</code> 和 <code>tid</code> 由数字 <code>0...9</code> 组成，而 <code>name</code> 和 <code>dept</code> 则由大小写字母组成。</p>
+<h4 id="cha-xun-yu-ju">查询语句</h4>
+<p>该数据库支持使用一种简单的 <code>SELECT</code> 语句进行查询，文法定义如下所述。最终所有的查询语句都可以由 <code>QUERY</code> 符号推导而来。</p>
+<p>在所有定义中，<code>::=</code> 表示其左侧的符号可以推导为右侧的符号串，其中带单引号的符号表示此符号为固定的字符串，不带引号的则表示符号还需要进行进一步推导。<code>[]</code> 表示文法中的可选内容。如果一个符号存在多种推导方式 <code>A ::= B</code> 和 <code>A ::= C</code>，则可以简写为 <code>A ::= B | C</code>。</p>
+<pre><code>QUERY ::= &#x27;SELECT&#x27; &#x27;*&#x27; &#x27;FROM&#x27; TABLES [&#x27;WHERE&#x27; EXPR]
+QUERY ::= &#x27;SELECT&#x27; COLUMNS &#x27;FROM&#x27; TABLES [&#x27;WHERE&#x27; EXPR]
+</code></pre>
+<p>从指定的<strong>表</strong>（<code>TABLES</code>）中查询满足<strong>筛选条件</strong>（<code>EXPR</code>）的<strong>记录</strong>，并按照指定的<strong>列</strong>（<code>COLUMNS</code>）输出。如果没有给出<strong>筛选条件</strong>，则返回所有的<strong>记录</strong>。</p>
+<pre><code>TABLES ::= TABLE_NAME | TABLE_NAME &#x27;,&#x27; TABLE_NAME
+TABLE_NAME ::= &#x27;Student&#x27; | &#x27;Grade&#x27; | &#x27;Course&#x27; | &#x27;Teach&#x27; | &#x27;Teacher&#x27;
+</code></pre>
+<p><code>TABLES</code> 可以包含多张<strong>表</strong>，此时新表中的<strong>列</strong>是这些表中列的笛卡尔积，一个例子如下所示。</p>
+<pre><code>+---------+ +---------+ +------------+ +------------+
+| Table A | | Table B | | Table A, B | | Table B, A |
++---------+ +---------+ +------------+ +------------+
+| a1      | | b1      | | a1, b1     | | b1, a1     |
+| a2      | | b2      | | a1, b2     | | b1, a2     |
++---------+ | b3      | | a1, b3     | | b2, a1     |
+            +---------+ | a2, b1     | | b2, a2     |
+                        | a2, b2     | | b3, a1     |
+                        | a2, b3     | | b3, a2     |
+                        +------------+ +------------+
+</code></pre>
+<p>本题中约定 <code>TABLES</code> <strong>仅会包含一张或两张不同的表</strong>。</p>
+<pre><code>COLUMNS ::= COLUMN | COLUMNS &#x27;,&#x27; COLUMN
+COLUMN ::= [TABLE_NAME &#x27;.&#x27;] COLUMN_NAME
+COLUMN_NAME ::= &#x27;sid&#x27; | &#x27;cid&#x27; | &#x27;tid&#x27; | &#x27;age&#x27; | &#x27;score&#x27; | &#x27;dept&#x27; | &#x27;name&#x27;
+</code></pre>
+<p><code>COLUMNS</code> 也是递归定义，即由逗号分隔的至少一个 <code>COLUMN</code> 组成。在无歧义时（即 <code>TABLES</code> 中只有<strong>唯一的表</strong>含有该<strong>列</strong>），<code>COLUMN</code> 中的 <code>TABLE_NAME</code> 是可选的。<code>SELECT age FROM Student, Teacher</code> 是一种典型的歧义句式，因为无法确定其中想要选取的 <code>age</code> 是学生还是教师的年龄。</p>
+<p>虽然在文法上一个 <code>COLUMN</code> 可以由任意 <code>TABLE_NAME</code> 和 <code>COLUMN_NAME</code> 组合而成，但在实际处理时，这两者需要符合上面定义的表结构。比如 <code>Course.sid</code> 就是一种错误的写法，因为 <code>Course</code> 表中并没有 <code>sid</code> 这一列。</p>
+<pre><code>EXPR ::= COND | EXPR &#x27;AND&#x27; COND
+COND ::= COLUMN CMP CONSTANT | COLUMN &#x27;=&#x27; COLUMN
+CMP ::= &#x27;&gt;&#x27; | &#x27;=&#x27; | &#x27;&lt;&#x27;
+</code></pre>
+<p>其中：</p>
+<ul>
+<li><code>EXPR</code> 是一个合取布尔表达式，由若干个<strong>比较条件</strong>（<code>COND</code>）用 <code>AND</code> 连接而成，表示<strong>筛选条件</strong>（即满足该条件的<strong>记录</strong>才会被输出）。</li>
+<li><code>CONSTANT</code> 没有文法定义，它表示一个<strong>常量</strong>，且其类型和数据范围与相比较的 <code>COLUMN</code> 一致；如果是字符串类型，还需用双引号括起（例如 <code>&quot;Sam&quot;</code>）。</li>
+</ul>
+<p>这里我们额外规定：</p>
+<ul>
+<li><strong>列</strong>与<strong>常量</strong>进行比较时（<code>COLUMN CMP CONSTANT</code>），整数类型（<code>age</code>、<code>score</code>）可以进行大于、小于和等于三种判断，字符串类型只能做等于判断；</li>
+<li>两<strong>列</strong>进行比较时（<code>COLUMN = COLUMN</code>），它们需来自不同的<strong>表</strong>且二者的<strong>列名</strong>（<code>COLUMN_NAME</code>）必须相同；</li>
+<li>在一个 <code>EXPR</code> 中，<code>COLUMN CMP CONSTANT</code> 类型的 <code>COND</code> 个数不限，但 <code>COLUMN = COLUMN</code> 最多只能出现一次。</li>
+</ul>
+<p>查询语句大小写敏感，全部的<strong>保留字</strong>包括：</p>
+<pre><code>SELECT, *, FROM, WHERE, AND, Student, Course, Teacher, Grade, Teach
+sid, cid, tid, dept, name, age, score
+</code></pre>
+<p>全部的<strong>分隔符</strong>包括：<code>,</code>, <code>.</code>, <code>&gt;</code>, <code>=</code>, <code>&lt;</code>, <code> </code>（空格）。</p>
+<p>双引号（<code>&quot;</code>）应视作字符串<strong>常量</strong>的一部分而非<strong>保留字</strong>或<strong>分隔符</strong>。</p>
+<p>每个<strong>保留字</strong>和<strong>常量</strong>（<code>CONSTANT</code>）可视作查询语句中的一个<strong>基本单位</strong>，在格式上我们约定：</p>
+<ul>
+<li>每条查询语句占一行；</li>
+<li><strong>基本单位</strong>不可分割；</li>
+<li>为避免歧义，两个<strong>基本单位</strong>之间应至少有一个<strong>分隔符</strong>，并且允许存在任意多的空格；</li>
+<li>一行总长度不超过 $100$ 个字符。</li>
+</ul>
+<h4 id="jie-guo-shu-chu">结果输出</h4>
+<p>对每条查询输出一张<strong>表</strong>，<strong>列</strong>由 <code>COLUMNS</code> 指定，每行为一条满足<strong>筛选条件</strong>（<code>EXPR</code>）的<strong>记录</strong>（不同的<strong>列</strong>间用一个空格分隔）。这里只需要输出所有满足条件的<strong>记录</strong>，不需要打印表头；查询结果为空则不输出；<strong>字符串类型无需输出双引号</strong>。若想输出所有的<strong>列</strong>，可以用 <code>*</code> 代替 <code>COLUMNS</code>；若 <code>TABLES</code> 中只有一张<strong>表</strong>，此时应输出该<strong>表</strong>的全部<strong>列</strong>；如果有第二张<strong>表</strong>，应输出第一张<strong>表</strong>的全部<strong>列</strong>与二张<strong>表</strong>的全部<strong>列</strong>的笛卡尔积；表内部的<strong>列</strong>按照上文定义时给出的顺序排序。</p>
+<p>如果 <code>TABLES</code> 仅含一张<strong>表</strong>，则按该<strong>表</strong>的顺序依次输出符合条件的<strong>记录</strong>。若 <code>TABLES</code> 包含两张<strong>表</strong>（形如 <code>A,B</code>），则先考虑 A 的顺序，再考虑 B 的顺序（参考前文中两张表做笛卡尔积的例子）。</p>
+<hr />
+<h3 id="cfg">CFG</h3>
+<p>题干中给出了很明确的CFG。照抄就可以用了:</p>
+<pre><code>Start
+Start -&gt; Query
+Query -&gt; &quot;SELECT&quot; Columns &quot;FROM&quot; Tables | &quot;SELECT&quot; Columns &quot;FROM&quot; Tables &quot;WHERE&quot; Expr
+Tables -&gt; Tables &quot;,&quot; TableName | TableName
+TableName -&gt; &quot;id&quot;
+Columns -&gt; Columns &quot;,&quot; Column | &quot;*&quot; | Column
+Column -&gt; ColumnName | TableName &quot;.&quot; ColumnName
+ColumnName -&gt; &quot;id&quot;
+Expr -&gt; Expr &quot;AND&quot; Cond | Cond
+Cond -&gt; Column CMP Constant | Column &quot;=&quot; Column
+CMP -&gt; &quot;&lt;&quot; | &quot;=&quot; | &quot;&gt;&quot;
+Constant -&gt; &quot;int_const&quot; | &quot;str_literal&quot;
+</code></pre>
+<h3 id="shu-ju-ku-ji-ben-lei-ji-qi-jian-lue-shi-xian">数据库基本类及其简略实现</h3>
+<ul>
+<li>
+<p><code>class Row</code></p>
+<p>广义上的一条记录。里面放的是一个列表。它并不存储每一列的信息。否则会导致大量重复的内存开销。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class Row:
+    &quot;&quot;&quot;
+    Basic Row object
+    &quot;&quot;&quot;
+
+    def __init__(self, data=None):
+        if data is None:
+            data = []
+        assert isinstance(data, list)
+        self.__data = list(data)
+</code></pre>
+</li>
+<li>
+<p><code>class Column</code></p>
+<p>定义一列数据。包含TableName和ColumnName。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class Column:
+
+    def __init__(self, tableName, columnName):
+        self.__tn = tableName
+        self.__cn = columnName
+</code></pre>
+</li>
+<li>
+<p><code>class Table</code></p>
+<p>表。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class Table:
+    &quot;&quot;&quot;
+    Table, containing a list of Row objects, and the definition of every column
+    &quot;&quot;&quot;
+
+    def __init__(self, name, columnDef, rows=None):
+        &quot;&quot;&quot;
+        columnDef is the definition of columns, including a list of Column objects.
+        The reason for table name is because a temporary merged table may contain columns
+        from other tables.
+        &quot;&quot;&quot;
+        assert isinstance(name, str)
+        self.__name = name
+        assert isinstance(columnDef, tuple)
+        self.__cd = columnDef
+        self.__c2i = {}  # column to integer
+        # omitted
+</code></pre>
+<p>由于列的定义都是放在Table内的，因此要获取Row内的对应数据还需要先从table内获取index才行。为了快速获取index，设置了字典<code>self.__c2i</code>。</p>
+</li>
+<li>
+<p><code>class AtomCond</code></p>
+<p>一个原子条件，只有一个操作符和两个操作数。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">class AtomCond:
+
+    def __init__(self, operator, lOperand, rOperand):
+        &quot;&quot;&quot;
+        operands must be Column object or constant
+        &quot;&quot;&quot;
+        assert isinstance(operator, Operators)
+        self.__operator = operator
+        self.__lop = lOperand
+        self.__rop = rOperand
+        
+    def check(self, row, table): pass
+    
+    def isApplicable(self, table) -&gt; bool: pass
+</code></pre>
+<p>额外提供了两个函数。<code>check</code>是用于确定这一行是否符合条件的。</p>
+<p>对于两表合并的情况来说，<code>row</code>是两个记录产生的新纪录。因此才不是<code>check(self, row1, row2)</code>这种写法。</p>
+<p><code>isApplicable(table)</code>函数确定该条件是否适用于<code>table</code>。由于在对分析树进行翻译时，我们是无法得知<code>cond</code>的每个operand是否都隶属于当前表的。因此只能运行时检查了。</p>
+</li>
+<li>
+<p><code>def mergeWithNoCond(table1, table2) -&gt; table</code></p>
+<p>无条件合并两张表，返回一张新表。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def mergeWithNoCond(newTableName, table1, table2):
+    newColDef, needToAdd = mergeColDef(table1.getColumnDef(), table2.getColumnDef())
+    resultTable = Table(newTableName, newColDef)
+    for r1 in table1.getRows():
+        for r2 in table2.getRows():
+            resultTable.addRow(mergeRows(r1, r2, needToAdd))
+    return resultTable
+</code></pre>
+</li>
+<li>
+<p><code>def mergeWithCond(table1, table2, atom_cond) -&gt; table</code></p>
+<p>根据<code>atom_cond</code>合并两张表，返回一张新表。可以在这里利用hash table将时间复杂度从$\mathcal{O}(n \cdot m)$降到$\mathcal{O}(n + m)$。</p>
+<p>这里的<code>atom_cond</code>就是最基础的条件，也就是只包含一个Operator和两个Operand的条件。</p>
+<p>分类讨论，如果条件可以使用哈希表加速，就加速。否则合并生成每个可能的新记录，然后通过<code>cond.check()</code>确定是否符合条件。</p>
+<p>实现过于冗长，因而省略。</p>
+</li>
+<li>
+<p><code>def mergeRow(row1, row2, needToAdd) -&gt; row</code></p>
+<p>合并两条记录。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def mergeRows(row1, row2, needToAdd) -&gt; Row:
+    result = list(row1.getData())
+    for i, _ in enumerate(row2.getData()):
+        if needToAdd[i]:
+            result.append(_)
+    return Row(result)
+</code></pre>
+<p>由于table1和table2可能存在一些Column是重复的，因此需要一个额外的bool list，记载row2每个index是否需要加入新记录中。</p>
+</li>
+<li>
+<p><code>def selectColumn(table, *columns) -&gt; table</code></p>
+<p>从table中选择一些列，返回一个新的table。</p>
+</li>
+<li>
+<p><code>def applyFilterCond(newTableName, table, cond)</code></p>
+<p>对整个表按<code>cond</code>进行筛选，返回一个新的表。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">def applyFilterCond(newTableName, table, cond):
+    resultTable = Table(newTableName, table.getColumnDef())
+    if not cond.isApplicable(resultTable):
+        return table  # thus nothing would change
+    for row in table.getRows():
+        if cond.check(row, resultTable):
+            resultTable.addRow(row)
+    return resultTable
+</code></pre>
+</li>
+</ul>
+<p>通过这些函数，应该可以<strong>翻译出一段python代码</strong>，用于执行基于python的数据库库类的查询。比方说考虑如下查询语句:</p>
+<pre data-lang="sql" class="language-sql "><code class="language-sql" data-lang="sql">SELECT Student.sid, Course.name, score
+FROM Student, Grade, Course
+WHERE Student.sid = Grade.sid AND Course.cid = Grade.cid
+</code></pre>
+<p>应该可以翻译成:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">col0 = Column(&#x27;Student&#x27;, &#x27;sid&#x27;)
+col1 = Column(&#x27;Course&#x27;, &#x27;name&#x27;)
+col2 = Column(None, &#x27;score&#x27;)
+col3 = Column(&#x27;Student&#x27;, &#x27;sid&#x27;)
+col4 = Column(&#x27;Grade&#x27;, &#x27;sid&#x27;)
+con0 = AtomCond(Operators.EQ, col3, col4)
+col5 = Column(&#x27;Course&#x27;, &#x27;cid&#x27;)
+col6 = Column(&#x27;Grade&#x27;, &#x27;cid&#x27;)
+con1 = AtomCond(Operators.EQ, col5, col6)
+t0 = deepcopy(Student)
+t1 = deepcopy(Grade)
+t2 = deepcopy(Course)
+t3 = mergeWithCond(&#x27;t3&#x27;, t0, t1, con0)
+t4 = mergeWithCond(&#x27;t4&#x27;, t3, t1, con1)
+t5 = mergeWithCond(&#x27;t5&#x27;, t4, t2, con0)
+t6 = mergeWithCond(&#x27;t6&#x27;, t5, t2, con1)
+t7 = selectColumns(t6, col0, col1, col2)
+print(t7)
+</code></pre>
+<p>之后交给python的<code>exec()</code>就可以执行了。</p>
+<h3 id="fan-yi">翻译</h3>
+<h4 id="columns-conditions">Columns &amp; Conditions</h4>
+<p>先来考虑比较容易实现的部分: <code>Column</code>和<code>Condition</code>。</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">@ptar.production(&#x27;Column -&gt; ColumnName&#x27;)
+def _col0(col, coln):
+    col.varName = getColId()
+    addStmt(&quot;%s = Column(None, &#x27;%s&#x27;)&quot; % (col.varName, coln.name))
+
+@ptar.production(&#x27;Column -&gt; TableName &quot;.&quot; ColumnName&#x27;)
+def _col1(col, tn, dot, cn):
+    col.varName = getColId()
+    addStmt(&quot;%s = Column(&#x27;%s&#x27;, &#x27;%s&#x27;)&quot; % (col.varName, tn.name, cn.name))
+    
+@ptar.production(&#x27;Cond -&gt; Column CMP Constant&#x27;)
+def _cond0(cond, col, cmp_, const):
+    cond.varName = getConId()
+    cond.canAcc = False
+    addStmt(&quot;%s = AtomCond(Operators.%s, %s, %s)&quot; % (cond.varName, sym2op[cmp_.op], col.varName, const.val))
+
+@ptar.production(&#x27;Cond -&gt; Column &quot;=&quot; Column&#x27;)
+def _cond1(cond, col, eq, col1):
+    cond.varName = getConId()
+    cond.canAcc = True
+    addStmt(&quot;%s = AtomCond(Operators.EQ, %s, %s)&quot; % (cond.varName, col.varName, col1.varName))
+</code></pre>
+<p>通过<code>addStmt</code>，就能将这几条语句加进全局的最终结果里了。</p>
+<p>这些<code>Column, Cond</code>节点，都是会包含<code>varName</code>属性的，用于确定每个节点的变量名。</p>
+<p>接下来把<code>Columns</code>和<code>Cond</code>都整理进列表里:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">@ptar.production(&#x27;Columns -&gt; Columns &quot;,&quot; Column&#x27;)
+def _cols0(cols, cols1, comma, col):
+    cols.list = cols1.list
+    cols.list.append(col.varName)
+
+@ptar.production(&#x27;Columns -&gt; Column&#x27;)
+def _cols1(cols, col):
+    cols.list = [col.varName]
+
+@ptar.production(&#x27;Columns -&gt; &quot;*&quot;&#x27;)
+def _cols2(cols, star):
+    cols.list = [&#x27;&quot;*&quot;&#x27;]
+
+@ptar.production(&#x27;Expr -&gt; Expr &quot;AND&quot; Cond&#x27;)
+def _ex0(expr, expr1, and_, cond):
+    expr.list = expr1.list
+    expr.list.append((cond.varName, cond.canAcc))
+
+@ptar.production(&#x27;Expr -&gt; Cond&#x27;)
+def _ex1(expr, cond):
+    expr.list = [(cond.varName, cond.canAcc)]
+</code></pre>
+<p>这里的<code>canAcc</code>属性是判断这个条件可否用于利用hash table对查询进行加速。后面会用到。</p>
+<p>这样，我们应该就能够在根节点访问到这两个list:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/PTandList.png" alt="PTandList" /></p>
+<h4 id="tables">Tables</h4>
+<p>由于合并表的时候需要用到<code>Expr</code>的信息，因此不能在<code>Tables</code>子树中生成合并表项的代码，而只能在根节点Query下合并。</p>
+<p>为了提高查询效率，我设想的合并方式如下:</p>
+<ul>
+<li>
+<p>条件的类型</p>
+<p>存在两种条件:</p>
+<ul>
+<li>仅涉及单表的条件: <code>Cond -&gt; Column CMP Constant</code></li>
+<li>涉及两个表的条件: <code>Cond -&gt; Column &quot;=&quot; Column</code></li>
+</ul>
+</li>
+<li>
+<p>应用条件的顺序</p>
+<p>涉及单表的条件，由于会使得<strong>表项变得更少</strong>，我把它称为Filter Condition。</p>
+<p>对于每个表，都先把所有Filter Condition都过一遍。这样，在合并时，无论有没有涉及两个表的条件，都可以有效减少表项，加快合并速度。</p>
+<p>之后，再根据有无涉及两个表的条件，利用<code>mergeWithCond</code>或<code>mergeWithNoCond</code>合并。</p>
+</li>
+</ul>
+<p>以<code>SELECT Student.sid, dept, score FROM Grade,Student WHERE Student.sid = Grade.sid AND cid = &quot;2019&quot;</code>为例，简单用一棵树来表示合并顺序:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/ConditionTree.png" alt="ConditionTree" /></p>
+<p>再以<code>SELECT Student.sid, Course.name, score FROM Student, Grade, Course WHERE Student.sid = Grade.sid AND Course.cid = Grade.cid</code>为例:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/ConditionTree2.png" alt="ConditionTree2" /></p>
+<p>根据以上考虑，不难写出如下代码:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">@ptar.production(&#x27;Query -&gt; &quot;SELECT&quot; Columns &quot;FROM&quot; Tables &quot;WHERE&quot; Expr&#x27;)
+def _q1(query, select, columns, f_, tables, where, expr):
+
+    # use filter conditions to make tables smaller first
+    # ...
+
+    # merge these small tables
+    # ...
+
+    # print result
+    addStmt(&quot;print(%s)&quot; % resultTableId)
+</code></pre>
+<p>而对于没有<code>where</code>的查询，就非常简单了:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">@ptar.production(&#x27;Query -&gt; &quot;SELECT&quot; Columns &quot;FROM&quot; Tables&#x27;)
+def _q0(query, select, columns, f_, tables):
+
+    # merge all tables
+    for i in range(1, len(tables.list)):
+        addStmt(&quot;%s = mergeWithNoCond(&#x27;%s&#x27;, %s, %s)&quot; % (...))
+    
+    # print result
+    addStmt(&quot;print(%s)&quot; % resultTableId)
+</code></pre>
+<p>还有很多不是特别重要的翻译规则，因而在此略去。</p>
+<h3 id="cheng-guo">成果</h3>
+<p>对于一个引擎来说，正确性和效率都是非常重要的。</p>
+<p>这种实现题通常都很难确认数据的准确性。好在这题有CCSP提供的数据与正解，因此我写了个简易Checker:</p>
+<pre data-lang="python" class="language-python "><code class="language-python" data-lang="python">from os import system
+from glob import glob
+from sys import stdout
+from time import time
+
+for filename in glob(&quot;SQLData&#x2F;*.in&quot;):
+    cmd = &quot;python sql.py &lt; %s.in &gt; %s.out&quot; % (filename[:-3], filename[:-3])
+    print(&quot;executing &#x27;&quot; + cmd + &quot;&#x27; ...&quot;, end=&quot;&quot;)
+    stdout.flush()
+    time0 = time()
+    system(cmd)
+    print(&quot; done, time cost: %.5fs. Checking output and answer... &quot; % (time() - time0), end=&quot;&quot;)
+    stdout.flush()
+    with open(&quot;%s.out&quot; % filename[:-3], &quot;r&quot;) as f:
+        out = f.read()
+    with open(&quot;%s.ans&quot; % filename[:-3], &quot;r&quot;) as f:
+        ans = f.read()
+    if out == ans:
+        print(&quot;Accepted&quot;)
+    else:
+        print(&quot;Wrong Answer&quot;)
+</code></pre>
+<p>然后跑一下看看结果...</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/SQLFinish2.png" alt="SQLFinish2" /></p>
+<p>尽管写的是Accepted，不过那也只是答案正确而已。看这个接近3秒的查询时间，说实话还是有点担心TLE的...</p>
+<p>然后稍微美化一下输出，顺便把分析树也打印出来，大致就会得到如下输出:</p>
+<p><img src="https://med1844.github.io/zh/build-a-compiler-2/SQLFinish.png" alt="SQLFinish" /></p>
+<h3 id="neng-bu-neng-zai-niu-bi-yi-dian">能不能再牛逼一点?</h3>
+<p>其实写这道题的时候，我就有种<em>CFG简化到了这种地步，似乎完全没有体现出递归文法的优势</em>的想法。</p>
+<p>其实稍微看看以前上数据库课的时候的代码就能发现，其实还有<code>Column -&gt; &quot;(&quot; Query &quot;)&quot; ColumnName</code>这种语法:</p>
+<pre data-lang="sql" class="language-sql "><code class="language-sql" data-lang="sql">select s.ID, s.name, s.dept_name, (
+	select count(case when takes.grade = &#x27;F&#x27; then 1 else null end)
+	from student left join takes on student.ID = takes.ID
+	where s.ID = student.ID
+) fail, (
+	select count(case when takes.grade = &#x27;F&#x27; then 1 else null end)
+	from student left join takes on student.ID = takes.ID
+	where s.dept_name = student.dept_name
+) all_fail
+from student as s
+</code></pre>
+<p>同样的，<code>where</code>语句中也可以包含<code>Query</code>:</p>
+<pre data-lang="sql" class="language-sql "><code class="language-sql" data-lang="sql">select id, name
+from student
+where not exists (
+    select takes.id
+    from takes
+    where takes.id = student.id
+)
+</code></pre>
+<p>所以也可以再补上一个<code>Expr -&gt; Expr &quot;exists&quot; &quot;(&quot; Query &quot;)&quot; | Expr &quot;not&quot; &quot;exists&quot; &quot;(&quot; Query &quot;)&quot;</code>。</p>
+<p>还有<code>join | left join | full outer join ...</code>、<code>with</code>、聚合函数、<code>group by</code>、<code>order by</code>:</p>
+<pre data-lang="sql" class="language-sql "><code class="language-sql" data-lang="sql">with full_st(ID) as (
+    select s.id
+    from student as s
+    where not exists (
+        select course_id
+        from teaches left join instructor on teaches.ID = instructor.ID
+        where instructor.dept_name = &#x27;丐帮&#x27;
+        except
+        select takes.course_id
+        from takes
+        where s.ID = takes.ID
+    )
+)
+select student.ID, student.name, count(*) &#x27;Course Count&#x27;
+from full_st left join student    on full_st.ID != student.ID
+             left join takes      on student.ID = takes.ID
+             left join teaches    on takes.course_id = teaches.course_id 
+                                 and takes.year      = teaches.year
+                                 and takes.semester  = teaches.semester
+                                 and takes.sec_id    = teaches.sec_id
+             left join instructor on instructor.ID = teaches.ID
+where takes.grade is not null and instructor.dept_name = &#x27;丐帮&#x27;
+group by student.ID, student.name
+</code></pre>
+<p>除此之外还要考虑<code>insert, update</code>之类的语句。</p>
+<p>尽管group by，聚合函数，join等都想好了要怎么实现，果然还是更想把接下来的simpleJava的编译器写出来。作为利用Parse Tree来生成线性IR的练习，我想应该到这里也就差不多了吧。</p>
+<p>而且，现在的实现更像是小打小闹一样，几乎没有任何可扩展性。要加入新功能，实在是麻烦。</p>
+<p>考虑在未来重写一个数据库系统吧。</p>
+<h2 id="references">References</h2>
+<ul>
+<li>http://gcc.gnu.org/onlinedocs/gccint/SSA.html</li>
+<li>https://cs.lmu.edu/~ray/notes/ir/</li>
+</ul>
+
+
+<script>
+  // Script to show/hide header based on scroll direction.
+  const header = document.getElementById('page-header');
+  if (header) {
+    // Store the last scroll position.
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // If scrolling down and past the top, hide the header.
+        header.classList.add('header-hide');
+      } else {
+        // If scrolling up or at the very top, show the header.
+        header.classList.remove('header-hide');
+      }
+
+      // Update the last scroll position.
+      lastScrollY = currentScrollY;
+    });
+  }
+</script>
+
+    </div>
+  </section>
+</body>
+
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Math rendering -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  
+    <link rel="stylesheet" href="https://med1844.github.io/style.css">
+  
+  <script type="module">
+    import {codeToHtml} from 'https://esm.sh/shiki@3.0.0'
+
+    document.querySelectorAll('pre').forEach(async (pre) => {
+      const lang = pre.getAttribute('data-lang')
+      if (lang !== null) {
+        const code = pre.textContent.trimEnd()
+        pre.innerHTML = await codeToHtml(code, {
+          lang: lang,
+          theme: 'everforest-dark',
+          colorReplacements: {
+            '#2d353b': '#232a2e'
+          }
+        })
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      
+<h1 class="title">
+  Med的博客
+</h1>
+<h2>Posts</h2>
+<div class="posts">
+  
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/the-blockheads-save-file-tool-dev-log-2/">The Blockheads存档修改工具开发记录（二）</a>
+        <div class="date">2020-03-10</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/the-blockheads-save-file-tool-dev-log-1/">The Blockheads存档修改工具开发记录（一）</a>
+        <div class="date">2020-03-02</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/build-a-compiler-3/">从零写一个编译器（三）- simpleJava Compiler</a>
+        <div class="date">2020-02-13</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/build-a-compiler-2/">从零写一个编译器（二）- SA, IR与实际应用</a>
+        <div class="date">2020-01-31</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/build-a-compiler-1/">从零写一个编译器（一）- Lexer与Parser</a>
+        <div class="date">2019-12-15</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/minecraft-clone-dev-log-5/">小学期开发记录 - 后日谈</a>
+        <div class="date">2019-08-19</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/minecraft-clone-dev-log-4/">小学期开发记录 - 第四周</a>
+        <div class="date">2019-07-15</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/minecraft-clone-dev-log-3/">小学期开发记录 - 第三周</a>
+        <div class="date">2019-07-08</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/minecraft-clone-dev-log-2/">小学期开发记录 - 第二周</a>
+        <div class="date">2019-07-04</div>
+      </article>
+    
+      <article class="post">
+        <a href="https://med1844.github.io/zh/minecraft-clone-dev-log-1/">小学期开发记录 - 第一周</a>
+        <div class="date">2019-06-24</div>
+      </article>
+    
+  
+</div>
+
+
+    </div>
+  </section>
+</body>
+
+</html>
